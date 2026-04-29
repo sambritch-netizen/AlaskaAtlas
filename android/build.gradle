@@ -1,0 +1,43 @@
+// Top-level build.gradle
+// Mapbox requires its Maven repo added here so Gradle can download the SDK.
+// See: https://docs.mapbox.com/android/maps/guides/install/
+
+buildscript {
+    ext.kotlin_version = '1.9.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.1.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+
+        // Mapbox Maven — requires MAPBOX_DOWNLOADS_TOKEN in ~/.gradle/gradle.properties
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = "mapbox"
+                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
+            }
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
