@@ -13,7 +13,7 @@ class MainNavigationScreen extends StatelessWidget {
   static const List<_NavItem> _items = [
     _NavItem(label: 'Explore', icon: Icons.explore_outlined, activeIcon: Icons.explore),
     _NavItem(label: 'Map', icon: Icons.map_outlined, activeIcon: Icons.map),
-    _NavItem(label: 'Rent Gear', icon: Icons.backpack_outlined, activeIcon: Icons.backpack),
+    _NavItem(label: 'Trade', icon: Icons.candlestick_chart_outlined, activeIcon: Icons.candlestick_chart),
     _NavItem(label: 'Trips', icon: Icons.bookmark_border, activeIcon: Icons.bookmark),
     _NavItem(label: 'More', icon: Icons.more_horiz),
   ];
