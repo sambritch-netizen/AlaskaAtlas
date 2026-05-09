@@ -1,0 +1,10 @@
+{
+  "etfs": ["SPY", "QQQ", "IWM"],
+  "large_cap": ["AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "TSLA"],
+  "high_momentum": ["AMD", "CRM", "NFLX", "SHOP", "COIN"],
+  "all": [
+    "SPY", "QQQ", "IWM",
+    "AAPL", "MSFT", "NVDA", "AMZN", "META", "GOOGL", "TSLA",
+    "AMD", "CRM", "NFLX", "SHOP", "COIN"
+  ]
+}
