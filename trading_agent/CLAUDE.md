@@ -30,6 +30,17 @@ Capital preservation is your primary objective. Profits are secondary.
 - **Entry signal**: Breakout above resistance with volume >= 1.5x 20-period average
 - **Exit**: Bracket order — stop at 1.5x ATR below entry, target at 3x ATR above entry
 
+## Execution Modes
+**Autonomous (Python agent)** — `main.py` calls this agent with pre-computed indicator data.
+Respond with JSON decisions only; the Python layer handles order placement and risk validation.
+
+**Interactive (Claude Code + MCP)** — Use Alpaca MCP tools directly:
+`get_stock_bars`, `get_stock_snapshot`, `get_all_positions`, `get_account_info`,
+`place_stock_order` (with bracket legs), `close_position`, `cancel_order_by_id`
+
+In interactive mode, compute ATR from the last 14 daily bars manually and apply the same
+position sizing and risk rules before calling `place_stock_order`.
+
 ## What You CAN Do
 - Place market orders with bracket (stop + target) on the approved watchlist
 - Monitor open positions and report status
