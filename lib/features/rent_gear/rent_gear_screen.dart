@@ -127,7 +127,7 @@ class RentGearScreen extends ConsumerWidget {
                   padding: const EdgeInsets.fromLTRB(20, 10, 20, 4),
                   children: MockData.rentalCategories
                       .map((cat) => _CategoryPill(
-                            label: cat,
+                            label: MockData.rentalCategoryLabels[cat] ?? cat,
                             selected: selectedCategory == cat,
                             onTap: () =>
                                 ref.read(selectedRentalCategoryProvider.notifier).state = cat,

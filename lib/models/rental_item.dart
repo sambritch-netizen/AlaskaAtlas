@@ -1,3 +1,6 @@
+// Maps to the `rental_packages` table — the user-facing gear catalog.
+// The lower-level `rental_items` table tracks physical inventory and is
+// managed by Turnagain Outfitters staff separately.
 class RentalItem {
   final String id;
   final String name;
@@ -28,10 +31,10 @@ class RentalItem {
       description: json['description'] as String,
       category: json['category'] as String,
       pricePerDay: (json['price_per_day'] as num).toDouble(),
-      images: List<String>.from(json['images'] as List),
-      includedItems: List<String>.from(json['included_items'] as List),
-      recommendedFor: List<String>.from(json['recommended_for'] as List),
-      available: json['available'] as bool? ?? true,
+      images: List<String>.from((json['images'] as List?) ?? []),
+      includedItems: List<String>.from((json['included_items'] as List?) ?? []),
+      recommendedFor: List<String>.from((json['recommended_for'] as List?) ?? []),
+      available: json['active'] as bool? ?? true,
     );
   }
 
@@ -44,6 +47,6 @@ class RentalItem {
         'images': images,
         'included_items': includedItems,
         'recommended_for': recommendedFor,
-        'available': available,
+        'active': available,
       };
 }

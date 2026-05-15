@@ -1,6 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/place.dart';
-import '../data/mock_data.dart';
 
 class PlacesService {
   final SupabaseClient _client;
@@ -8,23 +7,22 @@ class PlacesService {
   PlacesService(this._client);
 
   Future<List<Place>> fetchPlaces({String? category}) async {
-    // TODO: Replace mock with live query once Supabase table is populated
-    // final response = await _client
-    //     .from('places')
-    //     .select()
-    //     .eq('category', category ?? '')
-    //     .order('name');
-    // return response.map((json) => Place.fromJson(json)).toList();
-
-    await Future.delayed(const Duration(milliseconds: 600));
-    final all = MockData.places;
-    if (category == null || category.isEmpty) return all;
-    return all.where((p) => p.category == category).toList();
+    var query = _client.from('places').select();
+    if (category != null && category.isNotEmpty) {
+      query = query.eq('category', category);
+    }
+    final response = await query.order('rating', ascending: false);
+    return response.map((json) => Place.fromJson(json)).toList();
   }
 
   Future<List<Place>> fetchFeaturedPlaces() async {
-    await Future.delayed(const Duration(milliseconds: 400));
-    return MockData.places.where((p) => (p.rating ?? 0) >= 4.7).toList();
+    final response = await _client
+        .from('places')
+        .select()
+        .gte('rating', 4.7)
+        .order('rating', ascending: false)
+        .limit(10);
+    return response.map((json) => Place.fromJson(json)).toList();
   }
 
   Future<List<Place>> fetchNearbyPlaces({
@@ -32,30 +30,29 @@ class PlacesService {
     required double longitude,
     double radiusMiles = 100,
   }) async {
-    await Future.delayed(const Duration(milliseconds: 500));
-    // TODO: Use PostGIS ST_DWithin for real proximity queries
-    final sorted = [...MockData.places];
-    sorted.sort((a, b) => (a.distanceMiles ?? 999).compareTo(b.distanceMiles ?? 999));
-    return sorted.take(5).toList();
+    // Order by distance_miles for now; PostGIS ST_DWithin can replace this
+    // once the postgis extension is enabled.
+    final response = await _client
+        .from('places')
+        .select()
+        .order('distance_miles', ascending: true)
+        .limit(8);
+    return response.map((json) => Place.fromJson(json)).toList();
   }
 
   Future<List<Place>> searchPlaces(String query) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    final q = query.toLowerCase();
-    return MockData.places.where((p) {
-      return p.name.toLowerCase().contains(q) ||
-          p.description.toLowerCase().contains(q) ||
-          p.category.toLowerCase().contains(q) ||
-          p.tags.any((t) => t.toLowerCase().contains(q));
-    }).toList();
+    final response = await _client
+        .from('places')
+        .select()
+        .or('name.ilike.%$query%,description.ilike.%$query%,category.ilike.%$query%')
+        .order('rating', ascending: false);
+    return response.map((json) => Place.fromJson(json)).toList();
   }
 
   Future<Place?> fetchPlaceById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    try {
-      return MockData.places.firstWhere((p) => p.id == id);
-    } catch (_) {
-      return null;
-    }
+    final response =
+        await _client.from('places').select().eq('id', id).maybeSingle();
+    if (response == null) return null;
+    return Place.fromJson(response);
   }
 }

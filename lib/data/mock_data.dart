@@ -398,13 +398,18 @@ class MockData {
     ),
   ];
 
+  // Must match the `category` check constraint on rental_packages
   static const List<String> rentalCategories = [
     'All',
-    'Hiking',
-    'Camping',
-    'Water',
-    'Fishing',
-    'Bikes',
-    'Safety',
+    'fishing',
+    'camping',
+    'hunting',
   ];
+
+  static const Map<String, String> rentalCategoryLabels = {
+    'All': 'All Gear',
+    'fishing': 'Fishing',
+    'camping': 'Camping & Hiking',
+    'hunting': 'Hunting',
+  };
 }

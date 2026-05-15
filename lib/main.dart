@@ -9,8 +9,9 @@ import 'core/router/app_router.dart';
 // ── Configuration ─────────────────────────────────────────────────────────────
 // Store these in environment variables or a secrets manager before shipping.
 // Never commit real keys to version control.
-const String _supabaseUrl = 'YOUR_SUPABASE_URL';
-const String _supabaseAnonKey = 'YOUR_SUPABASE_ANON_KEY';
+const String _supabaseUrl = 'https://ijgrjsvfurhbgchbkcui.supabase.co';
+const String _supabaseAnonKey =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqZ3Jqc3ZmdXJoYmdjaGJrY3VpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxODExNjEsImV4cCI6MjA4ODc1NzE2MX0.Rg5Xjal__VwmN3QNcR_aWIwloauJpiP37g8YFtnXfvQ';
 const String mapboxAccessToken = 'YOUR_MAPBOX_ACCESS_TOKEN';
 
 Future<void> main() async {
