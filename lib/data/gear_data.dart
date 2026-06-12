@@ -149,6 +149,17 @@ class GearData {
 
     // ── Safety & Nav ────────────────────────────────────────────────────
     GearItem(
+      id: 'starlink',
+      name: 'Alaska Starlink Kit',
+      category: 'Safety & Nav',
+      emoji: '📶',
+      description:
+          'Portable Starlink satellite internet for basecamps, cabins, and remote lodges. Real broadband where Alaska has no coverage at all — check current pricing and availability on turnagainoutfitters.com.',
+      pricePerDay: 35,
+      includes: ['Starlink dish + router', 'Power kit', 'Carry case'],
+      goodFor: ['Remote cabins & lodges', 'Basecamps', 'Work-from-anywhere trips'],
+    ),
+    GearItem(
       id: 'inreach',
       name: 'Satellite Communicator',
       category: 'Safety & Nav',

@@ -23,7 +23,7 @@ class TurnagainService {
   static const String _base44ApiKey = '';
   static const String _gearEntity = 'GearItem';
 
-  static const String websiteUrl = 'https://app.base44.com';
+  static const String websiteUrl = 'https://turnagainoutfitters.com';
 
   bool get isLive => _base44AppId.isNotEmpty && _base44ApiKey.isNotEmpty;
 
