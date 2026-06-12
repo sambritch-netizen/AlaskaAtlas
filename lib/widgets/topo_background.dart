@@ -1,26 +1,25 @@
 import 'dart:math' as math;
-import 'package:flutter/material.dart';
-import '../core/constants/app_colors.dart';
 
+import 'package:flutter/material.dart';
+
+import '../theme/app_colors.dart';
+
+/// Paints faint topographic contour lines behind its child — the signature
+/// rugged texture of the app.
 class TopoBackground extends StatelessWidget {
   final Widget child;
   final double opacity;
 
-  const TopoBackground({
-    super.key,
-    required this.child,
-    this.opacity = 1.0,
-  });
+  const TopoBackground({super.key, required this.child, this.opacity = 0.3});
 
   @override
   Widget build(BuildContext context) {
     return Stack(
+      fit: StackFit.expand,
       children: [
-        Positioned.fill(
-          child: Opacity(
-            opacity: opacity,
-            child: CustomPaint(painter: _TopoPainter()),
-          ),
+        Opacity(
+          opacity: opacity,
+          child: CustomPaint(painter: _TopoPainter()),
         ),
         child,
       ],
@@ -32,51 +31,28 @@ class _TopoPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.topoLine
-      ..strokeWidth = 0.8
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1;
 
-    final brightPaint = Paint()
-      ..color = AppColors.topoLineBright
-      ..strokeWidth = 1.2
-      ..style = PaintingStyle.stroke;
-
-    const lineCount = 14;
-    final spacing = size.height / lineCount;
-
-    for (int i = 0; i < lineCount; i++) {
-      final y = i * spacing;
+    // Deterministic pseudo-random contours so the texture is stable.
+    final rng = math.Random(49); // Alaska, the 49th state
+    for (var i = 0; i < 9; i++) {
+      paint.color = i.isEven ? AppColors.topoLine : AppColors.topoLineBright;
       final path = Path();
-      final isMajor = i % 4 == 0;
-
-      path.moveTo(0, y);
-
-      const segmentWidth = 60.0;
-      final segments = (size.width / segmentWidth).ceil() + 1;
-
-      for (int j = 0; j < segments; j++) {
-        final x1 = j * segmentWidth;
-        final x2 = x1 + segmentWidth / 2;
-        final x3 = x1 + segmentWidth;
-
-        final amp1 = 6.0 + math.sin(i * 0.7 + j * 0.4) * 4.0;
-        final amp2 = 6.0 + math.cos(i * 0.5 + j * 0.3) * 5.0;
-
-        path.quadraticBezierTo(x2, y + amp1, x3, y + amp2 * 0.3);
+      final baseY = size.height * (i + 0.5) / 9;
+      path.moveTo(-20, baseY);
+      var x = -20.0;
+      var y = baseY;
+      while (x < size.width + 20) {
+        final dx = 40 + rng.nextDouble() * 50;
+        final dy = (rng.nextDouble() - 0.5) * 70;
+        final cx = x + dx / 2;
+        final cy = y + dy / 2 + (rng.nextDouble() - 0.5) * 30;
+        x += dx;
+        y = baseY + dy;
+        path.quadraticBezierTo(cx, cy, x, y);
       }
-
-      canvas.drawPath(path, isMajor ? brightPaint : paint);
-    }
-
-    // Vertical accent lines — subtle meridian effect
-    final vPaint = Paint()
-      ..color = AppColors.topoLine.withValues(alpha: 0.4)
-      ..strokeWidth = 0.5
-      ..style = PaintingStyle.stroke;
-
-    for (int i = 0; i < 8; i++) {
-      final x = i * (size.width / 8) + size.width / 16;
-      canvas.drawLine(Offset(x, 0), Offset(x, size.height), vPaint);
+      canvas.drawPath(path, paint);
     }
   }
 
