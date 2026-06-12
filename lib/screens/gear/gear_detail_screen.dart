@@ -159,7 +159,7 @@ class GearDetailScreen extends StatelessWidget {
                     const SizedBox(height: 12),
                     Center(
                       child: Text(
-                        'Pickup in Anchorage · trailhead delivery available',
+                        'Anchorage-based · book at turnagainoutfitters.com',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ),
@@ -190,8 +190,7 @@ class GearDetailScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Reservations are handled directly by Turnagain Outfitters. '
-              'Tap below to open their site and lock in your dates — '
-              'mention Alaska Atlas for trailhead delivery.',
+              'Tap below to open turnagainoutfitters.com and lock in your dates.',
               style: Theme.of(sheetContext).textTheme.bodyMedium,
             ),
             const SizedBox(height: 20),

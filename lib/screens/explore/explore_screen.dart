@@ -391,7 +391,7 @@ class _TurnagainBanner extends StatelessWidget {
                           style: Theme.of(context).textTheme.titleLarge),
                       const SizedBox(height: 2),
                       Text(
-                        'Tents, rods, parkas & sat-comms — delivered ready',
+                        'Fishing & camping packages, Starlink, and more',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
