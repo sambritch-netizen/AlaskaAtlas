@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../models/guide.dart';
 import '../models/gear_item.dart';
+import '../models/lake.dart';
+import '../screens/map/lake_profile_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/gear/gear_detail_screen.dart';
 import '../screens/gear/gear_screen.dart';
@@ -28,6 +30,13 @@ final routerProvider = Provider<GoRouter>((ref) {
             GoRoute(
               path: '/map',
               builder: (context, state) => const MapScreen(),
+              routes: [
+                GoRoute(
+                  path: 'lake',
+                  builder: (context, state) =>
+                      LakeProfileScreen(lake: state.extra as Lake),
+                ),
+              ],
             ),
           ]),
           StatefulShellBranch(routes: [

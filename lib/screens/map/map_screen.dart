@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../data/hotspots_data.dart';
+import '../../data/lakes_data.dart';
 import '../../models/hotspot.dart';
+import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import 'hotspot_sheet.dart';
@@ -26,6 +29,8 @@ class _MapScreenState extends State<MapScreen> {
   String? _category;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
+  static const _anchorageCenter = LatLng(61.23, -149.78);
+  static const _lakesFilter = 'Lake Charts';
 
   String get _tileUrl => switch (_layer) {
         _BaseLayer.dark =>
@@ -40,7 +45,12 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final spots = HotspotsData.byCategory(_category);
+    final lakesOnly = _category == _lakesFilter;
+    final spots =
+        lakesOnly ? <Hotspot>[] : HotspotsData.byCategory(_category);
+    // Lake pins ride along in the unfiltered view and stand alone in
+    // Lake Charts mode.
+    final showLakes = lakesOnly || _category == null;
 
     return Scaffold(
       body: Stack(
@@ -78,6 +88,19 @@ class _MapScreenState extends State<MapScreen> {
                         },
                       ),
                     ),
+                  if (showLakes)
+                    for (final lake in LakesData.lakes)
+                      Marker(
+                        point: lake.location,
+                        width: 40,
+                        height: 46,
+                        alignment: Alignment.topCenter,
+                        child: _LakeMarker(
+                          lake: lake,
+                          onTap: () =>
+                              context.go('/map/lake', extra: lake),
+                        ),
+                      ),
                 ],
               ),
               Align(
@@ -120,10 +143,18 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
                 FilterChipsRow(
-                  options: HotspotsData.categories,
+                  options: const [_lakesFilter, ...HotspotsData.categories],
                   selected: _category,
-                  emojiFor: HotspotsData.categoryEmoji,
-                  onSelected: (c) => setState(() => _category = c),
+                  emojiFor: (c) => c == _lakesFilter
+                      ? '💧'
+                      : HotspotsData.categoryEmoji(c),
+                  onSelected: (c) {
+                    setState(() => _category = c);
+                    if (c == _lakesFilter) {
+                      // The lake charts cluster around Anchorage.
+                      _mapController.move(_anchorageCenter, 9.6);
+                    }
+                  },
                 ),
               ],
             ),
@@ -187,6 +218,48 @@ class _SpotMarker extends StatelessWidget {
             height: 9,
             decoration: BoxDecoration(
               color: AppColors.pine,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LakeMarker extends StatelessWidget {
+  final Lake lake;
+  final VoidCallback onTap;
+
+  const _LakeMarker({required this.lake, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 32,
+            height: 32,
+            decoration: BoxDecoration(
+              color: const Color(0xFF13384C),
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.info, width: 2),
+              boxShadow: const [
+                BoxShadow(color: Colors.black54, blurRadius: 6),
+              ],
+            ),
+            child: const Center(
+              child: Text('💧', style: TextStyle(fontSize: 14)),
+            ),
+          ),
+          Container(
+            width: 3,
+            height: 8,
+            decoration: BoxDecoration(
+              color: AppColors.info,
               borderRadius: BorderRadius.circular(2),
             ),
           ),

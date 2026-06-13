@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:alaska_atlas/data/gear_data.dart';
 import 'package:alaska_atlas/data/guides_data.dart';
 import 'package:alaska_atlas/data/hotspots_data.dart';
+import 'package:alaska_atlas/data/lakes_data.dart';
 
 void main() {
   setUpAll(() {
@@ -37,6 +38,35 @@ void main() {
         expect(text.contains(outsider), isFalse,
             reason: '"$outsider" does not belong in an Alaska guide '
                 '(${guide.id})');
+      }
+    }
+  });
+
+  test('lakes are valid Anchorage-area waters', () {
+    expect(LakesData.lakes, isNotEmpty);
+    for (final lake in LakesData.lakes) {
+      expect(lake.lat, inInclusiveRange(61.0, 61.6),
+          reason: '${lake.name} is outside the Anchorage area');
+      expect(lake.lng, inInclusiveRange(-150.2, -149.3),
+          reason: '${lake.name} is outside the Anchorage area');
+      expect(lake.maxDepthFt, greaterThan(0));
+      expect(lake.surfaceAcres, greaterThan(0));
+      expect(lake.species, isNotEmpty,
+          reason: '${lake.name} has no fish listed');
+      expect(lake.outline.length, greaterThanOrEqualTo(8),
+          reason: '${lake.name} outline too coarse to chart');
+      for (final p in [...lake.outline, lake.deepPoint]) {
+        expect(p.length, 2);
+        expect(p[0], inInclusiveRange(0.0, 1.0));
+        expect(p[1], inInclusiveRange(0.0, 1.0));
+      }
+      for (final s in lake.species) {
+        expect(s.baits, isNotEmpty);
+        // Alaska lakes only — no warm-water or saltwater outsiders.
+        for (final outsider in ['tuna', 'bass', 'catfish', 'walleye']) {
+          expect(s.name.toLowerCase().contains(outsider), isFalse,
+              reason: '"$outsider" does not swim in ${lake.name}');
+        }
       }
     }
   });
