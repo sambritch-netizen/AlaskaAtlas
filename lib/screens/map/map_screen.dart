@@ -10,6 +10,7 @@ import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import 'hotspot_sheet.dart';
+import 'lake_overlay.dart';
 
 enum _BaseLayer { dark, topo }
 
@@ -25,8 +26,11 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final _mapController = MapController();
-  _BaseLayer _layer = _BaseLayer.dark;
+  _BaseLayer _layer = _BaseLayer.topo;
   String? _category;
+  // In-map bathymetry only makes sense once lakes occupy real screen space.
+  bool _showContours = false;
+  static const _contourZoom = 9.0;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -57,12 +61,18 @@ class _MapScreenState extends State<MapScreen> {
         children: [
           FlutterMap(
             mapController: _mapController,
-            options: const MapOptions(
+            options: MapOptions(
               initialCenter: _alaskaCenter,
               initialZoom: 4.3,
               minZoom: 3,
               maxZoom: 17,
               backgroundColor: AppColors.background,
+              onPositionChanged: (camera, _) {
+                final show = camera.zoom >= _contourZoom;
+                if (show != _showContours) {
+                  setState(() => _showContours = show);
+                }
+              },
             ),
             children: [
               TileLayer(
@@ -72,6 +82,13 @@ class _MapScreenState extends State<MapScreen> {
                     ? RetinaMode.isHighDensity(context)
                     : false,
               ),
+              if (showLakes && _showContours)
+                PolygonLayer(
+                  polygons: [
+                    for (final lake in LakesData.lakes)
+                      ...LakeOverlay.polygonsFor(lake),
+                  ],
+                ),
               MarkerLayer(
                 markers: [
                   for (final spot in spots)
@@ -92,14 +109,22 @@ class _MapScreenState extends State<MapScreen> {
                     for (final lake in LakesData.lakes)
                       Marker(
                         point: lake.location,
-                        width: 40,
-                        height: 46,
-                        alignment: Alignment.topCenter,
-                        child: _LakeMarker(
-                          lake: lake,
-                          onTap: () =>
-                              context.go('/map/lake', extra: lake),
-                        ),
+                        width: _showContours ? 150 : 40,
+                        height: _showContours ? 46 : 46,
+                        alignment: _showContours
+                            ? Alignment.center
+                            : Alignment.topCenter,
+                        child: _showContours
+                            ? _LakeLabel(
+                                lake: lake,
+                                onTap: () =>
+                                    context.go('/map/lake', extra: lake),
+                              )
+                            : _LakeMarker(
+                                lake: lake,
+                                onTap: () =>
+                                    context.go('/map/lake', extra: lake),
+                              ),
                       ),
                 ],
               ),
@@ -261,6 +286,54 @@ class _LakeMarker extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.info,
               borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// onX-style label shown once the bathymetry is visible: a small marker dot
+/// with the lake name beneath it.
+class _LakeLabel extends StatelessWidget {
+  final Lake lake;
+  final VoidCallback onTap;
+
+  const _LakeLabel({required this.lake, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 14,
+            height: 14,
+            decoration: BoxDecoration(
+              color: const Color(0xFF1B5E83),
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: const [
+                BoxShadow(color: Colors.black38, blurRadius: 3),
+              ],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            lake.name,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              fontStyle: FontStyle.italic,
+              color: Color(0xFF14537A),
+              shadows: [
+                Shadow(color: Colors.white, blurRadius: 3),
+                Shadow(color: Colors.white, blurRadius: 6),
+              ],
             ),
           ),
         ],
