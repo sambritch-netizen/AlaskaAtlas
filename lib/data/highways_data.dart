@@ -176,10 +176,9 @@ class HighwaysData {
 /// Loads highway routes from bundled GeoJSON
 /// (`assets/highways/highways.geojson`).
 ///
-/// Each route is a hand-built waypoint polyline spanning the highway's full
-/// length end-to-end (e.g. Anchorage to Seward), since exact OSM centerline
-/// data isn't available end-to-end. Curvature is approximate between
-/// waypoints, but coverage is complete.
+/// Each route is traced from real OpenStreetMap road-relation centerlines
+/// (fetched via the OSM API and stitched/simplified into one continuous
+/// line per highway), so the path follows the actual roadway end-to-end.
 class HighwayLoader {
   HighwayLoader._();
 
