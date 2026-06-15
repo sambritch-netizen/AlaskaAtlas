@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../data/bathymetry_loader.dart';
+import '../../data/geocode_service.dart';
 import '../../data/highways_data.dart';
 import '../../data/lakes_data.dart';
 import '../../data/search_index.dart';
@@ -70,10 +73,16 @@ class _MapScreenState extends State<MapScreen> {
   bool _layersPanelOpen = false;
 
   // Search panel state — searches across hot spots, highway stops,
-  // waypoints, and lakes by name.
+  // waypoints, and lakes by name, plus a debounced worldwide place lookup.
   bool _searchOpen = false;
   final _searchController = TextEditingController();
   List<SearchResult> _searchResults = [];
+  List<GeocodeResult> _geocodeResults = [];
+  bool _geocodeLoading = false;
+  Timer? _searchDebounce;
+
+  // Dropped pin for a selected geocode (worldwide place search) result.
+  GeocodeResult? _searchPin;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -107,18 +116,43 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
 
   void _onSearchChanged(String query) {
-    setState(() => _searchResults = SearchIndex.search(query));
+    setState(() {
+      _searchResults = SearchIndex.search(query);
+      _geocodeResults = [];
+      _geocodeLoading = query.trim().isNotEmpty;
+    });
+
+    _searchDebounce?.cancel();
+    final q = query.trim();
+    if (q.isEmpty) return;
+    _searchDebounce = Timer(
+      const Duration(milliseconds: 500),
+      () => _runGeocodeSearch(q),
+    );
+  }
+
+  Future<void> _runGeocodeSearch(String query) async {
+    final results = await GeocodeService.search(query);
+    if (!mounted || _searchController.text.trim() != query) return;
+    setState(() {
+      _geocodeResults = results;
+      _geocodeLoading = false;
+    });
   }
 
   void _closeSearch() {
+    _searchDebounce?.cancel();
     setState(() {
       _searchOpen = false;
       _searchResults = [];
+      _geocodeResults = [];
+      _geocodeLoading = false;
       _searchController.clear();
     });
   }
@@ -141,6 +175,13 @@ class _MapScreenState extends State<MapScreen> {
     } else if (result.lake != null) {
       context.go('/map/lake', extra: result.lake);
     }
+  }
+
+  /// Centers the map on a worldwide place-search result and drops a pin.
+  void _selectGeocodeResult(GeocodeResult result) {
+    _closeSearch();
+    _mapController.move(result.location, 13);
+    setState(() => _searchPin = result);
   }
 
   /// Builds "MP" pins at every 10-mile interval along each highway's real
@@ -331,6 +372,21 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                 ],
               ),
+              if (_searchPin != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _searchPin!.location,
+                      width: 220,
+                      height: 50,
+                      alignment: Alignment.bottomCenter,
+                      child: _SearchPin(
+                        result: _searchPin!,
+                        onClose: () => setState(() => _searchPin = null),
+                      ),
+                    ),
+                  ],
+                ),
               Align(
                 alignment: Alignment.bottomLeft,
                 child: Padding(
@@ -423,7 +479,10 @@ class _MapScreenState extends State<MapScreen> {
                       borderRadius: BorderRadius.circular(14),
                       border: Border.all(color: AppColors.border),
                     ),
-                    child: _searchResults.isEmpty
+                    child:
+                        _searchResults.isEmpty &&
+                            _geocodeResults.isEmpty &&
+                            !_geocodeLoading
                         ? const Padding(
                             padding: EdgeInsets.all(16),
                             child: Text(
@@ -434,34 +493,85 @@ class _MapScreenState extends State<MapScreen> {
                         : ListView.separated(
                             shrinkWrap: true,
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            itemCount: _searchResults.length,
+                            itemCount:
+                                _searchResults.length +
+                                _geocodeResults.length +
+                                (_geocodeLoading ? 1 : 0),
                             separatorBuilder: (_, __) => const Divider(
                               height: 1,
                               color: AppColors.border,
                             ),
                             itemBuilder: (context, i) {
-                              final result = _searchResults[i];
-                              return ListTile(
-                                dense: true,
-                                leading: Text(
-                                  _searchResultEmoji(result),
-                                  style: const TextStyle(fontSize: 20),
-                                ),
-                                title: Text(
-                                  result.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
-                                    color: AppColors.textPrimary,
+                              if (i < _searchResults.length) {
+                                final result = _searchResults[i];
+                                return ListTile(
+                                  dense: true,
+                                  leading: Text(
+                                    _searchResultEmoji(result),
+                                    style: const TextStyle(fontSize: 20),
                                   ),
-                                ),
-                                subtitle: Text(
-                                  result.subtitle,
-                                  style: const TextStyle(
-                                    fontSize: 12,
+                                  title: Text(
+                                    result.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    result.subtitle,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  onTap: () => _selectSearchResult(result),
+                                );
+                              }
+
+                              final gi = i - _searchResults.length;
+                              if (gi < _geocodeResults.length) {
+                                final result = _geocodeResults[gi];
+                                return ListTile(
+                                  dense: true,
+                                  leading: const Icon(
+                                    Icons.location_on,
                                     color: AppColors.textSecondary,
                                   ),
+                                  title: Text(
+                                    result.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.textPrimary,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    result.displayName,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                  onTap: () => _selectGeocodeResult(result),
+                                );
+                              }
+
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 14,
+                                  horizontal: 16,
                                 ),
-                                onTap: () => _selectSearchResult(result),
+                                child: Center(
+                                  child: SizedBox(
+                                    width: 18,
+                                    height: 18,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: AppColors.textSecondary,
+                                    ),
+                                  ),
+                                ),
                               );
                             },
                           ),
@@ -669,6 +779,49 @@ class _MileMarkerPin extends StatelessWidget {
           fontWeight: FontWeight.w700,
           color: color,
         ),
+      ),
+    );
+  }
+}
+
+/// Dropped pin marking the location of a worldwide [GeocodeResult].
+class _SearchPin extends StatelessWidget {
+  final GeocodeResult result;
+  final VoidCallback onClose;
+
+  const _SearchPin({required this.result, required this.onClose});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onClose,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            constraints: const BoxConstraints(maxWidth: 200),
+            decoration: BoxDecoration(
+              color: AppColors.surfaceElevated,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.border),
+              boxShadow: const [
+                BoxShadow(color: Colors.black54, blurRadius: 4),
+              ],
+            ),
+            child: Text(
+              result.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+          ),
+          const Icon(Icons.location_on, size: 34, color: Colors.redAccent),
+        ],
       ),
     );
   }
