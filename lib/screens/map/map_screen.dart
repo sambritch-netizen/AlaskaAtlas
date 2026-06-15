@@ -39,13 +39,16 @@ class _MapScreenState extends State<MapScreen> {
   bool _showHighways = true;
   bool _showLakeCharts = false;
 
-  // Per-category visibility within the Highways group — all on by default,
+  // Per-category visibility within the Highways group — off by default,
   // toggled individually from the Map Layers menu.
-  final Set<String> _activeHighwayCategories = {...HighwayStopCategories.all};
+  final Set<String> _activeHighwayCategories = {};
 
   // Trip-planning waypoint pins (fishing, wildlife, camping, etc.) — off by
   // default, toggled individually from the Map Layers menu.
   final Set<String> _activeWaypointCategories = {};
+
+  // Whether the left-side "Map Layers" panel is open.
+  bool _layersPanelOpen = false;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -248,7 +251,8 @@ class _MapScreenState extends State<MapScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(top: 132),
                 child: GestureDetector(
-                  onTap: () => _openMapLayersSheet(context),
+                  onTap: () =>
+                      setState(() => _layersPanelOpen = !_layersPanelOpen),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 7),
@@ -296,34 +300,35 @@ class _MapScreenState extends State<MapScreen> {
               child: const Icon(Icons.zoom_out_map),
             ),
           ),
-        ],
-      ),
-    );
-  }
 
-  /// Opens the onX-style "Map Layers" menu: a category list that drills
-  /// down into per-layer toggle switches.
-  void _openMapLayersSheet(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (sheetContext, sheetSetState) {
-            return _MapLayersSheet(
+          // ── Backdrop to dismiss the Map Layers panel ───────────────
+          if (_layersPanelOpen)
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(() => _layersPanelOpen = false),
+                child: Container(color: Colors.black.withValues(alpha: 0.3)),
+              ),
+            ),
+
+          // ── Left-side "Map Layers" panel ───────────────────────────
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOut,
+            top: 0,
+            bottom: 0,
+            left: _layersPanelOpen ? 0 : -300,
+            width: 300,
+            child: _MapLayersSheet(
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
               activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
-              onHighwaysChanged: (v) {
-                setState(() => _showHighways = v);
-                sheetSetState(() {});
-              },
+              onClose: () => setState(() => _layersPanelOpen = false),
+              onHighwaysChanged: (v) => setState(() => _showHighways = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
-                sheetSetState(() {});
               },
               onHighwayCategoryChanged: (cat, v) {
                 setState(() {
@@ -333,7 +338,6 @@ class _MapScreenState extends State<MapScreen> {
                     _activeHighwayCategories.remove(cat);
                   }
                 });
-                sheetSetState(() {});
               },
               onWaypointCategoryChanged: (cat, v) {
                 setState(() {
@@ -343,12 +347,11 @@ class _MapScreenState extends State<MapScreen> {
                     _activeWaypointCategories.remove(cat);
                   }
                 });
-                sheetSetState(() {});
               },
-            );
-          },
-        );
-      },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -573,6 +576,7 @@ class _MapLayersSheet extends StatefulWidget {
   final ValueChanged<bool> onLakeChartsChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
+  final VoidCallback onClose;
 
   const _MapLayersSheet({
     required this.showHighways,
@@ -583,6 +587,7 @@ class _MapLayersSheet extends StatefulWidget {
     required this.onLakeChartsChanged,
     required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
+    required this.onClose,
   });
 
   @override
@@ -608,58 +613,53 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.6,
-      minChildSize: 0.35,
-      maxChildSize: 0.9,
-      expand: false,
-      builder: (context, scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            border: Border(
-              top: BorderSide(color: AppColors.border),
-              left: BorderSide(color: AppColors.border),
-              right: BorderSide(color: AppColors.border),
-            ),
-          ),
-          child: _detail == null
-              ? _buildList(context, scrollController)
-              : _buildDetail(context, scrollController, _detail!),
-        );
-      },
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(20)),
+        border: Border(
+          top: BorderSide(color: AppColors.border),
+          right: BorderSide(color: AppColors.border),
+          bottom: BorderSide(color: AppColors.border),
+        ),
+        boxShadow: [
+          BoxShadow(color: Colors.black54, blurRadius: 12),
+        ],
+      ),
+      child: SafeArea(
+        child: _detail == null
+            ? _buildList(context)
+            : _buildDetail(context, _detail!),
+      ),
     );
   }
 
-  Widget _buildList(BuildContext context, ScrollController scrollController) {
+  Widget _buildList(BuildContext context) {
     final highwaysOn =
         (widget.showHighways ? 1 : 0) + widget.activeHighwayCategories.length;
     final highwayTotal = HighwayStopCategories.all.length + 1;
 
     return ListView(
-      controller: scrollController,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       children: [
-        Center(
-          child: Container(
-            width: 36,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
+        Row(
+          children: [
+            const Expanded(
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 6),
+                child: Text('Map Layers',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    )),
+              ),
             ),
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 6),
-          child: Text('Map Layers',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
-              )),
+            IconButton(
+              onPressed: widget.onClose,
+              icon: const Icon(Icons.close, color: AppColors.textSecondary),
+            ),
+          ],
         ),
         const SizedBox(height: 8),
         _CategoryRow(
@@ -685,8 +685,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
     );
   }
 
-  Widget _buildDetail(BuildContext context, ScrollController scrollController,
-      _LayersDetailPage page) {
+  Widget _buildDetail(BuildContext context, _LayersDetailPage page) {
     final (title, rows) = switch (page) {
       _LayersDetailPage.highways => (
           'Highways',
@@ -732,32 +731,26 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
     };
 
     return ListView(
-      controller: scrollController,
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
       children: [
-        Center(
-          child: Container(
-            width: 36,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 12),
-            decoration: BoxDecoration(
-              color: AppColors.border,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ),
         Row(
           children: [
             IconButton(
               onPressed: () => setState(() => _detail = null),
               icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             ),
-            Text(title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                )),
+            Expanded(
+              child: Text(title,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  )),
+            ),
+            IconButton(
+              onPressed: widget.onClose,
+              icon: const Icon(Icons.close, color: AppColors.textSecondary),
+            ),
           ],
         ),
         const SizedBox(height: 4),
