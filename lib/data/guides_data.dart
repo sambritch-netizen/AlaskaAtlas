@@ -12,6 +12,7 @@ class GuidesData {
     GuideCategory(name: 'Wildlife', emoji: '🐻'),
     GuideCategory(name: 'Winter', emoji: '❄️'),
     GuideCategory(name: 'Hiking', emoji: '🥾'),
+    GuideCategory(name: 'Highways', emoji: '🛣️'),
   ];
 
   static Guide byId(String id) => guides.firstWhere((g) => g.id == id);
@@ -524,6 +525,90 @@ class GuidesData {
       safetyNote:
           'Tell someone your route corridor, not just your destination. Off-trail searches need a line to follow.',
     ),
+    // ── Highways ──────────────────────────────────────────────────────────
+    Guide(
+      id: 'hwy-denali',
+      title: 'Denali Highway: Mile-by-Mile',
+      category: 'Highways',
+      emoji: '🛣️',
+      summary:
+          'Alaska\'s wildest road trip — 135 miles of mostly gravel from Cantwell to Paxson, through the heart of GMU 13\'s caribou and sheep country.',
+      difficulty: 'Intermediate',
+      readMinutes: 10,
+      season: 'Mid-May – mid-September (gated/unmaintained in winter)',
+      sections: [
+        GuideSection(
+          heading: 'Mile 0 – Cantwell (Parks Highway Junction)',
+          body:
+              'The western end, where the Denali Highway splits off the Parks Highway just south of Denali National Park. Last reliable fuel and groceries before MacLaren River Lodge, 43 miles out — top off here. Pavement runs for roughly the first 21 miles.',
+        ),
+        GuideSection(
+          heading: 'Mile 13 – Brushkana Creek Campground',
+          body:
+              'A small BLM campground on Brushkana Creek — the only developed campground on the western half of the highway. Sites sit right along the creek with grayling fishing in reach. Good base for hunters working the GMU 13E drainages to the north.',
+        ),
+        GuideSection(
+          heading: 'Mile 21 – Pavement Ends',
+          body:
+              'The road turns to maintained gravel here and stays that way for the rest of the route. Expect washboard, frost heaves, and dust in dry weather — ease off and give RVs room. Wide views of the Alaska Range open up to the north on clear days, with Denali visible from several pullouts over the next 20 miles.',
+        ),
+        GuideSection(
+          heading: 'Mile 36 – Clearwater Creek',
+          body:
+              'A clearwater drainage crossing popular with grayling anglers and a common pull-off for glassing the hillsides above for caribou movement in late August and September.',
+        ),
+        GuideSection(
+          heading: 'Mile 42 – Susitna River Bridge',
+          body:
+              'The road crosses the upper Susitna River here — still a small, clear headwaters stream this far from the coast, a world away from the silty giant it becomes near Talkeetna. Good landmark for orienting yourself on GMU 13 maps.',
+        ),
+        GuideSection(
+          heading: 'Mile 43 – MacLaren River Lodge',
+          body:
+              'The only fuel, food, and lodging between Cantwell and Paxson. A working roadhouse that fills up fast during caribou season — call ahead if you\'re counting on a room or a fuel top-off. Treat it as your last-chance services westbound or first-chance eastbound.',
+        ),
+        GuideSection(
+          heading: 'Mile 47 – MacLaren Summit',
+          body:
+              'At 4,086 feet, this is the highest point on the Alaska highway system and the gateway to the best alpine country on the route. Above treeline here on both sides — open tundra benches that hold caribou, and rocky basins above that hold Dall sheep. Pull-offs near the summit are popular glassing points; expect company during open seasons.',
+        ),
+        GuideSection(
+          heading: 'Mile 55 – Tangle Lakes & Tangle River Inn',
+          body:
+              'A chain of clear lakes straddling the road, with the Tangle River Inn offering fuel, food, and a few rooms — the second (and last) services on the highway. This is also a put-in for the Delta National Wild and Scenic River canoe route, which threads through GMU 13 country popular with float hunters.',
+        ),
+        GuideSection(
+          heading: 'Mile 65 – Tangle Lakes Archaeological District',
+          body:
+              'One of the densest concentrations of prehistoric sites in Alaska — thousands of years of seasonal hunting camps along these lake chains, which tells you everything about how good the game has always been here. Surface collection and digging are prohibited; respect closure signs in the district.',
+        ),
+        GuideSection(
+          heading: 'Mile 79 – Swede Lake Area',
+          body:
+              'Rolling tundra and scattered lakes mark the transition toward the Richardson Highway side. Good country for spot-and-stalk caribou hunts when the Nelchina herd is moving through GMU 13 — glass from the road and plan your approach before committing to the walk; distances across open tundra are deceiving.',
+        ),
+        GuideSection(
+          heading: 'Mile 85–110 – High Tundra & Sheep Country',
+          body:
+              'The longest stretch of true alpine tundra on the highway, with peaks of the eastern Alaska Range visible to the north. Sheep hunters use this section to access drainages on foot or with packraft support; caribou and moose are both present depending on season. No services for the next 25+ miles in either direction — carry extra fuel.',
+        ),
+        GuideSection(
+          heading: 'Mile 135 – Paxson (Richardson Highway Junction)',
+          body:
+              'The eastern terminus, meeting the Richardson Highway roughly halfway between Glennallen and Delta Junction. Limited services historically (check current status before relying on Paxson Lodge). From here it\'s a straightforward run north to Delta Junction/Fairbanks or south to Glennallen and the Glenn Highway back to Anchorage.',
+        ),
+      ],
+      proTips: [
+        'Top off fuel at Cantwell AND MacLaren River Lodge — Tangle River Inn is your last backup, and all three can close or run out during peak season.',
+        'Most of the route falls in GMU 13 (subunits B, D, and E) — confirm your specific subunit, drawing permit, and registration requirements before you go; boundaries follow drainages, not the road.',
+        'The road is typically passable late May through October depending on snow — call ADOT&PF\'s road conditions line for current status before a spring or fall trip.',
+        'Cell coverage is essentially nonexistent past Cantwell. A satellite communicator is standard kit out here, not a luxury.',
+        'Pullouts near MacLaren Summit and the high tundra miles (85-110) fill up fast during caribou season — arrive early or plan to glass from less obvious spots a short walk off the road.',
+      ],
+      safetyNote:
+          'This is a remote gravel road with two roadhouses in 135 miles and no cell service. Carry a full-size spare, extra fuel, and recovery gear — a breakdown here means a long wait, not a quick tow.',
+    ),
+
     Guide(
       id: 'hike-glacier',
       title: 'Glacier Viewing & Travel Basics',
