@@ -34,6 +34,12 @@ class _MapScreenState extends State<MapScreen> {
   bool _showContours = false;
   static const _contourZoom = 9.0;
 
+  // Mile-marker pins are spaced every 10 real miles, so they overlap into an
+  // unreadable stack until zoomed in far enough for that spacing to spread
+  // out on screen.
+  bool _zoomedForMileMarkers = false;
+  static const _mileMarkerZoom = 8.0;
+
   // Independently toggleable map overlays, switched from the "Map Layers"
   // menu — onX-style category drill-down.
   bool _showHighways = true;
@@ -165,6 +171,10 @@ class _MapScreenState extends State<MapScreen> {
                 if (show != _showContours) {
                   setState(() => _showContours = show);
                 }
+                final zoomedIn = camera.zoom >= _mileMarkerZoom;
+                if (zoomedIn != _zoomedForMileMarkers) {
+                  setState(() => _zoomedForMileMarkers = zoomedIn);
+                }
               },
             ),
             children: [
@@ -221,7 +231,7 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                   ],
                 ),
-              if (_showHighways && _showMileMarkers)
+              if (_showHighways && _showMileMarkers && _zoomedForMileMarkers)
                 MarkerLayer(markers: _mileMarkerPins()),
               if (_activeWaypointCategories.isNotEmpty)
                 MarkerLayer(
