@@ -101,7 +101,7 @@ class _MapScreenState extends State<MapScreen> {
   /// route geometry, walking the cumulative distance between points and
   /// applying the per-highway official-milepost offset.
   List<Marker> _mileMarkerPins() {
-    const distance = Distance();
+    const distance = Distance(roundResult: false);
     final markers = <Marker>[];
 
     for (final seg in _highwaySegments) {
@@ -118,6 +118,9 @@ class _MapScreenState extends State<MapScreen> {
 
       final startMile = ((offset + 9) ~/ 10) * 10;
       for (var mile = startMile; mile <= offset + total; mile += 10) {
+        // Skip MP 0: it sits at the highway's terminus and a lone "0" pin
+        // adds clutter without conveying useful information.
+        if (mile == 0) continue;
         final target = (mile - offset).toDouble();
         if (target < 0) continue;
 
