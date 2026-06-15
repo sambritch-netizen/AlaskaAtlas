@@ -695,6 +695,46 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
                 HighwayStopCategories.restArea, v),
           ),
         ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🏞️',
+            label: 'Scenic Stops',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.scenic),
+            onChanged: (v) => widget.onHighwayCategoryChanged(
+                HighwayStopCategories.scenic, v),
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🏕️',
+            label: 'Campgrounds',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.campground),
+            onChanged: (v) => widget.onHighwayCategoryChanged(
+                HighwayStopCategories.campground, v),
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🍽️',
+            label: 'Food & Lodging',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.food),
+            onChanged: (v) => widget.onHighwayCategoryChanged(
+                HighwayStopCategories.food, v),
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🛈',
+            label: 'Visitor Centers',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.visitorCenter),
+            onChanged: (v) => widget.onHighwayCategoryChanged(
+                HighwayStopCategories.visitorCenter, v),
+          ),
+        ),
         _CategoryRow(
           emoji: '🧭',
           title: 'Map Filters',

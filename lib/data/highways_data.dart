@@ -102,6 +102,226 @@ class HighwaysData {
           category: HighwayStopCategories.scenic,
         ),
         
+        HighwayStop(
+          mile: 127.0,
+          name: 'Anchorage',
+          emoji: '⛽',
+          lat: 61.2019,
+          lng: -149.8679,
+          description:
+              'A community along the Seward Highway — gambell street and 10th avenue.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 117.6,
+          name: 'Potter Marsh',
+          emoji: '🏞️',
+          lat: 61.106,
+          lng: -149.8477,
+          description:
+              'A state recreation site along the Seward Highway — anchorage coastal wildlife refuge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 115.4,
+          name: 'Potter Valley Road',
+          emoji: '🔀',
+          lat: 61.0759,
+          lng: -149.8295,
+          description:
+              'A highway junction — chugach state park headquarters.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 103.8,
+          name: 'Indian',
+          emoji: '⛽',
+          lat: 60.9845,
+          lng: -149.5705,
+          description:
+              'A community along the Seward Highway — indian road.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 103.0,
+          name: 'Indian Creek',
+          emoji: '🌉',
+          lat: 60.9833,
+          lng: -149.5469,
+          description:
+              'A highway bridge along the Seward Highway — chugach state park parking.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 101.6,
+          name: 'Bird Creek',
+          emoji: '🌉',
+          lat: 60.9862,
+          lng: -149.5078,
+          description:
+              'A highway bridge along the Seward Highway — bird creek access.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 96.5,
+          name: 'Bird Point',
+          emoji: '🔍',
+          lat: 60.9473,
+          lng: -149.3834,
+          description:
+              'A roadside overlook along the Seward Highway — scenic overlook.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 84.1,
+          name: 'Peterson Creek',
+          emoji: '🌉',
+          lat: 60.9002,
+          lng: -149.0733,
+          description:
+              'A highway bridge along the Seward Highway — view of blueberry mountain.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 80.7,
+          name: 'Twentymile River',
+          emoji: '🌉',
+          lat: 60.8598,
+          lng: -149.0185,
+          description:
+              'A highway bridge along the Seward Highway — parking and boat launch.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 79.4,
+          name: 'Portage Creek No. 2',
+          emoji: '🌉',
+          lat: 60.8466,
+          lng: -148.9909,
+          description:
+              'A highway bridge along the Seward Highway — parking to west.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 79.2,
+          name: 'Alaska Wildlife Conservation Center',
+          emoji: '🎡',
+          lat: 60.8443,
+          lng: -148.9872,
+          description:
+              'A visitor attraction along the Seward Highway — 140-acre animal park.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 79.0,
+          name: 'Portage Creek No. 1',
+          emoji: '🌉',
+          lat: 60.8419,
+          lng: -148.9839,
+          description:
+              'A highway bridge along the Seward Highway — portage creek no. 1 bridge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 78.9,
+          name: 'Whittier/Portage Glacier Access Road',
+          emoji: '🔀',
+          lat: 60.8406,
+          lng: -148.9828,
+          description:
+              'A highway junction — access to whittier and portage glacier.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 78.4,
+          name: 'Placer River',
+          emoji: '🌉',
+          lat: 60.8335,
+          lng: -148.9801,
+          description:
+              'A highway bridge along the Seward Highway — bridge with rough surface.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 75.2,
+          name: 'Ingram Creek',
+          emoji: '🌉',
+          lat: 60.8318,
+          lng: -149.0289,
+          description:
+              'A highway bridge along the Seward Highway — bridge over ingram creek.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 65.4,
+          name: 'Bertha Creek',
+          emoji: '🌉',
+          lat: 60.7661,
+          lng: -149.2322,
+          description:
+              'A highway bridge along the Seward Highway — bertha creek USFS campground.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 64.7,
+          name: 'Spokane Creek',
+          emoji: '🌉',
+          lat: 60.7573,
+          lng: -149.2418,
+          description:
+              'A highway bridge along the Seward Highway — spokane creek.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 56.5,
+          name: 'Canyon Creek',
+          emoji: '🌉',
+          lat: 60.7717,
+          lng: -149.4039,
+          description:
+              'A highway bridge along the Seward Highway — view of old canyon creek bridge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 56.3,
+          name: 'Hope Highway',
+          emoji: '🔀',
+          lat: 60.7743,
+          lng: -149.4064,
+          description:
+              'A highway junction — access to hope.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 18.0,
+          name: 'Snow River',
+          emoji: '🌉',
+          lat: 60.3399,
+          lng: -149.3443,
+          description:
+              'A highway bridge along the Seward Highway — bridge over snow river.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 3.2,
+          name: 'Nash Road',
+          emoji: '🔀',
+          lat: 60.1433,
+          lng: -149.4167,
+          description:
+              'A highway junction — access to nash road.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 0.0,
+          name: 'Seward',
+          emoji: '⛽',
+          lat: 60.1001,
+          lng: -149.4422,
+          description:
+              'A community along the Seward Highway — downtown seward.',
+          category: HighwayStopCategories.fuel,
+        ),
       ],
     ),
     Highway(
@@ -221,6 +441,226 @@ class HighwaysData {
           description:
               'Eastern terminus of this segment of the Glenn Highway, where it meets the Richardson Highway in the Copper River Basin. Glennallen is the commercial hub of the region, with fuel, groceries, lodging, and the Copper River Valley visitor information center.',
           category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 0.0,
+          name: 'Anchorage',
+          emoji: '📍',
+          lat: 61.2176,
+          lng: -149.8266,
+          description:
+              'A community along the Glenn Highway — junction with ingra street and gambell street.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 21.9,
+          name: 'Peters Creek',
+          emoji: '⛽',
+          lat: 61.4287,
+          lng: -149.4167,
+          description:
+              'A community along the Glenn Highway — peters creek overpass.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 29.6,
+          name: 'Old Glenn Highway',
+          emoji: '🔀',
+          lat: 61.4934,
+          lng: -149.2443,
+          description:
+              'A highway junction — alternate route.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 30.8,
+          name: 'Knik River',
+          emoji: '🌉',
+          lat: 61.5095,
+          lng: -149.2544,
+          description:
+              'A highway bridge along the Glenn Highway — matanuska-susitna borough boundary.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 35.1,
+          name: 'Glenn-Parks Interchange',
+          emoji: '🔀',
+          lat: 61.5516,
+          lng: -149.2113,
+          description:
+              'A highway junction — junction with parks highway.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 49.5,
+          name: 'Palmer-Fishhook Road',
+          emoji: '🔀',
+          lat: 61.6863,
+          lng: -148.9844,
+          description:
+              'A highway junction — access to hatcher pass.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 54.6,
+          name: 'Moose Creek',
+          emoji: '🌉',
+          lat: 61.711,
+          lng: -148.852,
+          description:
+              'A highway bridge along the Glenn Highway — fish for dolly varden.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 60.8,
+          name: 'Eska Creek',
+          emoji: '🌉',
+          lat: 61.734,
+          lng: -148.7002,
+          description:
+              'A highway bridge along the Glenn Highway — sutton-alpine.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 61.0,
+          name: 'Sutton-Alpine',
+          emoji: '⛽',
+          lat: 61.7347,
+          lng: -148.6944,
+          description:
+              'A community along the Glenn Highway — highway community.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 62.4,
+          name: 'Granite Creek',
+          emoji: '🌉',
+          lat: 61.7445,
+          lng: -148.657,
+          description:
+              'A highway bridge along the Glenn Highway — fish for dolly varden.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 66.5,
+          name: 'King River',
+          emoji: '🌉',
+          lat: 61.7634,
+          lng: -148.5423,
+          description:
+              'A highway bridge along the Glenn Highway — access to king river trail.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 78.1,
+          name: 'Chickaloon River',
+          emoji: '🌉',
+          lat: 61.808,
+          lng: -148.2137,
+          description:
+              'A highway bridge along the Glenn Highway — boundary between GMU 13 and 14.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 85.4,
+          name: 'Long Lake State Recreation Site',
+          emoji: '🏞️',
+          lat: 61.7943,
+          lng: -148.0028,
+          description:
+              'A state recreation site along the Glenn Highway — parking and boat launch.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 96.3,
+          name: 'Hicks Creek',
+          emoji: '🌉',
+          lat: 61.7914,
+          lng: -147.6876,
+          description:
+              'A highway bridge along the Glenn Highway — named by captain glenn in 1898.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 106.9,
+          name: 'Caribou Creek',
+          emoji: '🌉',
+          lat: 61.8268,
+          lng: -147.4187,
+          description:
+              'A highway bridge along the Glenn Highway — sheep mountain reserve boundary.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 109.7,
+          name: 'Grand View Cafe and RV Campground',
+          emoji: '🏕️',
+          lat: 61.857,
+          lng: -147.3637,
+          description:
+              'A roadside business along the Glenn Highway — dining and RV sites.',
+          category: HighwayStopCategories.campground,
+        ),
+        HighwayStop(
+          mile: 118.8,
+          name: 'Knob Lake',
+          emoji: '🏞️',
+          lat: 61.9393,
+          lng: -147.1666,
+          description:
+              'A lake along the Glenn Highway — view of chugach mountains.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 122.0,
+          name: 'Tahneta Pass',
+          emoji: '⛰️',
+          lat: 61.9726,
+          lng: -147.0998,
+          description:
+              'The highway crosses a pass here — elevation 3,000 feet.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 137.5,
+          name: 'Little Nelchina River',
+          emoji: '🌉',
+          lat: 62.028,
+          lng: -146.6834,
+          description:
+              'A highway bridge along the Glenn Highway — little nelchina state recreation site nearby.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 150.4,
+          name: 'Nelchina',
+          emoji: '📍',
+          lat: 62.0885,
+          lng: -146.3241,
+          description:
+              'A community along the Glenn Highway — unincorporated community.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 154.0,
+          name: 'Mendeltna',
+          emoji: '📍',
+          lat: 62.0968,
+          lng: -146.2146,
+          description:
+              'A community along the Glenn Highway — unincorporated community.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 173.0,
+          name: 'Tolsona Wilderness Campground',
+          emoji: '🏕️',
+          lat: 62.1067,
+          lng: -145.6415,
+          description:
+              'A roadside business along the Glenn Highway — campground and RV park.',
+          category: HighwayStopCategories.campground,
         ),
       ],
     ),
@@ -354,6 +794,286 @@ class HighwaysData {
         ),
         
         
+        HighwayStop(
+          mile: 35.0,
+          name: 'Glenn-Parks Interchange',
+          emoji: '🔀',
+          lat: 61.5535,
+          lng: -149.2473,
+          description:
+              'A highway junction — junction of glenn and parks highways.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 42.2,
+          name: 'Wasilla',
+          emoji: '📍',
+          lat: 61.5814,
+          lng: -149.4492,
+          description:
+              'A community along the Parks Highway — junction with knik-goose bay road.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 57.0,
+          name: 'Little Susitna River',
+          emoji: '🌉',
+          lat: 61.6306,
+          lng: -149.8273,
+          description:
+              'A highway bridge along the Parks Highway — popular fishing and camping area.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 57.5,
+          name: 'Houston',
+          emoji: '⛽',
+          lat: 61.6337,
+          lng: -149.841,
+          description:
+              'A community along the Parks Highway — city limits.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 71.2,
+          name: 'Willow-Fishhook Road',
+          emoji: '🔀',
+          lat: 61.7819,
+          lng: -150.0737,
+          description:
+              'A highway junction — access to hatcher pass.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 71.4,
+          name: 'Willow Creek',
+          emoji: '🌉',
+          lat: 61.7847,
+          lng: -150.0752,
+          description:
+              'A highway bridge along the Parks Highway — pioneer lodge RV park & campground.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 74.7,
+          name: 'Little Willow Creek',
+          emoji: '🌉',
+          lat: 61.8255,
+          lng: -150.0744,
+          description:
+              'A highway bridge along the Parks Highway — fishing for salmon and trout.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 83.2,
+          name: 'Kashwitna River',
+          emoji: '🌉',
+          lat: 61.9422,
+          lng: -150.0587,
+          description:
+              'A highway bridge along the Parks Highway — pedestrian bridge also crosses river.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 88.5,
+          name: 'Sheep Creek',
+          emoji: '🌉',
+          lat: 62.0167,
+          lng: -150.0653,
+          description:
+              'A highway bridge along the Parks Highway — narrow access to creek.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 98.7,
+          name: 'Talkeetna Spur Road',
+          emoji: '🔀',
+          lat: 62.1482,
+          lng: -150.0831,
+          description:
+              'A highway junction — access to talkeetna.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 104.2,
+          name: 'Susitna River',
+          emoji: '🌉',
+          lat: 62.1933,
+          lng: -150.2137,
+          description:
+              'A highway bridge along the Parks Highway — entering GMU 16A northbound.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 132.8,
+          name: 'Chulitna River',
+          emoji: '🌉',
+          lat: 62.5901,
+          lng: -150.2369,
+          description:
+              'A highway bridge along the Parks Highway — fishing for arctic grayling.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 137.4,
+          name: 'Troublesome Creek',
+          emoji: '🌉',
+          lat: 62.6538,
+          lng: -150.2248,
+          description:
+              'A highway bridge along the Parks Highway — troublesome creek bridge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 162.6,
+          name: 'Denali View North',
+          emoji: '🏞️',
+          lat: 62.9021,
+          lng: -149.7297,
+          description:
+              'A state recreation site along the Parks Highway — campground and viewpoint.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 163.3,
+          name: 'Little Coal Creek',
+          emoji: '🌉',
+          lat: 62.91,
+          lng: -149.7162,
+          description:
+              'A highway bridge along the Parks Highway — fishing for rainbow trout.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 174.0,
+          name: 'Hurricane Gulch',
+          emoji: '🌉',
+          lat: 63.0458,
+          lng: -149.5749,
+          description:
+              'A highway bridge along the Parks Highway — 550-foot deck is 260 feet above creek.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 178.0,
+          name: 'Honolulu Creek',
+          emoji: '🌉',
+          lat: 63.0939,
+          lng: -149.5058,
+          description:
+              'A highway bridge along the Parks Highway — rough gravel access to creek.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 185.1,
+          name: 'East Fork Chulitna River',
+          emoji: '🌉',
+          lat: 63.1762,
+          lng: -149.3784,
+          description:
+              'A highway bridge along the Parks Highway — bridge over east fork chulitna river.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 194.5,
+          name: 'Middle Fork Chulitna River',
+          emoji: '🌉',
+          lat: 63.2855,
+          lng: -149.2146,
+          description:
+              'A highway bridge along the Parks Highway — middle fork chulitna river bridge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 201.3,
+          name: 'Broad Pass',
+          emoji: '⛰️',
+          lat: 63.3516,
+          lng: -149.058,
+          description:
+              'The highway crosses a pass here — summit elevation 2,400 feet.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 215.8,
+          name: 'Nenana River',
+          emoji: '🌉',
+          lat: 63.4999,
+          lng: -148.8163,
+          description:
+              'A highway bridge along the Parks Highway — first crossing of nenana river northbound.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 276.0,
+          name: 'Jack Coghill Bridge',
+          emoji: '🌉',
+          lat: 64.2572,
+          lng: -149.1802,
+          description:
+              'A highway bridge along the Parks Highway — bridge over nenana river.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 283.5,
+          name: 'Clear Road',
+          emoji: '🔀',
+          lat: 64.3376,
+          lng: -149.043,
+          description:
+              'A highway junction — access to clear air force station and anderson.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 304.5,
+          name: 'Nenana',
+          emoji: '⛽',
+          lat: 64.6117,
+          lng: -149.0782,
+          description:
+              'A community along the Parks Highway — confluence of tanana and nenana rivers.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 305.0,
+          name: 'Tanana River',
+          emoji: '🌉',
+          lat: 64.6176,
+          lng: -149.0686,
+          description:
+              'A highway bridge along the Parks Highway — alaska native veterans\' honor bridge.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 351.2,
+          name: 'Ester',
+          emoji: '📍',
+          lat: 64.8201,
+          lng: -147.7989,
+          description:
+              'A community along the Parks Highway — old nenana highway junction.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 357.7,
+          name: 'Chena River',
+          emoji: '🌉',
+          lat: 64.8204,
+          lng: -147.7094,
+          description:
+              'A highway bridge along the Parks Highway — bridge over chena river.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 362.0,
+          name: 'Fairbanks',
+          emoji: '📍',
+          lat: 64.8204,
+          lng: -147.7094,
+          description:
+              'A community along the Parks Highway — junction with airport way and steese expressway.',
+          category: HighwayStopCategories.scenic,
+        ),
       ],
     ),
     Highway(
@@ -501,6 +1221,26 @@ class HighwaysData {
           description:
               'Southern terminus of the Sterling Highway, a fishing and arts town on the shore of Kachemak Bay known as the "Halibut Fishing Capital of the World." The 4.5-mile Homer Spit juts into the bay with the boat harbor, halibut charter docks, campgrounds, and seafood restaurants, with fuel and lodging available throughout town.',
           category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 0.0,
+          name: 'Tern Lake Junction',
+          emoji: '🔀',
+          lat: 60.5347,
+          lng: -149.5435,
+          description:
+              'A highway junction — junction with seward highway.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 123.0,
+          name: 'Anchor Point',
+          emoji: '🏞️',
+          lat: 59.7101,
+          lng: -151.7013,
+          description:
+              'A scenic stop along the Sterling Highway — north america\'s westernmost highway point.',
+          category: HighwayStopCategories.scenic,
         ),
       ],
     ),
@@ -650,6 +1390,186 @@ class HighwaysData {
           description:
               'The Richardson Highway ends in Fairbanks, Alaska\'s second-largest city and the transportation hub of the Interior, where it meets the Alaska Highway corridor and Parks Highway. Full services, an international airport, and the University of Alaska Fairbanks are all here.',
           category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 2.5,
+          name: 'Crooked Creek Salmon Viewing',
+          emoji: '🔍',
+          lat: 61.1327,
+          lng: -146.2845,
+          description:
+              'A roadside overlook along the Richardson Highway — salmon viewing pullout.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 18.2,
+          name: 'Lowe River Bridge',
+          emoji: '🌉',
+          lat: 61.0797,
+          lng: -145.8966,
+          description:
+              'A highway bridge along the Richardson Highway — river crossing.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 46.8,
+          name: 'Tiekel River Lodge',
+          emoji: '🍽️',
+          lat: 61.2458,
+          lng: -145.3337,
+          description:
+              'A roadside facility along the Richardson Highway — food and lodging.',
+          category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 64.7,
+          name: 'Ernestine Maintenance Station',
+          emoji: '🅿️',
+          lat: 61.4404,
+          lng: -145.1139,
+          description:
+              'A roadside facility along the Richardson Highway — DOT station.',
+          category: HighwayStopCategories.restArea,
+        ),
+        HighwayStop(
+          mile: 82.5,
+          name: 'Tonsina River Lodge',
+          emoji: '🍽️',
+          lat: 61.6704,
+          lng: -145.1702,
+          description:
+              'A roadside facility along the Richardson Highway — food and lodging.',
+          category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 100.2,
+          name: 'Copper Center',
+          emoji: '⛽',
+          lat: 61.9099,
+          lng: -145.286,
+          description:
+              'A community along the Richardson Highway — historic community.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 128.5,
+          name: 'Gulkana Junction',
+          emoji: '🔀',
+          lat: 62.271,
+          lng: -145.3793,
+          description:
+              'A highway junction — junction with tok cutoff.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 175.0,
+          name: 'Meier\'s Lake Roadhouse',
+          emoji: '🍽️',
+          lat: 62.8801,
+          lng: -145.4826,
+          description:
+              'A roadside facility along the Richardson Highway — food and lodging.',
+          category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 195.0,
+          name: 'Summit Lake',
+          emoji: '🏞️',
+          lat: 63.1501,
+          lng: -145.5425,
+          description:
+              'A scenic stop along the Richardson Highway — scenic views.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 200.5,
+          name: 'Monument Creek',
+          emoji: '🏞️',
+          lat: 63.2064,
+          lng: -145.6194,
+          description:
+              'A scenic stop along the Richardson Highway — scenic pullout.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 212.5,
+          name: 'Trims Camp',
+          emoji: '🅿️',
+          lat: 63.3451,
+          lng: -145.732,
+          description:
+              'A roadside facility along the Richardson Highway — maintenance camp.',
+          category: HighwayStopCategories.restArea,
+        ),
+        HighwayStop(
+          mile: 256.0,
+          name: 'Fort Greely',
+          emoji: '🏛️',
+          lat: 63.9182,
+          lng: -145.7832,
+          description:
+              'A roadside facility along the Richardson Highway — military base.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 288.0,
+          name: 'Shaw Creek',
+          emoji: '🌉',
+          lat: 64.2679,
+          lng: -146.2099,
+          description:
+              'A highway bridge along the Richardson Highway — river crossing.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 306.0,
+          name: 'Birch Lake State Recreation Site',
+          emoji: '🏕️',
+          lat: 64.326,
+          lng: -146.7402,
+          description:
+              'A campground along the Richardson Highway — campground and lake access.',
+          category: HighwayStopCategories.campground,
+        ),
+        HighwayStop(
+          mile: 324.5,
+          name: 'Harding Lake State Recreation Area',
+          emoji: '🏕️',
+          lat: 64.521,
+          lng: -146.9834,
+          description:
+              'A campground along the Richardson Highway — campground and lake access.',
+          category: HighwayStopCategories.campground,
+        ),
+        HighwayStop(
+          mile: 343.0,
+          name: 'Eielson Air Force Base',
+          emoji: '🏛️',
+          lat: 64.7355,
+          lng: -147.2853,
+          description:
+              'A roadside facility along the Richardson Highway — military base.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 348.0,
+          name: 'North Pole',
+          emoji: '⛽',
+          lat: 64.7706,
+          lng: -147.4291,
+          description:
+              'A community along the Richardson Highway — city limits.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 368.0,
+          name: 'Fairbanks Terminal Junction',
+          emoji: '🔀',
+          lat: 64.8348,
+          lng: -147.7065,
+          description:
+              'A highway junction — junction with parks highway.',
+          category: HighwayStopCategories.scenic,
         ),
       ],
     ),
@@ -949,6 +1869,46 @@ class HighwaysData {
               'Northern terminus of the Dalton Highway and a working oil-field service town supporting the Prudhoe Bay fields on the Arctic Ocean. Visitors can fuel up, stay in industrial-style hotels, and book a shuttle tour to dip a toe in the Arctic Ocean at the coast, since the shoreline itself is on restricted oil-field land.',
           category: HighwayStopCategories.fuel,
         ),
+        HighwayStop(
+          mile: 60.5,
+          name: 'Five Mile BLM Campground',
+          emoji: '🏕️',
+          lat: 65.9483,
+          lng: -149.9154,
+          description:
+              'A campground along the Dalton Highway — free camping, sani-dump.',
+          category: HighwayStopCategories.campground,
+        ),
+        HighwayStop(
+          mile: 179.7,
+          name: 'Marion Creek BLM Campground',
+          emoji: '🏕️',
+          lat: 67.3889,
+          lng: -150.1067,
+          description:
+              'A campground along the Dalton Highway — 26 sites.',
+          category: HighwayStopCategories.campground,
+        ),
+        HighwayStop(
+          mile: 188.6,
+          name: 'Wiseman Turnoff',
+          emoji: '🔀',
+          lat: 67.4763,
+          lng: -149.9204,
+          description:
+              'A highway junction — historic mining town.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 354.6,
+          name: 'Last Chance Wayside',
+          emoji: '🔍',
+          lat: 69.496,
+          lng: -148.569,
+          description:
+              'A roadside overlook along the Dalton Highway — views of arctic coastal plain.',
+          category: HighwayStopCategories.scenic,
+        ),
       ],
     ),
     Highway(
@@ -1040,6 +2000,56 @@ class HighwaysData {
           category: HighwayStopCategories.fuel,
         ),
         
+        HighwayStop(
+          mile: 11.0,
+          name: 'Fox',
+          emoji: '📍',
+          lat: 64.9608,
+          lng: -147.6127,
+          description:
+              'A community along the Steese Highway — junction with elliott highway.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 16.6,
+          name: 'Felix Pedro Monument',
+          emoji: '🗽',
+          lat: 65.0152,
+          lng: -147.4851,
+          description:
+              'A historic monument along the Steese Highway — discovery claim, gold panning.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 28.6,
+          name: 'Chatanika',
+          emoji: '⛽',
+          lat: 65.1317,
+          lng: -147.4797,
+          description:
+              'A community along the Steese Highway — chatanika lodge, old gold dredge.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 57.3,
+          name: 'Davidson Ditch Historic Site',
+          emoji: '🏛️',
+          lat: 65.2774,
+          lng: -146.6263,
+          description:
+              'A historic site along the Steese Highway — historic water pipeline.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 161.3,
+          name: 'Circle',
+          emoji: '⛽',
+          lat: 65.8251,
+          lng: -144.0622,
+          description:
+              'A community along the Steese Highway — end of steese highway at yukon river.',
+          category: HighwayStopCategories.fuel,
+        ),
       ],
     ),
     Highway(
@@ -1202,6 +2212,36 @@ class HighwaysData {
               'The western terminus of the Elliott Highway, a small Tanana River community founded around a 1900s roadhouse and natural hot springs. The historic Manley Roadhouse offers the last fuel and lodging on the route, and a public parking area near the river marks the literal end of the road.',
           category: HighwayStopCategories.fuel,
         ),
+        HighwayStop(
+          mile: 5.5,
+          name: 'Hilltop Truckstop',
+          emoji: '⛽',
+          lat: 65.0301,
+          lng: -147.6548,
+          description:
+              'A roadside stop along the Elliott Highway offering 24-hour gas, diesel, restaurant.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 71.0,
+          name: 'Livengood',
+          emoji: '⛽',
+          lat: 65.4488,
+          lng: -148.7352,
+          description:
+              'A community along the Elliott Highway — mining camp.',
+          category: HighwayStopCategories.fuel,
+        ),
+        HighwayStop(
+          mile: 150.0,
+          name: 'Manley Hot Springs',
+          emoji: '⛽',
+          lat: 64.9724,
+          lng: -150.6713,
+          description:
+              'A community along the Elliott Highway — end of elliott highway.',
+          category: HighwayStopCategories.fuel,
+        ),
       ],
     ),
     Highway(
@@ -1312,6 +2352,86 @@ class HighwaysData {
           category: HighwayStopCategories.campground,
         ),
         
+        HighwayStop(
+          mile: 1.5,
+          name: 'Paved Turnout',
+          emoji: '📷',
+          lat: 63.0487,
+          lng: -145.5158,
+          description:
+              'A scenic pullout along the Denali Highway — large paved scenic turnout (south side).',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 13.0,
+          name: 'Gulkana River Bridge',
+          emoji: '🌉',
+          lat: 63.054,
+          lng: -145.8008,
+          description:
+              'A highway bridge along the Denali Highway — campground launch site.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 115.5,
+          name: 'Seattle Creek Bridge',
+          emoji: '🌉',
+          lat: 63.3796,
+          lng: -148.4066,
+          description:
+              'A highway bridge along the Denali Highway — bridge and gravel pullout.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 134.5,
+          name: 'Nenana River Bridge',
+          emoji: '🌉',
+          lat: 63.3905,
+          lng: -148.9018,
+          description:
+              'A highway bridge along the Denali Highway — major river crossing.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 135.0,
+          name: 'Cantwell Junction',
+          emoji: '🔀',
+          lat: 63.3905,
+          lng: -148.9018,
+          description:
+              'A highway junction — junction with parks highway.',
+          category: HighwayStopCategories.scenic,
+        ),
+        HighwayStop(
+          mile: 22.0,
+          name: 'Tangle Lakes Lodge',
+          emoji: '🍽️',
+          lat: 63.0542,
+          lng: -146.0634,
+          description:
+              'A lodge along the Denali Highway offering food, lodging, canoe rentals.',
+          category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 68.0,
+          name: 'Alpine Creek Lodge',
+          emoji: '🍽️',
+          lat: 63.0508,
+          lng: -147.2951,
+          description:
+              'A lodge along the Denali Highway offering food, bar, lodging.',
+          category: HighwayStopCategories.food,
+        ),
+        HighwayStop(
+          mile: 134.4,
+          name: 'Cantwell',
+          emoji: '📍',
+          lat: 63.3905,
+          lng: -148.9018,
+          description:
+              'A community along the Denali Highway — junction of denali and parks highways.',
+          category: HighwayStopCategories.scenic,
+        ),
       ],
     ),
   ];
