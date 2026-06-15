@@ -6,12 +6,15 @@ import 'package:latlong2/latlong.dart';
 import '../../data/bathymetry_loader.dart';
 import '../../data/highways_data.dart';
 import '../../data/lakes_data.dart';
+import '../../data/waypoints_data.dart';
 import '../../models/highway.dart';
 import '../../models/lake.dart';
+import '../../models/waypoint.dart';
 import '../../theme/app_colors.dart';
 import 'basemaps.dart';
 import 'highway_stop_sheet.dart';
 import 'lake_overlay.dart';
+import 'waypoint_sheet.dart';
 
 /// Statewide hot-spot map with switchable high-res base layers (satellite,
 /// USGS imagery & topo, dark atlas), category-filterable pins, and onX-style
@@ -39,6 +42,10 @@ class _MapScreenState extends State<MapScreen> {
   // Per-category visibility within the Highways group — all on by default,
   // toggled individually from the Map Layers menu.
   final Set<String> _activeHighwayCategories = {...HighwayStopCategories.all};
+
+  // Trip-planning waypoint pins (fishing, wildlife, camping, etc.) — off by
+  // default, toggled individually from the Map Layers menu.
+  final Set<String> _activeWaypointCategories = {};
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -142,6 +149,25 @@ class _MapScreenState extends State<MapScreen> {
                             color: highway.color,
                             onTap: () =>
                                 showHighwayStopSheet(context, highway, stop),
+                          ),
+                        ),
+                  ],
+                ),
+              if (_activeWaypointCategories.isNotEmpty)
+                MarkerLayer(
+                  markers: [
+                    for (final wp in WaypointsData.all)
+                      if (_activeWaypointCategories.contains(wp.category))
+                        Marker(
+                          point: LatLng(wp.lat, wp.lng),
+                          width: 30,
+                          height: 36,
+                          alignment: Alignment.topCenter,
+                          child: _WaypointMarker(
+                            waypoint: wp,
+                            color: _waypointCategoryColor(wp.category),
+                            onTap: () => showWaypointSheet(context, wp,
+                                _waypointCategoryColor(wp.category)),
                           ),
                         ),
                   ],
@@ -289,6 +315,7 @@ class _MapScreenState extends State<MapScreen> {
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
               activeHighwayCategories: _activeHighwayCategories,
+              activeWaypointCategories: _activeWaypointCategories,
               onHighwaysChanged: (v) {
                 setState(() => _showHighways = v);
                 sheetSetState(() {});
@@ -304,6 +331,16 @@ class _MapScreenState extends State<MapScreen> {
                     _activeHighwayCategories.add(cat);
                   } else {
                     _activeHighwayCategories.remove(cat);
+                  }
+                });
+                sheetSetState(() {});
+              },
+              onWaypointCategoryChanged: (cat, v) {
+                setState(() {
+                  if (v) {
+                    _activeWaypointCategories.add(cat);
+                  } else {
+                    _activeWaypointCategories.remove(cat);
                   }
                 });
                 sheetSetState(() {});
@@ -344,6 +381,80 @@ class _HighwayStopMarker extends StatelessWidget {
               boxShadow: const [
                 BoxShadow(color: Colors.black54, blurRadius: 4),
               ],
+            ),
+          ),
+          Container(
+            width: 3,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Color for a [Waypoint] pin, by category — mirrors the Field Guide
+/// category colors so the map and guides stay visually in sync.
+Color _waypointCategoryColor(String category) => switch (category) {
+      WaypointCategories.fishing => const Color(0xFF1E88E5),
+      WaypointCategories.wildlife => const Color(0xFF8D6E63),
+      WaypointCategories.camping => const Color(0xFFFB8C00),
+      WaypointCategories.hiking => const Color(0xFF43A047),
+      WaypointCategories.survival => const Color(0xFFE53935),
+      WaypointCategories.aurora => const Color(0xFF7E57C2),
+      WaypointCategories.harvesting => const Color(0xFF5C6BC0),
+      WaypointCategories.food => const Color(0xFFFBC02D),
+      _ => AppColors.pine,
+    };
+
+/// Menu emoji for each [Waypoint] category — matches the Field Guide icons.
+String _waypointCategoryEmoji(String category) => switch (category) {
+      WaypointCategories.fishing => '🎣',
+      WaypointCategories.wildlife => '🐻',
+      WaypointCategories.camping => '⛺',
+      WaypointCategories.hiking => '🥾',
+      WaypointCategories.survival => '🧭',
+      WaypointCategories.aurora => '🌌',
+      WaypointCategories.harvesting => '🫐',
+      WaypointCategories.food => '🍲',
+      _ => '📍',
+    };
+
+/// Small pin for a themed trip-planning waypoint, colored by category and
+/// labeled with its activity emoji.
+class _WaypointMarker extends StatelessWidget {
+  final Waypoint waypoint;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _WaypointMarker(
+      {required this.waypoint, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 26,
+            height: 26,
+            decoration: BoxDecoration(
+              color: color,
+              shape: BoxShape.circle,
+              border: Border.all(color: AppColors.surfaceElevated, width: 2),
+              boxShadow: const [
+                BoxShadow(color: Colors.black54, blurRadius: 4),
+              ],
+            ),
+            child: Center(
+              child: Text(_waypointCategoryEmoji(waypoint.category),
+                  style: const TextStyle(fontSize: 13)),
             ),
           ),
           Container(
@@ -457,17 +568,21 @@ class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
   final Set<String> activeHighwayCategories;
+  final Set<String> activeWaypointCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
+  final void Function(String category, bool value) onWaypointCategoryChanged;
 
   const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
     required this.activeHighwayCategories,
+    required this.activeWaypointCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
     required this.onHighwayCategoryChanged,
+    required this.onWaypointCategoryChanged,
   });
 
   @override
@@ -486,7 +601,7 @@ String _highwayCategoryEmoji(String category) => switch (category) {
       _ => '📍',
     };
 
-enum _LayersDetailPage { highways, lakeCharts }
+enum _LayersDetailPage { highways, lakeCharts, waypoints }
 
 class _MapLayersSheetState extends State<_MapLayersSheet> {
   _LayersDetailPage? _detail;
@@ -559,6 +674,13 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           subtitle: widget.showLakeCharts ? '1 of 1 Layers On' : '0 of 1 Layers On',
           onTap: () => setState(() => _detail = _LayersDetailPage.lakeCharts),
         ),
+        _CategoryRow(
+          emoji: '🧭',
+          title: 'Trip Waypoints',
+          subtitle:
+              '${widget.activeWaypointCategories.length} of ${WaypointCategories.all.length} Layers On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.waypoints),
+        ),
       ],
     );
   }
@@ -593,6 +715,18 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
               value: widget.showLakeCharts,
               onChanged: widget.onLakeChartsChanged,
             ),
+          ]
+        ),
+      _LayersDetailPage.waypoints => (
+          'Trip Waypoints',
+          [
+            for (final cat in WaypointCategories.all)
+              _ToggleRowData(
+                emoji: _waypointCategoryEmoji(cat),
+                label: cat,
+                value: widget.activeWaypointCategories.contains(cat),
+                onChanged: (v) => widget.onWaypointCategoryChanged(cat, v),
+              ),
           ]
         ),
     };
