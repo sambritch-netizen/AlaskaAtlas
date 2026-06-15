@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../data/bathymetry_loader.dart';
 import '../../models/lake.dart';
 
 /// Renders each lake's bathymetry directly on the map, onX-style:
@@ -20,6 +21,23 @@ class LakeOverlay {
 
   static List<Polygon> polygonsFor(Lake lake) =>
       _cache.putIfAbsent(lake.id, () => _build(lake));
+
+  /// Renders survey-accurate ADF&G contours (depth-shaded), used in place of
+  /// the stylized rings whenever real data is bundled for a lake.
+  static List<Polygon> realPolygons(Lake lake, List<DepthContour> contours) {
+    final maxDepth = lake.maxDepthFt.toDouble().clamp(1, double.infinity);
+    return [
+      for (final c in contours)
+        Polygon(
+          points: c.rings.first,
+          holePointsList: c.rings.length > 1 ? c.rings.sublist(1) : null,
+          color: Color.lerp(_shore, _deep, (c.depthFt / maxDepth).clamp(0, 1))!
+              .withValues(alpha: 0.88),
+          borderColor: _contourLine.withValues(alpha: 0.7),
+          borderStrokeWidth: c.depthFt == 0 ? 1.6 : 0.9,
+        ),
+    ];
+  }
 
   static List<Polygon> _build(Lake lake) {
     // Centroid of the normalized outline.

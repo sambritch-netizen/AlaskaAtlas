@@ -3,20 +3,20 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../data/bathymetry_loader.dart';
 import '../../data/hotspots_data.dart';
 import '../../data/lakes_data.dart';
 import '../../models/hotspot.dart';
 import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
+import 'basemaps.dart';
 import 'hotspot_sheet.dart';
 import 'lake_overlay.dart';
 
-enum _BaseLayer { dark, topo }
-
-/// Statewide hot-spot map. Two base layers — a dark atlas style that matches
-/// the app, and OpenTopoMap for the rugged contour look — with
-/// category-filterable pins.
+/// Statewide hot-spot map with switchable high-res base layers (satellite,
+/// USGS imagery & topo, dark atlas), category-filterable pins, and onX-style
+/// in-map lake bathymetry.
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
 
@@ -26,7 +26,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   final _mapController = MapController();
-  _BaseLayer _layer = _BaseLayer.topo;
+  Basemap _basemap = Basemaps.satellite;
   String? _category;
   // In-map bathymetry only makes sense once lakes occupy real screen space.
   bool _showContours = false;
@@ -36,16 +36,23 @@ class _MapScreenState extends State<MapScreen> {
   static const _anchorageCenter = LatLng(61.23, -149.78);
   static const _lakesFilter = 'Lake Charts';
 
-  String get _tileUrl => switch (_layer) {
-        _BaseLayer.dark =>
-          'https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
-        _BaseLayer.topo => 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
-      };
+  // Survey-accurate ADF&G contours, by lake id, once digitized and bundled.
+  final Map<String, List<DepthContour>> _realContours = {};
 
-  String get _attribution => switch (_layer) {
-        _BaseLayer.dark => '© OpenStreetMap, © CARTO',
-        _BaseLayer.topo => '© OpenStreetMap, © OpenTopoMap (CC-BY-SA)',
-      };
+  @override
+  void initState() {
+    super.initState();
+    _loadRealContours();
+  }
+
+  Future<void> _loadRealContours() async {
+    for (final lake in LakesData.lakes) {
+      final contours = await BathymetryLoader.load(lake.id);
+      if (contours != null && contours.isNotEmpty && mounted) {
+        setState(() => _realContours[lake.id] = contours);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +72,7 @@ class _MapScreenState extends State<MapScreen> {
               initialCenter: _alaskaCenter,
               initialZoom: 4.3,
               minZoom: 3,
-              maxZoom: 17,
+              maxZoom: 18,
               backgroundColor: AppColors.background,
               onPositionChanged: (camera, _) {
                 final show = camera.zoom >= _contourZoom;
@@ -76,9 +83,11 @@ class _MapScreenState extends State<MapScreen> {
             ),
             children: [
               TileLayer(
-                urlTemplate: _tileUrl,
+                key: ValueKey(_basemap.id),
+                urlTemplate: _basemap.urlTemplate,
                 userAgentPackageName: 'com.alaskaatlas.alaska_atlas',
-                retinaMode: _layer == _BaseLayer.dark
+                maxNativeZoom: _basemap.maxNativeZoom,
+                retinaMode: _basemap.id == 'dark'
                     ? RetinaMode.isHighDensity(context)
                     : false,
               ),
@@ -86,7 +95,11 @@ class _MapScreenState extends State<MapScreen> {
                 PolygonLayer(
                   polygons: [
                     for (final lake in LakesData.lakes)
-                      ...LakeOverlay.polygonsFor(lake),
+                      // Prefer real ADF&G contours; fall back to stylized.
+                      if (_realContours[lake.id] case final real?)
+                        ...LakeOverlay.realPolygons(lake, real)
+                      else
+                        ...LakeOverlay.polygonsFor(lake),
                   ],
                 ),
               MarkerLayer(
@@ -133,7 +146,7 @@ class _MapScreenState extends State<MapScreen> {
                 child: Padding(
                   padding: const EdgeInsets.only(left: 8, bottom: 4),
                   child: Text(
-                    _attribution,
+                    _basemap.attribution,
                     style: const TextStyle(
                         fontSize: 9, color: AppColors.textMuted),
                   ),
@@ -160,9 +173,9 @@ class _MapScreenState extends State<MapScreen> {
                       Text('Hot Spot Map',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const Spacer(),
-                      _LayerToggle(
-                        layer: _layer,
-                        onChanged: (l) => setState(() => _layer = l),
+                      _LayerButton(
+                        basemap: _basemap,
+                        onSelected: (b) => setState(() => _basemap = b),
                       ),
                     ],
                   ),
@@ -342,47 +355,77 @@ class _LakeLabel extends StatelessWidget {
   }
 }
 
-class _LayerToggle extends StatelessWidget {
-  final _BaseLayer layer;
-  final ValueChanged<_BaseLayer> onChanged;
+/// Compact layer switcher: tap to pop a menu of base layers.
+class _LayerButton extends StatelessWidget {
+  final Basemap basemap;
+  final ValueChanged<Basemap> onSelected;
 
-  const _LayerToggle({required this.layer, required this.onChanged});
+  const _LayerButton({required this.basemap, required this.onSelected});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
+    return PopupMenuButton<Basemap>(
+      tooltip: 'Map layer',
+      color: AppColors.surfaceElevated,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.border),
       ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _option('Dark', _BaseLayer.dark),
-          _option('Topo', _BaseLayer.topo),
-        ],
-      ),
-    );
-  }
-
-  Widget _option(String label, _BaseLayer value) {
-    final selected = layer == value;
-    return GestureDetector(
-      onTap: () => onChanged(value),
+      onSelected: onSelected,
+      itemBuilder: (context) => [
+        for (final b in Basemaps.all)
+          PopupMenuItem(
+            value: b,
+            child: Row(
+              children: [
+                Icon(b.icon,
+                    size: 18,
+                    color: b.id == basemap.id
+                        ? AppColors.pine
+                        : AppColors.textSecondary),
+                const SizedBox(width: 10),
+                Text(
+                  b.label,
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight:
+                        b.id == basemap.id ? FontWeight.w700 : FontWeight.w500,
+                    color: b.id == basemap.id
+                        ? AppColors.pine
+                        : AppColors.textPrimary,
+                  ),
+                ),
+                if (b.id == basemap.id) ...[
+                  const Spacer(),
+                  const Icon(Icons.check, size: 16, color: AppColors.pine),
+                ],
+              ],
+            ),
+          ),
+      ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: selected ? AppColors.pine : Colors.transparent,
-          borderRadius: BorderRadius.circular(9),
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: AppColors.border),
         ),
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: selected ? AppColors.background : AppColors.textSecondary,
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(basemap.icon, size: 15, color: AppColors.pine),
+            const SizedBox(width: 6),
+            Text(
+              basemap.label,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            const Icon(Icons.arrow_drop_down,
+                size: 16, color: AppColors.textSecondary),
+          ],
         ),
       ),
     );
