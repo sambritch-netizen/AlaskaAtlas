@@ -229,7 +229,7 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   child: Row(
                     children: [
-                      Text('Hot Spot Map',
+                      Text('Alaska Atlas',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const Spacer(),
                       _LayerButton(
@@ -264,10 +264,10 @@ class _MapScreenState extends State<MapScreen> {
                     child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.layers, size: 15, color: AppColors.pine),
+                        Icon(Icons.filter_alt, size: 15, color: AppColors.pine),
                         SizedBox(width: 6),
                         Text(
-                          'Map Layers',
+                          'Filters',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w700,
@@ -322,22 +322,21 @@ class _MapScreenState extends State<MapScreen> {
             child: _MapLayersSheet(
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
-              activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
               onClose: () => setState(() => _layersPanelOpen = false),
-              onHighwaysChanged: (v) => setState(() => _showHighways = v),
+              onHighwaysChanged: (v) => setState(() {
+                _showHighways = v;
+                if (v) {
+                  _activeHighwayCategories
+                    ..clear()
+                    ..addAll(HighwayStopCategories.all);
+                } else {
+                  _activeHighwayCategories.clear();
+                }
+              }),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
-              },
-              onHighwayCategoryChanged: (cat, v) {
-                setState(() {
-                  if (v) {
-                    _activeHighwayCategories.add(cat);
-                  } else {
-                    _activeHighwayCategories.remove(cat);
-                  }
-                });
               },
               onWaypointCategoryChanged: (cat, v) {
                 setState(() {
@@ -410,7 +409,7 @@ Color _waypointCategoryColor(String category) => switch (category) {
       WaypointCategories.survival => const Color(0xFFE53935),
       WaypointCategories.aurora => const Color(0xFF7E57C2),
       WaypointCategories.harvesting => const Color(0xFF5C6BC0),
-      WaypointCategories.food => const Color(0xFFFBC02D),
+      WaypointCategories.food => const Color(0xFFE53935),
       _ => AppColors.pine,
     };
 
@@ -570,22 +569,18 @@ class _LakeLabel extends StatelessWidget {
 class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
-  final Set<String> activeHighwayCategories;
   final Set<String> activeWaypointCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
-  final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
   final VoidCallback onClose;
 
   const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
-    required this.activeHighwayCategories,
     required this.activeWaypointCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
-    required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
     required this.onClose,
   });
@@ -594,19 +589,18 @@ class _MapLayersSheet extends StatefulWidget {
   State<_MapLayersSheet> createState() => _MapLayersSheetState();
 }
 
-/// Menu emoji for each highway-stop category (UI only — map pins themselves
-/// carry no emoji).
-String _highwayCategoryEmoji(String category) => switch (category) {
-      HighwayStopCategories.visitorCenter => 'ℹ️',
-      HighwayStopCategories.fuel => '⛽',
-      HighwayStopCategories.restArea => '🅿️',
-      HighwayStopCategories.campground => '🏕️',
-      HighwayStopCategories.scenic => '⛰️',
-      HighwayStopCategories.food => '🍽️',
-      _ => '📍',
-    };
+/// The Map Filters categories shown in the side panel — fishing, wildlife,
+/// camping, hiking, harvesting, and food.
+const List<String> _mapFilterCategories = [
+  WaypointCategories.fishing,
+  WaypointCategories.wildlife,
+  WaypointCategories.camping,
+  WaypointCategories.hiking,
+  WaypointCategories.harvesting,
+  WaypointCategories.food,
+];
 
-enum _LayersDetailPage { highways, lakeCharts, waypoints }
+enum _LayersDetailPage { mapFilters }
 
 class _MapLayersSheetState extends State<_MapLayersSheet> {
   _LayersDetailPage? _detail;
@@ -635,9 +629,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
   }
 
   Widget _buildList(BuildContext context) {
-    final highwaysOn =
-        (widget.showHighways ? 1 : 0) + widget.activeHighwayCategories.length;
-    final highwayTotal = HighwayStopCategories.all.length + 1;
+    final filtersOn = widget.activeWaypointCategories.length;
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
@@ -647,7 +639,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             const Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6),
-                child: Text('Map Layers',
+                child: Text('Filters',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.w700,
@@ -662,24 +654,27 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           ],
         ),
         const SizedBox(height: 8),
-        _CategoryRow(
-          emoji: '🛣️',
-          title: 'Highways',
-          subtitle: '$highwaysOn of $highwayTotal Layers On',
-          onTap: () => setState(() => _detail = _LayersDetailPage.highways),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🛣️',
+            label: 'Road System',
+            value: widget.showHighways,
+            onChanged: widget.onHighwaysChanged,
+          ),
         ),
-        _CategoryRow(
-          emoji: '💧',
-          title: 'Lake Charts',
-          subtitle: widget.showLakeCharts ? '1 of 1 Layers On' : '0 of 1 Layers On',
-          onTap: () => setState(() => _detail = _LayersDetailPage.lakeCharts),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '💧',
+            label: 'Lake Charts',
+            value: widget.showLakeCharts,
+            onChanged: widget.onLakeChartsChanged,
+          ),
         ),
         _CategoryRow(
           emoji: '🧭',
-          title: 'Trip Waypoints',
-          subtitle:
-              '${widget.activeWaypointCategories.length} of ${WaypointCategories.all.length} Layers On',
-          onTap: () => setState(() => _detail = _LayersDetailPage.waypoints),
+          title: 'Map Filters',
+          subtitle: '$filtersOn of ${_mapFilterCategories.length} Layers On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.mapFilters),
         ),
       ],
     );
@@ -687,39 +682,10 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
 
   Widget _buildDetail(BuildContext context, _LayersDetailPage page) {
     final (title, rows) = switch (page) {
-      _LayersDetailPage.highways => (
-          'Highways',
+      _LayersDetailPage.mapFilters => (
+          'Map Filters',
           [
-            _ToggleRowData(
-              emoji: '🛣️',
-              label: 'Highway Routes & Pins',
-              value: widget.showHighways,
-              onChanged: widget.onHighwaysChanged,
-            ),
-            for (final cat in HighwayStopCategories.all)
-              _ToggleRowData(
-                emoji: _highwayCategoryEmoji(cat),
-                label: cat,
-                value: widget.activeHighwayCategories.contains(cat),
-                onChanged: (v) => widget.onHighwayCategoryChanged(cat, v),
-              ),
-          ]
-        ),
-      _LayersDetailPage.lakeCharts => (
-          'Lake Charts',
-          [
-            _ToggleRowData(
-              emoji: '💧',
-              label: 'Lake Bathymetry',
-              value: widget.showLakeCharts,
-              onChanged: widget.onLakeChartsChanged,
-            ),
-          ]
-        ),
-      _LayersDetailPage.waypoints => (
-          'Trip Waypoints',
-          [
-            for (final cat in WaypointCategories.all)
+            for (final cat in _mapFilterCategories)
               _ToggleRowData(
                 emoji: _waypointCategoryEmoji(cat),
                 label: cat,
