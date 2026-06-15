@@ -176,9 +176,9 @@ class HighwaysData {
 /// Loads highway routes from bundled GeoJSON
 /// (`assets/highways/highways.geojson`).
 ///
-/// Each route is traced from real OpenStreetMap road-relation centerlines
-/// (fetched via the OSM API and stitched/simplified into one continuous
-/// line per highway), so the path follows the actual roadway end-to-end.
+/// Each route is traced from the Alaska DOT&PF Highway System centerlines
+/// (AHS_AKDOT, gis.data.alaska.gov), simplified to one continuous line per
+/// highway, so the path follows the actual roadway end-to-end.
 class HighwayLoader {
   HighwayLoader._();
 
