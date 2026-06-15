@@ -4,8 +4,10 @@ import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../data/bathymetry_loader.dart';
+import '../../data/highways_data.dart';
 import '../../data/hotspots_data.dart';
 import '../../data/lakes_data.dart';
+import '../../models/highway.dart';
 import '../../models/hotspot.dart';
 import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
@@ -35,14 +37,19 @@ class _MapScreenState extends State<MapScreen> {
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
   static const _lakesFilter = 'Lake Charts';
+  static const _highwaysFilter = 'Highways';
 
   // Survey-accurate ADF&G contours, by lake id, once digitized and bundled.
   final Map<String, List<DepthContour>> _realContours = {};
+
+  // Highway centerline segments, loaded from bundled OSM-derived GeoJSON.
+  List<HighwaySegment> _highwaySegments = [];
 
   @override
   void initState() {
     super.initState();
     _loadRealContours();
+    _loadHighways();
   }
 
   Future<void> _loadRealContours() async {
@@ -54,11 +61,18 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<void> _loadHighways() async {
+    final segments = await HighwayLoader.load();
+    if (mounted) setState(() => _highwaySegments = segments);
+  }
+
   @override
   Widget build(BuildContext context) {
     final lakesOnly = _category == _lakesFilter;
-    final spots =
-        lakesOnly ? <Hotspot>[] : HotspotsData.byCategory(_category);
+    final highwaysOnly = _category == _highwaysFilter;
+    final spots = (lakesOnly || highwaysOnly)
+        ? <Hotspot>[]
+        : HotspotsData.byCategory(_category);
     // Lake pins ride along in the unfiltered view and stand alone in
     // Lake Charts mode.
     final showLakes = lakesOnly || _category == null;
@@ -100,6 +114,19 @@ class _MapScreenState extends State<MapScreen> {
                         ...LakeOverlay.realPolygons(lake, real)
                       else
                         ...LakeOverlay.polygonsFor(lake),
+                  ],
+                ),
+              if (highwaysOnly)
+                PolylineLayer(
+                  polylines: [
+                    for (final seg in _highwaySegments)
+                      Polyline(
+                        points: seg.points,
+                        color: seg.color,
+                        strokeWidth: 4,
+                        borderColor: Colors.black.withValues(alpha: 0.35),
+                        borderStrokeWidth: 1.5,
+                      ),
                   ],
                 ),
               MarkerLayer(
@@ -181,16 +208,24 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                 ),
                 FilterChipsRow(
-                  options: const [_lakesFilter, ...HotspotsData.categories],
+                  options: const [
+                    _lakesFilter,
+                    _highwaysFilter,
+                    ...HotspotsData.categories,
+                  ],
                   selected: _category,
-                  emojiFor: (c) => c == _lakesFilter
-                      ? '💧'
-                      : HotspotsData.categoryEmoji(c),
+                  emojiFor: (c) => switch (c) {
+                    _lakesFilter => '💧',
+                    _highwaysFilter => '🛣️',
+                    _ => HotspotsData.categoryEmoji(c),
+                  },
                   onSelected: (c) {
                     setState(() => _category = c);
                     if (c == _lakesFilter) {
                       // The lake charts cluster around Anchorage.
                       _mapController.move(_anchorageCenter, 9.6);
+                    } else if (c == _highwaysFilter) {
+                      _mapController.move(_alaskaCenter, 4.3);
                     }
                   },
                 ),
