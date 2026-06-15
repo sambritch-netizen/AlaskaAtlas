@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -84,6 +85,10 @@ class _MapScreenState extends State<MapScreen> {
 
   // Dropped pin for a selected geocode (worldwide place search) result.
   GeocodeResult? _searchPin;
+
+  // The device's current location, once "locate me" has been used.
+  LatLng? _userLocation;
+  bool _locating = false;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -183,6 +188,50 @@ class _MapScreenState extends State<MapScreen> {
     _closeSearch();
     _mapController.move(result.location, 13);
     setState(() => _searchPin = result);
+  }
+
+  /// Requests the device's current position and centers the map on it,
+  /// dropping a "you are here" dot.
+  Future<void> _locateMe() async {
+    if (_locating) return;
+    setState(() => _locating = true);
+
+    try {
+      if (!await Geolocator.isLocationServiceEnabled()) {
+        _showLocationError('Location services are turned off.');
+        return;
+      }
+
+      var permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+      }
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
+        _showLocationError('Location permission was denied.');
+        return;
+      }
+
+      final position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+      if (!mounted) return;
+      final here = LatLng(position.latitude, position.longitude);
+      setState(() => _userLocation = here);
+      _mapController.move(here, 13);
+    } catch (_) {
+      _showLocationError('Could not determine your location.');
+    } finally {
+      if (mounted) setState(() => _locating = false);
+    }
+  }
+
+  void _showLocationError(String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// Builds "MP" pins at every 10-mile interval along each highway's real
@@ -400,6 +449,18 @@ class _MapScreenState extends State<MapScreen> {
                         result: _searchPin!,
                         onClose: () => setState(() => _searchPin = null),
                       ),
+                    ),
+                  ],
+                ),
+              if (_userLocation != null)
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: _userLocation!,
+                      width: 22,
+                      height: 22,
+                      alignment: Alignment.center,
+                      child: const _UserLocationDot(),
                     ),
                   ],
                 ),
@@ -650,6 +711,31 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
 
+          // ── Locate-me button ───────────────────────────────────────
+          Positioned(
+            right: 16,
+            bottom: 76,
+            child: FloatingActionButton.small(
+              backgroundColor: AppColors.surfaceElevated,
+              foregroundColor: AppColors.pine,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: AppColors.border),
+              ),
+              onPressed: _locateMe,
+              child: _locating
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.pine,
+                      ),
+                    )
+                  : const Icon(Icons.my_location),
+            ),
+          ),
+
           // ── Recenter button ────────────────────────────────────────
           Positioned(
             right: 16,
@@ -824,6 +910,27 @@ class _ClusterBadge extends StatelessWidget {
             fontWeight: FontWeight.w800,
             color: AppColors.textPrimary,
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Apple/Google Maps-style "you are here" marker — a blue dot with a halo.
+class _UserLocationDot extends StatelessWidget {
+  const _UserLocationDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 16,
+        height: 16,
+        decoration: BoxDecoration(
+          color: Colors.blueAccent,
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 3),
+          boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 4)],
         ),
       ),
     );
