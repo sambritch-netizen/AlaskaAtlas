@@ -3,7 +3,7 @@ name: Deploy Web Preview
 on:
   workflow_dispatch:
   push:
-    branches: [claude/alaska-atlas-app-r9rg32]
+    branches: [claude/alaska-atlas-app-r9rg32, claude/optimistic-hamilton-j51yk0]
 
 permissions:
   contents: write
