@@ -9,6 +9,7 @@ import '../screens/map/lake_profile_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/gear/gear_detail_screen.dart';
 import '../screens/gear/gear_screen.dart';
+import '../screens/guides/guide_category_screen.dart';
 import '../screens/guides/guide_detail_screen.dart';
 import '../screens/guides/guides_screen.dart';
 import '../screens/guides/species_detail_screen.dart';
@@ -47,6 +48,11 @@ final routerProvider = Provider<GoRouter>((ref) {
               path: '/guides',
               builder: (context, state) => const GuidesScreen(),
               routes: [
+                GoRoute(
+                  path: 'category',
+                  builder: (context, state) =>
+                      GuideCategoryScreen(category: state.extra as String),
+                ),
                 GoRoute(
                   path: 'detail',
                   builder: (context, state) =>
