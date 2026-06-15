@@ -142,8 +142,8 @@ class _MapScreenState extends State<MapScreen> {
         markers.add(
           Marker(
             point: point,
-            width: 46,
-            height: 22,
+            width: 56,
+            height: 24,
             alignment: Alignment.center,
             child: _MileMarkerPin(mile: mile, color: seg.color),
           ),
