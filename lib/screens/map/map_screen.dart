@@ -136,7 +136,7 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                   ],
                 ),
-              if (_showHighways)
+              if (_activeHighwayCategories.isNotEmpty)
                 MarkerLayer(
                   markers: [
                     for (final highway in HighwaysData.highways)
@@ -322,21 +322,22 @@ class _MapScreenState extends State<MapScreen> {
             child: _MapLayersSheet(
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
+              activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
               onClose: () => setState(() => _layersPanelOpen = false),
-              onHighwaysChanged: (v) => setState(() {
-                _showHighways = v;
-                if (v) {
-                  _activeHighwayCategories
-                    ..clear()
-                    ..addAll(HighwayStopCategories.all);
-                } else {
-                  _activeHighwayCategories.clear();
-                }
-              }),
+              onHighwaysChanged: (v) => setState(() => _showHighways = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
+              },
+              onHighwayCategoryChanged: (cat, v) {
+                setState(() {
+                  if (v) {
+                    _activeHighwayCategories.add(cat);
+                  } else {
+                    _activeHighwayCategories.remove(cat);
+                  }
+                });
               },
               onWaypointCategoryChanged: (cat, v) {
                 setState(() {
@@ -569,18 +570,22 @@ class _LakeLabel extends StatelessWidget {
 class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
+  final Set<String> activeHighwayCategories;
   final Set<String> activeWaypointCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
+  final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
   final VoidCallback onClose;
 
   const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
+    required this.activeHighwayCategories,
     required this.activeWaypointCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
+    required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
     required this.onClose,
   });
@@ -668,6 +673,26 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             label: 'Lake Charts',
             value: widget.showLakeCharts,
             onChanged: widget.onLakeChartsChanged,
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '⛽',
+            label: 'Fuel',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.fuel),
+            onChanged: (v) =>
+                widget.onHighwayCategoryChanged(HighwayStopCategories.fuel, v),
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🅿️',
+            label: 'Rest Stops',
+            value: widget.activeHighwayCategories
+                .contains(HighwayStopCategories.restArea),
+            onChanged: (v) => widget.onHighwayCategoryChanged(
+                HighwayStopCategories.restArea, v),
           ),
         ),
         _CategoryRow(
