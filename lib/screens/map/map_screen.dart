@@ -13,6 +13,7 @@ import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import 'basemaps.dart';
+import 'highway_stop_sheet.dart';
 import 'hotspot_sheet.dart';
 import 'lake_overlay.dart';
 
@@ -127,6 +128,25 @@ class _MapScreenState extends State<MapScreen> {
                         borderColor: Colors.black.withValues(alpha: 0.35),
                         borderStrokeWidth: 1.5,
                       ),
+                  ],
+                ),
+              if (highwaysOnly)
+                MarkerLayer(
+                  markers: [
+                    for (final highway in HighwaysData.highways)
+                      for (final stop in highway.stops)
+                        Marker(
+                          point: LatLng(stop.lat, stop.lng),
+                          width: 34,
+                          height: 40,
+                          alignment: Alignment.topCenter,
+                          child: _HighwayStopMarker(
+                            stop: stop,
+                            color: highway.color,
+                            onTap: () =>
+                                showHighwayStopSheet(context, highway, stop),
+                          ),
+                        ),
                   ],
                 ),
               MarkerLayer(
@@ -291,6 +311,52 @@ class _SpotMarker extends StatelessWidget {
             height: 9,
             decoration: BoxDecoration(
               color: AppColors.pine,
+              borderRadius: BorderRadius.circular(2),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Small circular marker for a highway mile-marker stop (campground,
+/// viewpoint, lodge, etc.), colored to match its highway.
+class _HighwayStopMarker extends StatelessWidget {
+  final HighwayStop stop;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _HighwayStopMarker(
+      {required this.stop, required this.color, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              color: AppColors.surfaceElevated,
+              shape: BoxShape.circle,
+              border: Border.all(color: color, width: 2),
+              boxShadow: const [
+                BoxShadow(color: Colors.black54, blurRadius: 4),
+              ],
+            ),
+            child: Center(
+              child: Text(stop.emoji, style: const TextStyle(fontSize: 13)),
+            ),
+          ),
+          Container(
+            width: 3,
+            height: 8,
+            decoration: BoxDecoration(
+              color: color,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
