@@ -38,6 +38,17 @@ class _MapScreenState extends State<MapScreen> {
   // menu — onX-style category drill-down.
   bool _showHighways = true;
   bool _showLakeCharts = false;
+  bool _showMileMarkers = false;
+
+  // Official milepost numbering doesn't always start at zero where the
+  // bundled route geometry begins (e.g. the Parks Highway geometry starts
+  // at its junction with the Glenn, which is official MP 35). These offsets
+  // are added to the distance traveled along each segment's geometry to
+  // recover the real-world milepost.
+  static const Map<String, int> _mileMarkerOffsets = {
+    'parks-highway': 35,
+    'sterling-highway': 37,
+  };
 
   // Per-category visibility within the Highways group — off by default,
   // toggled individually from the Map Layers menu.
@@ -78,6 +89,60 @@ class _MapScreenState extends State<MapScreen> {
   Future<void> _loadHighways() async {
     final segments = await HighwayLoader.load();
     if (mounted) setState(() => _highwaySegments = segments);
+  }
+
+  /// Builds "MP" pins at every 10-mile interval along each highway's real
+  /// route geometry, walking the cumulative distance between points and
+  /// applying the per-highway official-milepost offset.
+  List<Marker> _mileMarkerPins() {
+    const distance = Distance();
+    final markers = <Marker>[];
+
+    for (final seg in _highwaySegments) {
+      final points = seg.points;
+      if (points.length < 2) continue;
+      final offset = _mileMarkerOffsets[seg.slug] ?? 0;
+
+      final cumulative = List<double>.filled(points.length, 0);
+      for (var i = 1; i < points.length; i++) {
+        cumulative[i] = cumulative[i - 1] +
+            distance.as(LengthUnit.Mile, points[i - 1], points[i]);
+      }
+      final total = cumulative.last;
+
+      final startMile = ((offset + 9) ~/ 10) * 10;
+      for (var mile = startMile; mile <= offset + total; mile += 10) {
+        final target = (mile - offset).toDouble();
+        if (target < 0) continue;
+
+        var idx = 0;
+        while (idx < cumulative.length - 2 && cumulative[idx + 1] < target) {
+          idx++;
+        }
+        final segStart = cumulative[idx];
+        final segEnd = cumulative[idx + 1];
+        final t =
+            segEnd == segStart ? 0.0 : (target - segStart) / (segEnd - segStart);
+        final a = points[idx];
+        final b = points[idx + 1];
+        final point = LatLng(
+          a.latitude + (b.latitude - a.latitude) * t,
+          a.longitude + (b.longitude - a.longitude) * t,
+        );
+
+        markers.add(
+          Marker(
+            point: point,
+            width: 46,
+            height: 22,
+            alignment: Alignment.center,
+            child: _MileMarkerPin(mile: mile, color: seg.color),
+          ),
+        );
+      }
+    }
+
+    return markers;
   }
 
   @override
@@ -156,6 +221,8 @@ class _MapScreenState extends State<MapScreen> {
                         ),
                   ],
                 ),
+              if (_showHighways && _showMileMarkers)
+                MarkerLayer(markers: _mileMarkerPins()),
               if (_activeWaypointCategories.isNotEmpty)
                 MarkerLayer(
                   markers: [
@@ -322,10 +389,13 @@ class _MapScreenState extends State<MapScreen> {
             child: _MapLayersSheet(
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
+              showMileMarkers: _showMileMarkers,
               activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
               onClose: () => setState(() => _layersPanelOpen = false),
               onHighwaysChanged: (v) => setState(() => _showHighways = v),
+              onMileMarkersChanged: (v) =>
+                  setState(() => _showMileMarkers = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
@@ -395,6 +465,38 @@ class _HighwayStopMarker extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Small "MP n" pill marking an official milepost along a highway,
+/// colored to match the highway's route line.
+class _MileMarkerPin extends StatelessWidget {
+  final int mile;
+  final Color color;
+
+  const _MileMarkerPin({required this.mile, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated.withValues(alpha: 0.92),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color, width: 1.5),
+        boxShadow: const [
+          BoxShadow(color: Colors.black54, blurRadius: 3),
+        ],
+      ),
+      child: Text(
+        'MP $mile',
+        style: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          color: color,
+        ),
       ),
     );
   }
@@ -570,10 +672,12 @@ class _LakeLabel extends StatelessWidget {
 class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
+  final bool showMileMarkers;
   final Set<String> activeHighwayCategories;
   final Set<String> activeWaypointCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
+  final ValueChanged<bool> onMileMarkersChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
   final VoidCallback onClose;
@@ -581,10 +685,12 @@ class _MapLayersSheet extends StatefulWidget {
   const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
+    required this.showMileMarkers,
     required this.activeHighwayCategories,
     required this.activeWaypointCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
+    required this.onMileMarkersChanged,
     required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
     required this.onClose,
@@ -693,6 +799,14 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
                 .contains(HighwayStopCategories.restArea),
             onChanged: (v) => widget.onHighwayCategoryChanged(
                 HighwayStopCategories.restArea, v),
+          ),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🔢',
+            label: 'Mile Markers',
+            value: widget.showMileMarkers,
+            onChanged: widget.onMileMarkersChanged,
           ),
         ),
         _ToggleRow(
