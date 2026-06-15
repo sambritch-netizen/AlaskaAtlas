@@ -5,15 +5,12 @@ import 'package:latlong2/latlong.dart';
 
 import '../../data/bathymetry_loader.dart';
 import '../../data/highways_data.dart';
-import '../../data/hotspots_data.dart';
 import '../../data/lakes_data.dart';
 import '../../models/highway.dart';
-import '../../models/hotspot.dart';
 import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
 import 'basemaps.dart';
 import 'highway_stop_sheet.dart';
-import 'hotspot_sheet.dart';
 import 'lake_overlay.dart';
 
 /// Statewide hot-spot map with switchable high-res base layers (satellite,
@@ -38,12 +35,10 @@ class _MapScreenState extends State<MapScreen> {
   // menu — onX-style category drill-down.
   bool _showHighways = true;
   bool _showLakeCharts = false;
-  bool _showHotspots = true;
 
-  // Per-category visibility within the Highways and Hot Spots groups — all
-  // on by default, toggled individually from the Map Layers menu.
+  // Per-category visibility within the Highways group — all on by default,
+  // toggled individually from the Map Layers menu.
   final Set<String> _activeHighwayCategories = {...HighwayStopCategories.all};
-  final Set<String> _activeHotspotCategories = {...HotspotsData.categories};
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -77,11 +72,6 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final spots = _showHotspots
-        ? HotspotsData.hotspots
-            .where((h) => _activeHotspotCategories.contains(h.category))
-            .toList()
-        : <Hotspot>[];
     final showLakes = _showLakeCharts;
 
     return Scaffold(
@@ -158,20 +148,6 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               MarkerLayer(
                 markers: [
-                  for (final spot in spots)
-                    Marker(
-                      point: spot.location,
-                      width: 46,
-                      height: 52,
-                      alignment: Alignment.topCenter,
-                      child: _SpotMarker(
-                        spot: spot,
-                        onTap: () {
-                          _mapController.move(spot.location, 7.5);
-                          showHotspotSheet(context, spot);
-                        },
-                      ),
-                    ),
                   if (showLakes)
                     for (final lake in LakesData.lakes)
                       Marker(
@@ -312,9 +288,7 @@ class _MapScreenState extends State<MapScreen> {
             return _MapLayersSheet(
               showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
-              showHotspots: _showHotspots,
               activeHighwayCategories: _activeHighwayCategories,
-              activeHotspotCategories: _activeHotspotCategories,
               onHighwaysChanged: (v) {
                 setState(() => _showHighways = v);
                 sheetSetState(() {});
@@ -322,10 +296,6 @@ class _MapScreenState extends State<MapScreen> {
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
-                sheetSetState(() {});
-              },
-              onHotspotsChanged: (v) {
-                setState(() => _showHotspots = v);
                 sheetSetState(() {});
               },
               onHighwayCategoryChanged: (cat, v) {
@@ -338,16 +308,6 @@ class _MapScreenState extends State<MapScreen> {
                 });
                 sheetSetState(() {});
               },
-              onHotspotCategoryChanged: (cat, v) {
-                setState(() {
-                  if (v) {
-                    _activeHotspotCategories.add(cat);
-                  } else {
-                    _activeHotspotCategories.remove(cat);
-                  }
-                });
-                sheetSetState(() {});
-              },
             );
           },
         );
@@ -356,54 +316,9 @@ class _MapScreenState extends State<MapScreen> {
   }
 }
 
-class _SpotMarker extends StatelessWidget {
-  final Hotspot spot;
-  final VoidCallback onTap;
-
-  const _SpotMarker({required this.spot, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(
-              color: spot.featured ? AppColors.pine : AppColors.surfaceElevated,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: spot.featured ? AppColors.textPrimary : AppColors.pine,
-                width: 2,
-              ),
-              boxShadow: const [
-                BoxShadow(color: Colors.black54, blurRadius: 6),
-              ],
-            ),
-            child: Center(
-              child: Text(spot.emoji, style: const TextStyle(fontSize: 16)),
-            ),
-          ),
-          // Pin tail
-          Container(
-            width: 3,
-            height: 9,
-            decoration: BoxDecoration(
-              color: AppColors.pine,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Small circular marker for a highway mile-marker stop (campground,
-/// viewpoint, lodge, etc.), colored to match its highway.
+/// Small circular pin for a highway mile-marker stop (visitor center, fuel,
+/// rest area, campground, scenic feature, or food), colored to match its
+/// highway. No emoji — just a small dot.
 class _HighwayStopMarker extends StatelessWidget {
   final HighwayStop stop;
   final Color color;
@@ -420,18 +335,15 @@ class _HighwayStopMarker extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 28,
-            height: 28,
+            width: 14,
+            height: 14,
             decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
+              color: color,
               shape: BoxShape.circle,
-              border: Border.all(color: color, width: 2),
+              border: Border.all(color: AppColors.surfaceElevated, width: 2),
               boxShadow: const [
                 BoxShadow(color: Colors.black54, blurRadius: 4),
               ],
-            ),
-            child: Center(
-              child: Text(stop.emoji, style: const TextStyle(fontSize: 13)),
             ),
           ),
           Container(
@@ -544,33 +456,37 @@ class _LakeLabel extends StatelessWidget {
 class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
-  final bool showHotspots;
   final Set<String> activeHighwayCategories;
-  final Set<String> activeHotspotCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
-  final ValueChanged<bool> onHotspotsChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
-  final void Function(String category, bool value) onHotspotCategoryChanged;
 
   const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
-    required this.showHotspots,
     required this.activeHighwayCategories,
-    required this.activeHotspotCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
-    required this.onHotspotsChanged,
     required this.onHighwayCategoryChanged,
-    required this.onHotspotCategoryChanged,
   });
 
   @override
   State<_MapLayersSheet> createState() => _MapLayersSheetState();
 }
 
-enum _LayersDetailPage { highways, hotspots, lakeCharts }
+/// Menu emoji for each highway-stop category (UI only — map pins themselves
+/// carry no emoji).
+String _highwayCategoryEmoji(String category) => switch (category) {
+      HighwayStopCategories.visitorCenter => 'ℹ️',
+      HighwayStopCategories.fuel => '⛽',
+      HighwayStopCategories.restArea => '🅿️',
+      HighwayStopCategories.campground => '🏕️',
+      HighwayStopCategories.scenic => '⛰️',
+      HighwayStopCategories.food => '🍽️',
+      _ => '📍',
+    };
+
+enum _LayersDetailPage { highways, lakeCharts }
 
 class _MapLayersSheetState extends State<_MapLayersSheet> {
   _LayersDetailPage? _detail;
@@ -604,8 +520,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
   Widget _buildList(BuildContext context, ScrollController scrollController) {
     final highwaysOn =
         (widget.showHighways ? 1 : 0) + widget.activeHighwayCategories.length;
-    final hotspotsOn =
-        (widget.showHotspots ? 1 : 0) + widget.activeHotspotCategories.length;
+    final highwayTotal = HighwayStopCategories.all.length + 1;
 
     return ListView(
       controller: scrollController,
@@ -635,14 +550,8 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
         _CategoryRow(
           emoji: '🛣️',
           title: 'Highways',
-          subtitle: '$highwaysOn of 9 Layers On',
+          subtitle: '$highwaysOn of $highwayTotal Layers On',
           onTap: () => setState(() => _detail = _LayersDetailPage.highways),
-        ),
-        _CategoryRow(
-          emoji: '📍',
-          title: 'Hot Spots',
-          subtitle: '$hotspotsOn of 9 Layers On',
-          onTap: () => setState(() => _detail = _LayersDetailPage.hotspots),
         ),
         _CategoryRow(
           emoji: '💧',
@@ -668,28 +577,10 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             ),
             for (final cat in HighwayStopCategories.all)
               _ToggleRowData(
-                emoji: HighwayStopCategories.emojiFor(cat),
+                emoji: _highwayCategoryEmoji(cat),
                 label: cat,
                 value: widget.activeHighwayCategories.contains(cat),
                 onChanged: (v) => widget.onHighwayCategoryChanged(cat, v),
-              ),
-          ]
-        ),
-      _LayersDetailPage.hotspots => (
-          'Hot Spots',
-          [
-            _ToggleRowData(
-              emoji: '📍',
-              label: 'Hot Spot Pins',
-              value: widget.showHotspots,
-              onChanged: widget.onHotspotsChanged,
-            ),
-            for (final cat in HotspotsData.categories)
-              _ToggleRowData(
-                emoji: HotspotsData.categoryEmoji(cat),
-                label: cat,
-                value: widget.activeHotspotCategories.contains(cat),
-                onChanged: (v) => widget.onHotspotCategoryChanged(cat, v),
               ),
           ]
         ),

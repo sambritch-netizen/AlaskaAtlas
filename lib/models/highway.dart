@@ -64,35 +64,19 @@ class HighwayStop {
 class HighwayStopCategories {
   HighwayStopCategories._();
 
-  static const String junction = 'Junctions';
-  static const String fuel = 'Fuel & Lodging';
-  static const String camping = 'Camping';
-  static const String viewpoint = 'Viewpoints';
-  static const String wildlife = 'Wildlife';
-  static const String fishing = 'Fishing';
-  static const String historic = 'Historic';
-  static const String roadNotes = 'Road Notes';
+  static const String visitorCenter = 'Visitor Center';
+  static const String fuel = 'Fuel';
+  static const String restArea = 'Pull Off / Rest Area';
+  static const String campground = 'Camp Ground';
+  static const String scenic = 'Scenic Feature / Attraction';
+  static const String food = 'Food';
 
   static const List<String> all = [
-    junction,
+    visitorCenter,
     fuel,
-    camping,
-    viewpoint,
-    wildlife,
-    fishing,
-    historic,
-    roadNotes,
+    restArea,
+    campground,
+    scenic,
+    food,
   ];
-
-  static String emojiFor(String category) => switch (category) {
-        junction => '🔀',
-        fuel => '⛽',
-        camping => '🏕️',
-        viewpoint => '⛰️',
-        wildlife => '🦌',
-        fishing => '🎣',
-        historic => '🏺',
-        roadNotes => '🚧',
-        _ => '📍',
-      };
 }
