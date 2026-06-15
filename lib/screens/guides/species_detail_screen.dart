@@ -233,7 +233,10 @@ class SpeciesDetailScreen extends StatelessWidget {
 
                     const SizedBox(height: 16),
                     Text(
-                      'Always check current ADF&G regulations, bag limits, and seasons before fishing, hunting, or harvesting.',
+                      species.subcategory == 'Birds' ||
+                              species.subcategory == 'Land Animals'
+                          ? 'Always view wildlife from a safe distance, never approach or feed wild animals, and store food and scented items securely.'
+                          : 'Always check current ADF&G regulations, bag limits, and seasons before fishing or harvesting.',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
