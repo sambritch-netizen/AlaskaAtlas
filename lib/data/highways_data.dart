@@ -55,6 +55,24 @@ class HighwaysData {
       color: Color(0xFF6D4C41),
     ),
     Highway(
+      slug: 'dalton-highway',
+      name: 'Dalton Highway',
+      route: 'AK-11',
+      color: Color(0xFFFFB300),
+    ),
+    Highway(
+      slug: 'steese-highway',
+      name: 'Steese Highway',
+      route: 'AK-6',
+      color: Color(0xFF3949AB),
+    ),
+    Highway(
+      slug: 'taylor-highway',
+      name: 'Taylor Highway',
+      route: 'AK-5',
+      color: Color(0xFF7CB342),
+    ),
+    Highway(
       slug: 'denali-highway',
       name: 'Denali Highway',
       route: 'AK-8',
@@ -62,111 +80,111 @@ class HighwaysData {
       stops: [
         HighwayStop(
           mile: 0,
-          name: 'Cantwell (Parks Hwy Junction)',
-          emoji: '🔀',
-          lat: 63.3905,
-          lng: -148.9018,
-          description:
-              'Western end of the Denali Highway. Last reliable fuel and groceries before MacLaren River Lodge, 43 miles out.',
-        ),
-        HighwayStop(
-          mile: 13,
-          name: 'Brushkana Creek Campground',
-          emoji: '🏕️',
-          lat: 63.3932,
-          lng: -148.5157,
-          description:
-              'Small BLM campground right on Brushkana Creek — grayling fishing in reach and a good base for the GMU 13E drainages to the north.',
-        ),
-        HighwayStop(
-          mile: 21,
-          name: 'Pavement Ends',
-          emoji: '🚧',
-          lat: 63.3472,
-          lng: -148.2959,
-          description:
-              'Maintained gravel begins here for the rest of the route. Wide views of the Alaska Range open up, with Denali visible from pullouts on clear days.',
-        ),
-        HighwayStop(
-          mile: 36,
-          name: 'Clearwater Creek',
-          emoji: '🎣',
-          lat: 63.2741,
-          lng: -147.8953,
-          description:
-              'Clearwater drainage crossing popular with grayling anglers, and a common pull-off for glassing hillsides for caribou movement in late summer.',
-        ),
-        HighwayStop(
-          mile: 42,
-          name: 'Susitna River Bridge',
-          emoji: '🌉',
-          lat: 63.2291,
-          lng: -147.7428,
-          description:
-              'The road crosses the upper Susitna River — a small, clear headwaters stream here, and a handy landmark for orienting on GMU 13 maps.',
-        ),
-        HighwayStop(
-          mile: 43,
-          name: 'MacLaren River Lodge',
-          emoji: '⛽',
-          lat: 63.2233,
-          lng: -147.7142,
-          description:
-              'The only fuel, food, and lodging between Cantwell and Paxson. Fills up fast in caribou season — call ahead for rooms or fuel.',
-        ),
-        HighwayStop(
-          mile: 47,
-          name: 'MacLaren Summit',
-          emoji: '⛰️',
-          lat: 63.1919,
-          lng: -147.6143,
-          description:
-              'At 4,086 ft, the highest point on the Alaska highway system. Alpine tundra benches hold caribou; rocky basins above hold Dall sheep. Popular glassing pullouts near the summit.',
-        ),
-        HighwayStop(
-          mile: 55,
-          name: 'Tangle Lakes / Tangle River Inn',
-          emoji: '⛽',
-          lat: 63.1045,
-          lng: -147.5245,
-          description:
-              'A chain of clear lakes straddling the road. Tangle River Inn offers fuel, food, and rooms — the last services on the highway. Also a put-in for the Delta Wild and Scenic River canoe route.',
-        ),
-        HighwayStop(
-          mile: 65,
-          name: 'Tangle Lakes Archaeological District',
-          emoji: '🏺',
-          lat: 63.0508,
-          lng: -147.2951,
-          description:
-              'One of the densest concentrations of prehistoric sites in Alaska. Surface collection and digging are prohibited — respect closure signs.',
-        ),
-        HighwayStop(
-          mile: 79,
-          name: 'Swede Lake Area',
-          emoji: '🦌',
-          lat: 63.0420,
-          lng: -146.8825,
-          description:
-              'Rolling tundra and scattered lakes. Good spot-and-stalk caribou country when the Nelchina herd is moving through GMU 13 — glass before committing to the walk.',
-        ),
-        HighwayStop(
-          mile: 97,
-          name: 'High Tundra & Sheep Country',
-          emoji: '🐏',
-          lat: 63.1026,
-          lng: -146.4460,
-          description:
-              'The longest stretch of true alpine tundra on the highway, with eastern Alaska Range peaks to the north. No services for 25+ miles either direction — carry extra fuel.',
-        ),
-        HighwayStop(
-          mile: 135,
           name: 'Paxson (Richardson Hwy Junction)',
           emoji: '🔀',
           lat: 63.0293,
           lng: -145.4962,
           description:
-              'Eastern terminus, meeting the Richardson Highway. From here it\'s north to Delta Junction/Fairbanks or south to Glennallen and the Glenn Highway.',
+              'Eastern terminus and Milepost 0 of the Denali Highway, where it meets the Richardson Highway. Paxson Lodge is the last fuel before MacLaren River Lodge, 42 miles west.',
+        ),
+        HighwayStop(
+          mile: 16,
+          name: 'Swede Lake Area',
+          emoji: '🦌',
+          lat: 63.0402,
+          lng: -145.8659,
+          description:
+              'Swede Lake Trailhead on the south side of the highway, within the Tangle Lakes Archaeological District. Rolling tundra and scattered lakes make good spot-and-stalk caribou country when the Nelchina herd is moving through GMU 13.',
+        ),
+        HighwayStop(
+          mile: 20,
+          name: 'Tangle Lakes / Tangle River Inn',
+          emoji: '⛽',
+          lat: 63.0523,
+          lng: -145.9835,
+          description:
+              'A chain of clear lakes straddling the road. Tangle River Inn offers fuel, food, and rooms, and is also a put-in for the Delta Wild and Scenic River canoe route.',
+        ),
+        HighwayStop(
+          mile: 21,
+          name: 'Pavement Ends',
+          emoji: '🚧',
+          lat: 63.0471,
+          lng: -146.0104,
+          description:
+              'The first 21 miles west of Paxson are paved. From here the route is chip-seal and gravel most of the way to Cantwell, with wide views of the Alaska Range opening up.',
+        ),
+        HighwayStop(
+          mile: 25,
+          name: 'Tangle Lakes Archaeological District',
+          emoji: '🏺',
+          lat: 63.0744,
+          lng: -146.1120,
+          description:
+              'One of the densest concentrations of prehistoric sites in Alaska, spanning roughly Milepost 15 to 37 on both sides of the highway. Surface collection and digging are prohibited — respect closure signs.',
+        ),
+        HighwayStop(
+          mile: 37,
+          name: 'MacLaren Summit',
+          emoji: '⛰️',
+          lat: 63.0886,
+          lng: -146.4356,
+          description:
+              'At 4,086 ft, the second-highest highway pass in Alaska. Alpine tundra benches hold caribou; rocky basins above hold Dall sheep. Popular glassing pullouts near the summit.',
+        ),
+        HighwayStop(
+          mile: 42,
+          name: 'MacLaren River Lodge',
+          emoji: '⛽',
+          lat: 63.1189,
+          lng: -146.5388,
+          description:
+              'One of just a handful of fuel, food, and lodging stops on the highway. Fills up fast in caribou season — call ahead for rooms or fuel.',
+        ),
+        HighwayStop(
+          mile: 55,
+          name: 'High Tundra & Sheep Country',
+          emoji: '🐏',
+          lat: 63.0431,
+          lng: -146.8637,
+          description:
+              'The long stretch between MacLaren River Lodge and Alpine Creek Lodge runs through open alpine tundra with eastern Alaska Range peaks to the north. No services for 25+ miles — carry extra fuel.',
+        ),
+        HighwayStop(
+          mile: 80,
+          name: 'Susitna River Bridge',
+          emoji: '🌉',
+          lat: 63.1044,
+          lng: -147.5269,
+          description:
+              'A roughly 1,000-foot bridge carries the highway over the upper Susitna River — a small, clear headwaters stream here, and a handy landmark for orienting on GMU 13 maps.',
+        ),
+        HighwayStop(
+          mile: 82,
+          name: 'Clearwater Creek',
+          emoji: '🎣',
+          lat: 63.1338,
+          lng: -147.5389,
+          description:
+              'Clearwater drainage crossing near Clearwater Mountain Lodge, popular with grayling anglers and a common pull-off for glassing hillsides for caribou movement in late summer.',
+        ),
+        HighwayStop(
+          mile: 104,
+          name: 'Brushkana Creek Campground',
+          emoji: '🏕️',
+          lat: 63.2843,
+          lng: -148.0617,
+          description:
+              'BLM campground right on Brushkana Creek — grayling fishing in reach and a good base for the GMU 13E drainages to the north.',
+        ),
+        HighwayStop(
+          mile: 135,
+          name: 'Cantwell (Parks Hwy Junction)',
+          emoji: '🔀',
+          lat: 63.3905,
+          lng: -148.9018,
+          description:
+              'Western terminus, meeting the Parks Highway. From here it\'s north to Healy/Denali Park or south to Talkeetna and Anchorage.',
         ),
       ],
     ),
