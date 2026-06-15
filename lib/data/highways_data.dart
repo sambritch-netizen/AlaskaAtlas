@@ -63,11 +63,13 @@ class HighwaysData {
   ];
 }
 
-/// Loads highway centerline segments from bundled GeoJSON
-/// (`assets/highways/highways.geojson`), digitized from OpenStreetMap.
+/// Loads highway routes from bundled GeoJSON
+/// (`assets/highways/highways.geojson`).
 ///
-/// Coverage reflects what OSM's Nominatim search surfaces per highway —
-/// the main named segments, not necessarily every mile of every route.
+/// Each route is a hand-built waypoint polyline spanning the highway's full
+/// length end-to-end (e.g. Anchorage to Seward), since exact OSM centerline
+/// data isn't available end-to-end. Curvature is approximate between
+/// waypoints, but coverage is complete.
 class HighwayLoader {
   HighwayLoader._();
 
