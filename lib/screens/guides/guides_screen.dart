@@ -1,11 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/fish_species_data.dart';
 import '../../data/guides_data.dart';
+import '../../data/harvest_species_data.dart';
+import '../../data/wildlife_species_data.dart';
 import '../../models/guide.dart';
+import '../../models/species.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
+
+/// Species sub-categories shown as a "browse by type" row for the
+/// Fishing, Wildlife, and Harvesting guide categories.
+const Map<String, List<SpeciesSubcategory>> _speciesSubcategories = {
+  'Fishing': [
+    SpeciesSubcategory(
+      name: 'Fish Species',
+      emoji: '🐟',
+      description: 'Identification, habitat & how-to-fish for Alaska gamefish',
+    ),
+  ],
+  'Wildlife': [
+    SpeciesSubcategory(
+      name: 'Birds',
+      emoji: '🦅',
+      description: 'Eagles, swans, grouse & more',
+    ),
+    SpeciesSubcategory(
+      name: 'Land Animals',
+      emoji: '🐻',
+      description: 'Bears, moose, caribou & more',
+    ),
+  ],
+  'Harvesting': [
+    SpeciesSubcategory(
+      name: 'Berries',
+      emoji: '🫐',
+      description: 'What to pick & when',
+    ),
+    SpeciesSubcategory(
+      name: 'Mushrooms & Foraging',
+      emoji: '🍄',
+      description: 'Edible fungi & how to ID them safely',
+    ),
+    SpeciesSubcategory(
+      name: 'Other Wild Edibles',
+      emoji: '🌿',
+      description: 'Greens, shoots & more',
+    ),
+  ],
+};
+
+List<Species> _speciesForSubcategory(String name) {
+  return [
+    ...FishSpeciesData.all,
+    ...WildlifeSpeciesData.all,
+    ...HarvestSpeciesData.all,
+  ].where((s) => s.subcategory == name).toList();
+}
 
 class GuidesScreen extends StatefulWidget {
   const GuidesScreen({super.key});
@@ -70,6 +123,27 @@ class _GuidesScreenState extends State<GuidesScreen> {
                 ),
               ),
             ),
+            if (_category != null &&
+                _speciesSubcategories.containsKey(_category))
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Browse by Type',
+                          style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 10),
+                      ..._speciesSubcategories[_category]!
+                          .map((sub) => _SubcategoryCard(subcategory: sub)),
+                      const SizedBox(height: 14),
+                      Text('Guides',
+                          style: Theme.of(context).textTheme.headlineSmall),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                ),
+              ),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
               sliver: SliverList.builder(
@@ -78,6 +152,74 @@ class _GuidesScreenState extends State<GuidesScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SubcategoryCard extends StatelessWidget {
+  final SpeciesSubcategory subcategory;
+
+  const _SubcategoryCard({required this.subcategory});
+
+  @override
+  Widget build(BuildContext context) {
+    final species = _speciesForSubcategory(subcategory.name);
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      decoration: BoxDecoration(
+        color: AppColors.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.go('/guides/species-list', extra: {
+            'title': subcategory.name,
+            'species': species,
+          }),
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: AppColors.pine.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                        color: AppColors.pine.withValues(alpha: 0.25)),
+                  ),
+                  child: Center(
+                    child: Text(subcategory.emoji,
+                        style: const TextStyle(fontSize: 22)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(subcategory.name,
+                          style: Theme.of(context).textTheme.titleLarge),
+                      const SizedBox(height: 2),
+                      Text(subcategory.description,
+                          style: Theme.of(context).textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+                MetaBadge(
+                    label: '${species.length}', color: AppColors.textMuted),
+                const SizedBox(width: 6),
+                const Icon(Icons.chevron_right,
+                    color: AppColors.textMuted, size: 20),
+              ],
+            ),
+          ),
         ),
       ),
     );

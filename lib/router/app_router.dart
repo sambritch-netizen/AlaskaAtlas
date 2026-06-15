@@ -4,12 +4,15 @@ import 'package:go_router/go_router.dart';
 import '../models/guide.dart';
 import '../models/gear_item.dart';
 import '../models/lake.dart';
+import '../models/species.dart';
 import '../screens/map/lake_profile_screen.dart';
 import '../screens/explore/explore_screen.dart';
 import '../screens/gear/gear_detail_screen.dart';
 import '../screens/gear/gear_screen.dart';
 import '../screens/guides/guide_detail_screen.dart';
 import '../screens/guides/guides_screen.dart';
+import '../screens/guides/species_detail_screen.dart';
+import '../screens/guides/species_list_screen.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/shell_screen.dart';
 
@@ -48,6 +51,22 @@ final routerProvider = Provider<GoRouter>((ref) {
                   path: 'detail',
                   builder: (context, state) =>
                       GuideDetailScreen(guide: state.extra as Guide),
+                ),
+                GoRoute(
+                  path: 'species-list',
+                  builder: (context, state) {
+                    final extra =
+                        state.extra as Map<String, Object?>;
+                    return SpeciesListScreen(
+                      title: extra['title'] as String,
+                      species: extra['species'] as List<Species>,
+                    );
+                  },
+                ),
+                GoRoute(
+                  path: 'species',
+                  builder: (context, state) =>
+                      SpeciesDetailScreen(species: state.extra as Species),
                 ),
               ],
             ),

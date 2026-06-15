@@ -16,9 +16,8 @@ class GearData {
   static const List<String> categories = [
     'Fishing',
     'Camping',
-    'Hunting',
     'Winter',
-    'Add-Ons',
+    'Standalone Items',
   ];
 
   static const List<GearItem> items = [
@@ -266,18 +265,6 @@ class GearData {
       goodFor: ['Families', 'Summer visits'],
     ),
 
-    // ── Hunting ─────────────────────────────────────────────────────────
-    GearItem(
-      id: '69cf0953932a612a06ed7484',
-      name: 'Hunting Package',
-      category: 'Hunting',
-      emoji: '🦌',
-      description: 'Everything you need for a successful Alaska big game hunt.',
-      pricePerDay: 30,
-      includes: ['Binos', 'Butcher Kit', 'Reusable Game Bags', 'Bear Spray'],
-      goodFor: ['Big game hunts', 'Pack-out ready'],
-    ),
-
     // ── Winter ──────────────────────────────────────────────────────────
     GearItem(
       id: '69efb5608e9f6299b257f512',
@@ -316,22 +303,22 @@ class GearData {
       pricePerDay: 15,
     ),
 
-    // ── Add-Ons ─────────────────────────────────────────────────────────
+    // ── Standalone Items ───────────────────────────────────────────────
     GearItem(
       id: '69cf0953932a612a06ed749b',
       name: 'The Connectivity Kit',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '📶',
       description:
           'Cell service in Alaska gets thin fast once you leave the highway. The Starlink Mini is a real, working internet connection — check weather, video call home, handle work, or stream a movie at camp. Packs up small and it\'s tougher than it looks.',
       pricePerDay: 25,
       includes: ['Starlink Mini', 'Protective Case', 'Charging Cables'],
-      goodFor: ['Remote hunts & fishing trips', 'Off-grid camping', 'Staying reachable'],
+      goodFor: ['Remote fishing trips', 'Off-grid camping', 'Staying reachable'],
     ),
     GearItem(
       id: '6a164cd25b65753911003707',
       name: 'Garmin inReach',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '📡',
       description:
           'Two-way satellite communicator for remote Alaska adventures. Send and receive messages, track your route, trigger SOS alerts, and share your location when you\'re far beyond cell range.',
@@ -341,7 +328,7 @@ class GearData {
     GearItem(
       id: '69e90f543e73c002b2f667c3',
       name: 'Garmin GPS',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🧭',
       description:
           'Handheld Garmin GPS unit for navigation in Alaska\'s backcountry. Preloaded with topographic maps.',
@@ -350,7 +337,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7488',
       name: 'Bear Spray',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🐻',
       description:
           'EPA-registered bear deterrent. Non-negotiable for Alaska backcountry travel. Flat-rate rental for your entire trip.',
@@ -359,7 +346,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7492',
       name: 'Bear Vault',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🛢️',
       description:
           'Bear-resistant food canister required in many Alaska wilderness areas.',
@@ -368,7 +355,7 @@ class GearData {
     GearItem(
       id: '69cf26305d877f66a5fc278a',
       name: 'Action Camera Package',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🎥',
       description:
           'Capture your trip without risking your phone. A solid action camera setup with the mounts you need for good footage — throw it on your gear, hit record, and go. Memory card not included.',
@@ -379,7 +366,7 @@ class GearData {
     GearItem(
       id: '69d862da48ea0b9c516af366',
       name: 'Gold Panning Package',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '⛏️',
       description:
           'Everything you need for a day of gold panning in Alaska — all the tools to find your fortune in local creeks and streams.',
@@ -389,7 +376,7 @@ class GearData {
     GearItem(
       id: '69d862da48ea0b9c516af365',
       name: 'Metal Detecting Package',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🕵️',
       description:
           'Alaska has more buried history than people realize — old mining sites, ghost towns, century-old beaches. The Minelab Equinox 800 is one of the best detectors on the market. Check land status and local rules before detecting.',
@@ -399,7 +386,7 @@ class GearData {
     GearItem(
       id: '69d862da48ea0b9c516af367',
       name: 'Berry Picking Package',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🫐',
       description:
           'Alaska is one of the best places in the world for wild berry picking — blueberries, raspberries, salmonberries, low-bush cranberries. The basket clips on so you have both hands free. Best late summer through early fall.',
@@ -409,7 +396,7 @@ class GearData {
     GearItem(
       id: '69cf1ccf283f6afe48ba0123',
       name: 'Roadside Assistance Kit',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🚗',
       description:
           'Be prepared for anything on Alaska\'s remote roads — jumper cables, a tire patch kit, a mini compressor, and essential safety equipment.',
@@ -424,7 +411,7 @@ class GearData {
     GearItem(
       id: '6a17316be41bdc92c8d2324a',
       name: 'Tent (1, 2 or 4 Person)',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '⛺',
       description:
           'A quality camping tent perfect for Alaska\'s wilderness — choose the size that fits your group. All tents are freestanding, weather-resistant, and easy to set up.',
@@ -434,7 +421,7 @@ class GearData {
     GearItem(
       id: '6a2b23fcded8efd6a6736ee7',
       name: 'Sleeping Bag',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🛌',
       description:
           'Warm, durable sleeping bag suitable for Alaska camping conditions. Rated for comfort in cool temperatures.',
@@ -443,7 +430,7 @@ class GearData {
     GearItem(
       id: '6a2b23fcded8efd6a6736ee6',
       name: 'Sleeping Pad',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🛏️',
       description:
           'Lightweight, insulated sleeping pad — cushioning and insulation from the ground.',
@@ -452,7 +439,7 @@ class GearData {
     GearItem(
       id: '69cf360b70d7aa396839577a',
       name: 'Jetboil',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🔥',
       description:
           'Ultra-efficient backcountry stove system for quick meals and hot drinks.',
@@ -461,7 +448,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7497',
       name: 'Cooler (48qt)',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🧊',
       description: '48qt heavy-duty cooler for keeping food and catch fresh.',
       pricePerDay: 14,
@@ -469,7 +456,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7496',
       name: 'Camp Chair',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🪑',
       description: 'Lightweight, packable camp chair.',
       pricePerDay: 7,
@@ -477,7 +464,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed748b',
       name: 'Binoculars',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🔭',
       description: 'Compact binoculars for glassing terrain and spotting wildlife.',
       pricePerDay: 14,
@@ -485,7 +472,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7494',
       name: 'Water Filter',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '💧',
       description:
           'Lightweight water filter for safe drinking water from Alaska streams.',
@@ -494,7 +481,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7490',
       name: 'Headlamp',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🔦',
       description: 'Bright, lightweight headlamp for camp and trail use.',
       pricePerDay: 3,
@@ -502,7 +489,7 @@ class GearData {
     GearItem(
       id: '69cf0953932a612a06ed7498',
       name: 'Power Bank',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🔋',
       description: 'High-capacity portable power bank to keep devices charged.',
       pricePerDay: 9,
@@ -510,7 +497,7 @@ class GearData {
     GearItem(
       id: '6a15eb237bdc0a3d9d9ac980',
       name: 'Trekking Poles',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🥢',
       description:
           'Adjustable trekking poles for added stability on Alaska\'s varied terrain — hiking, river crossings, and backcountry travel.',
@@ -519,7 +506,7 @@ class GearData {
     GearItem(
       id: '69d2957a734ad5af95dc2c64',
       name: '5 Gallon Gas Can',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '⛽',
       description:
           'Heavy-duty 5 gallon fuel container, perfect for remote trips where fuel stops are scarce.',
@@ -528,7 +515,7 @@ class GearData {
     GearItem(
       id: '69cf1e0e6b172924ae64cc3e',
       name: 'Portable Toilet',
-      category: 'Add-Ons',
+      category: 'Standalone Items',
       emoji: '🚽',
       description: 'Compact portable toilet for backcountry and remote camping.',
       pricePerDay: 5,
