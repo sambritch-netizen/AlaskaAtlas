@@ -6,6 +6,7 @@ import 'package:latlong2/latlong.dart';
 import '../../data/bathymetry_loader.dart';
 import '../../data/highways_data.dart';
 import '../../data/lakes_data.dart';
+import '../../data/search_index.dart';
 import '../../data/waypoints_data.dart';
 import '../../models/highway.dart';
 import '../../models/lake.dart';
@@ -13,6 +14,7 @@ import '../../models/waypoint.dart';
 import '../../theme/app_colors.dart';
 import 'basemaps.dart';
 import 'highway_stop_sheet.dart';
+import 'hotspot_sheet.dart';
 import 'lake_overlay.dart';
 import 'waypoint_sheet.dart';
 
@@ -67,6 +69,12 @@ class _MapScreenState extends State<MapScreen> {
   // Whether the left-side "Map Layers" panel is open.
   bool _layersPanelOpen = false;
 
+  // Search panel state — searches across hot spots, highway stops,
+  // waypoints, and lakes by name.
+  bool _searchOpen = false;
+  final _searchController = TextEditingController();
+  List<SearchResult> _searchResults = [];
+
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
 
@@ -97,6 +105,44 @@ class _MapScreenState extends State<MapScreen> {
     if (mounted) setState(() => _highwaySegments = segments);
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String query) {
+    setState(() => _searchResults = SearchIndex.search(query));
+  }
+
+  void _closeSearch() {
+    setState(() {
+      _searchOpen = false;
+      _searchResults = [];
+      _searchController.clear();
+    });
+  }
+
+  /// Centers the map on a search result and opens its detail sheet/screen.
+  void _selectSearchResult(SearchResult result) {
+    _closeSearch();
+    _mapController.move(result.location, 12);
+
+    if (result.hotspot != null) {
+      showHotspotSheet(context, result.hotspot!);
+    } else if (result.highwayStop != null) {
+      showHighwayStopSheet(context, result.highway!, result.highwayStop!);
+    } else if (result.waypoint != null) {
+      showWaypointSheet(
+        context,
+        result.waypoint!,
+        _waypointCategoryColor(result.waypoint!.category),
+      );
+    } else if (result.lake != null) {
+      context.go('/map/lake', extra: result.lake);
+    }
+  }
+
   /// Builds "MP" pins at every 10-mile interval along each highway's real
   /// route geometry, walking the cumulative distance between points and
   /// applying the per-highway official-milepost offset.
@@ -111,7 +157,8 @@ class _MapScreenState extends State<MapScreen> {
 
       final cumulative = List<double>.filled(points.length, 0);
       for (var i = 1; i < points.length; i++) {
-        cumulative[i] = cumulative[i - 1] +
+        cumulative[i] =
+            cumulative[i - 1] +
             distance.as(LengthUnit.Mile, points[i - 1], points[i]);
       }
       final total = cumulative.last;
@@ -130,8 +177,9 @@ class _MapScreenState extends State<MapScreen> {
         }
         final segStart = cumulative[idx];
         final segEnd = cumulative[idx + 1];
-        final t =
-            segEnd == segStart ? 0.0 : (target - segStart) / (segEnd - segStart);
+        final t = segEnd == segStart
+            ? 0.0
+            : (target - segStart) / (segEnd - segStart);
         final a = points[idx];
         final b = points[idx + 1];
         final point = LatLng(
@@ -220,18 +268,18 @@ class _MapScreenState extends State<MapScreen> {
                     for (final highway in HighwaysData.highways)
                       for (final stop in highway.stops)
                         if (_activeHighwayCategories.contains(stop.category))
-                        Marker(
-                          point: LatLng(stop.lat, stop.lng),
-                          width: 34,
-                          height: 40,
-                          alignment: Alignment.topCenter,
-                          child: _HighwayStopMarker(
-                            stop: stop,
-                            color: highway.color,
-                            onTap: () =>
-                                showHighwayStopSheet(context, highway, stop),
+                          Marker(
+                            point: LatLng(stop.lat, stop.lng),
+                            width: 34,
+                            height: 40,
+                            alignment: Alignment.topCenter,
+                            child: _HighwayStopMarker(
+                              stop: stop,
+                              color: highway.color,
+                              onTap: () =>
+                                  showHighwayStopSheet(context, highway, stop),
+                            ),
                           ),
-                        ),
                   ],
                 ),
               if (_showHighways && _showMileMarkers && _zoomedForMileMarkers)
@@ -249,8 +297,11 @@ class _MapScreenState extends State<MapScreen> {
                           child: _WaypointMarker(
                             waypoint: wp,
                             color: _waypointCategoryColor(wp.category),
-                            onTap: () => showWaypointSheet(context, wp,
-                                _waypointCategoryColor(wp.category)),
+                            onTap: () => showWaypointSheet(
+                              context,
+                              wp,
+                              _waypointCategoryColor(wp.category),
+                            ),
                           ),
                         ),
                   ],
@@ -287,7 +338,9 @@ class _MapScreenState extends State<MapScreen> {
                   child: Text(
                     _basemap.attribution,
                     style: const TextStyle(
-                        fontSize: 9, color: AppColors.textMuted),
+                      fontSize: 9,
+                      color: AppColors.textMuted,
+                    ),
                   ),
                 ),
               ),
@@ -300,8 +353,10 @@ class _MapScreenState extends State<MapScreen> {
               children: [
                 Container(
                   margin: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 10,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.surface.withValues(alpha: 0.92),
                     borderRadius: BorderRadius.circular(14),
@@ -309,61 +364,165 @@ class _MapScreenState extends State<MapScreen> {
                   ),
                   child: Row(
                     children: [
-                      Text('Alaska Atlas',
-                          style: Theme.of(context).textTheme.headlineSmall),
-                      const Spacer(),
-                      _LayerButton(
-                        basemap: _basemap,
-                        onSelected: (b) => setState(() => _basemap = b),
+                      if (_searchOpen)
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            autofocus: true,
+                            onChanged: _onSearchChanged,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            decoration: const InputDecoration(
+                              isDense: true,
+                              border: InputBorder.none,
+                              hintText: 'Search places, towns, waypoints…',
+                              hintStyle: TextStyle(color: AppColors.textMuted),
+                            ),
+                          ),
+                        )
+                      else
+                        Expanded(
+                          child: Text(
+                            'Alaska Atlas',
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(),
+                        icon: Icon(
+                          _searchOpen ? Icons.close : Icons.search,
+                          color: AppColors.textPrimary,
+                        ),
+                        onPressed: () {
+                          if (_searchOpen) {
+                            _closeSearch();
+                          } else {
+                            setState(() {
+                              _searchOpen = true;
+                              _layersPanelOpen = false;
+                            });
+                          }
+                        },
                       ),
+                      if (!_searchOpen) ...[
+                        const SizedBox(width: 8),
+                        _LayerButton(
+                          basemap: _basemap,
+                          onSelected: (b) => setState(() => _basemap = b),
+                        ),
+                      ],
                     ],
                   ),
                 ),
+                if (_searchOpen && _searchController.text.isNotEmpty)
+                  Container(
+                    margin: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+                    constraints: const BoxConstraints(maxHeight: 320),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.96),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: _searchResults.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Text(
+                              'No matches found.',
+                              style: TextStyle(color: AppColors.textMuted),
+                            ),
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.symmetric(vertical: 4),
+                            itemCount: _searchResults.length,
+                            separatorBuilder: (_, __) => const Divider(
+                              height: 1,
+                              color: AppColors.border,
+                            ),
+                            itemBuilder: (context, i) {
+                              final result = _searchResults[i];
+                              return ListTile(
+                                dense: true,
+                                leading: Text(
+                                  _searchResultEmoji(result),
+                                  style: const TextStyle(fontSize: 20),
+                                ),
+                                title: Text(
+                                  result.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    color: AppColors.textPrimary,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  result.subtitle,
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
+                                onTap: () => _selectSearchResult(result),
+                              );
+                            },
+                          ),
+                  ),
               ],
             ),
           ),
 
           // ── Left-side "Map Layers" menu button ─────────────────────
-          Positioned(
-            left: 20,
-            top: 0,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 132),
-                child: GestureDetector(
-                  onTap: () =>
-                      setState(() => _layersPanelOpen = !_layersPanelOpen),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 7),
-                    decoration: BoxDecoration(
-                      color: AppColors.surfaceElevated,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: const Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.filter_alt, size: 15, color: AppColors.pine),
-                        SizedBox(width: 6),
-                        Text(
-                          'Filters',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.textPrimary,
+          if (!_searchOpen)
+            Positioned(
+              left: 20,
+              top: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 132),
+                  child: GestureDetector(
+                    onTap: () => setState(() {
+                      _layersPanelOpen = !_layersPanelOpen;
+                      if (_layersPanelOpen) _closeSearch();
+                    }),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 7,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceElevated,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.filter_alt,
+                            size: 15,
+                            color: AppColors.pine,
                           ),
-                        ),
-                        SizedBox(width: 4),
-                        Icon(Icons.chevron_right,
-                            size: 16, color: AppColors.textSecondary),
-                      ],
+                          SizedBox(width: 6),
+                          Text(
+                            'Filters',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.textPrimary,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Icon(
+                            Icons.chevron_right,
+                            size: 16,
+                            color: AppColors.textSecondary,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
-          ),
 
           // ── Recenter button ────────────────────────────────────────
           Positioned(
@@ -407,8 +566,7 @@ class _MapScreenState extends State<MapScreen> {
               activeWaypointCategories: _activeWaypointCategories,
               onClose: () => setState(() => _layersPanelOpen = false),
               onHighwaysChanged: (v) => setState(() => _showHighways = v),
-              onMileMarkersChanged: (v) =>
-                  setState(() => _showMileMarkers = v),
+              onMileMarkersChanged: (v) => setState(() => _showMileMarkers = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
@@ -447,8 +605,11 @@ class _HighwayStopMarker extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _HighwayStopMarker(
-      {required this.stop, required this.color, required this.onTap});
+  const _HighwayStopMarker({
+    required this.stop,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -499,9 +660,7 @@ class _MileMarkerPin extends StatelessWidget {
         color: AppColors.surfaceElevated.withValues(alpha: 0.92),
         borderRadius: BorderRadius.circular(6),
         border: Border.all(color: color, width: 1.5),
-        boxShadow: const [
-          BoxShadow(color: Colors.black54, blurRadius: 3),
-        ],
+        boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 3)],
       ),
       child: Text(
         'MP $mile',
@@ -515,32 +674,43 @@ class _MileMarkerPin extends StatelessWidget {
   }
 }
 
+/// Emoji shown next to a [SearchResult] in the search results list.
+String _searchResultEmoji(SearchResult result) {
+  if (result.hotspot != null) return result.hotspot!.emoji;
+  if (result.highwayStop != null) return result.highwayStop!.emoji;
+  if (result.waypoint != null) {
+    return _waypointCategoryEmoji(result.waypoint!.category);
+  }
+  if (result.lake != null) return '🌊';
+  return '📍';
+}
+
 /// Color for a [Waypoint] pin, by category — mirrors the Field Guide
 /// category colors so the map and guides stay visually in sync.
 Color _waypointCategoryColor(String category) => switch (category) {
-      WaypointCategories.fishing => const Color(0xFF1E88E5),
-      WaypointCategories.wildlife => const Color(0xFF8D6E63),
-      WaypointCategories.camping => const Color(0xFFFB8C00),
-      WaypointCategories.hiking => const Color(0xFF43A047),
-      WaypointCategories.survival => const Color(0xFFE53935),
-      WaypointCategories.aurora => const Color(0xFF7E57C2),
-      WaypointCategories.harvesting => const Color(0xFF5C6BC0),
-      WaypointCategories.food => const Color(0xFFE53935),
-      _ => AppColors.pine,
-    };
+  WaypointCategories.fishing => const Color(0xFF1E88E5),
+  WaypointCategories.wildlife => const Color(0xFF8D6E63),
+  WaypointCategories.camping => const Color(0xFFFB8C00),
+  WaypointCategories.hiking => const Color(0xFF43A047),
+  WaypointCategories.survival => const Color(0xFFE53935),
+  WaypointCategories.aurora => const Color(0xFF7E57C2),
+  WaypointCategories.harvesting => const Color(0xFF5C6BC0),
+  WaypointCategories.food => const Color(0xFFE53935),
+  _ => AppColors.pine,
+};
 
 /// Menu emoji for each [Waypoint] category — matches the Field Guide icons.
 String _waypointCategoryEmoji(String category) => switch (category) {
-      WaypointCategories.fishing => '🎣',
-      WaypointCategories.wildlife => '🐻',
-      WaypointCategories.camping => '⛺',
-      WaypointCategories.hiking => '🥾',
-      WaypointCategories.survival => '🧭',
-      WaypointCategories.aurora => '🌌',
-      WaypointCategories.harvesting => '🫐',
-      WaypointCategories.food => '🍲',
-      _ => '📍',
-    };
+  WaypointCategories.fishing => '🎣',
+  WaypointCategories.wildlife => '🐻',
+  WaypointCategories.camping => '⛺',
+  WaypointCategories.hiking => '🥾',
+  WaypointCategories.survival => '🧭',
+  WaypointCategories.aurora => '🌌',
+  WaypointCategories.harvesting => '🫐',
+  WaypointCategories.food => '🍲',
+  _ => '📍',
+};
 
 /// Small pin for a themed trip-planning waypoint, colored by category and
 /// labeled with its activity emoji.
@@ -549,8 +719,11 @@ class _WaypointMarker extends StatelessWidget {
   final Color color;
   final VoidCallback onTap;
 
-  const _WaypointMarker(
-      {required this.waypoint, required this.color, required this.onTap});
+  const _WaypointMarker({
+    required this.waypoint,
+    required this.color,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -571,8 +744,10 @@ class _WaypointMarker extends StatelessWidget {
               ],
             ),
             child: Center(
-              child: Text(_waypointCategoryEmoji(waypoint.category),
-                  style: const TextStyle(fontSize: 13)),
+              child: Text(
+                _waypointCategoryEmoji(waypoint.category),
+                style: const TextStyle(fontSize: 13),
+              ),
             ),
           ),
           Container(
@@ -740,9 +915,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           right: BorderSide(color: AppColors.border),
           bottom: BorderSide(color: AppColors.border),
         ),
-        boxShadow: [
-          BoxShadow(color: Colors.black54, blurRadius: 12),
-        ],
+        boxShadow: [BoxShadow(color: Colors.black54, blurRadius: 12)],
       ),
       child: SafeArea(
         child: _detail == null
@@ -763,12 +936,14 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             const Expanded(
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6),
-                child: Text('Filters',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.textPrimary,
-                    )),
+                child: Text(
+                  'Filters',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               ),
             ),
             IconButton(
@@ -798,8 +973,9 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           data: _ToggleRowData(
             emoji: '⛽',
             label: 'Fuel',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.fuel),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.fuel,
+            ),
             onChanged: (v) =>
                 widget.onHighwayCategoryChanged(HighwayStopCategories.fuel, v),
           ),
@@ -808,10 +984,13 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           data: _ToggleRowData(
             emoji: '🅿️',
             label: 'Rest Stops',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.restArea),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.restArea,
+            ),
             onChanged: (v) => widget.onHighwayCategoryChanged(
-                HighwayStopCategories.restArea, v),
+              HighwayStopCategories.restArea,
+              v,
+            ),
           ),
         ),
         _ToggleRow(
@@ -826,40 +1005,50 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           data: _ToggleRowData(
             emoji: '🏞️',
             label: 'Scenic Stops',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.scenic),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.scenic,
+            ),
             onChanged: (v) => widget.onHighwayCategoryChanged(
-                HighwayStopCategories.scenic, v),
+              HighwayStopCategories.scenic,
+              v,
+            ),
           ),
         ),
         _ToggleRow(
           data: _ToggleRowData(
             emoji: '🏕️',
             label: 'Campgrounds',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.campground),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.campground,
+            ),
             onChanged: (v) => widget.onHighwayCategoryChanged(
-                HighwayStopCategories.campground, v),
+              HighwayStopCategories.campground,
+              v,
+            ),
           ),
         ),
         _ToggleRow(
           data: _ToggleRowData(
             emoji: '🍽️',
             label: 'Food & Lodging',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.food),
-            onChanged: (v) => widget.onHighwayCategoryChanged(
-                HighwayStopCategories.food, v),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.food,
+            ),
+            onChanged: (v) =>
+                widget.onHighwayCategoryChanged(HighwayStopCategories.food, v),
           ),
         ),
         _ToggleRow(
           data: _ToggleRowData(
             emoji: '🛈',
             label: 'Visitor Centers',
-            value: widget.activeHighwayCategories
-                .contains(HighwayStopCategories.visitorCenter),
+            value: widget.activeHighwayCategories.contains(
+              HighwayStopCategories.visitorCenter,
+            ),
             onChanged: (v) => widget.onHighwayCategoryChanged(
-                HighwayStopCategories.visitorCenter, v),
+              HighwayStopCategories.visitorCenter,
+              v,
+            ),
           ),
         ),
         _CategoryRow(
@@ -875,17 +1064,17 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
   Widget _buildDetail(BuildContext context, _LayersDetailPage page) {
     final (title, rows) = switch (page) {
       _LayersDetailPage.mapFilters => (
-          'Map Filters',
-          [
-            for (final cat in _mapFilterCategories)
-              _ToggleRowData(
-                emoji: _waypointCategoryEmoji(cat),
-                label: cat,
-                value: widget.activeWaypointCategories.contains(cat),
-                onChanged: (v) => widget.onWaypointCategoryChanged(cat, v),
-              ),
-          ]
-        ),
+        'Map Filters',
+        [
+          for (final cat in _mapFilterCategories)
+            _ToggleRowData(
+              emoji: _waypointCategoryEmoji(cat),
+              label: cat,
+              value: widget.activeWaypointCategories.contains(cat),
+              onChanged: (v) => widget.onWaypointCategoryChanged(cat, v),
+            ),
+        ],
+      ),
     };
 
     return ListView(
@@ -898,12 +1087,14 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
               icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
             ),
             Expanded(
-              child: Text(title,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  )),
+              child: Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
             ),
             IconButton(
               onPressed: widget.onClose,
@@ -954,18 +1145,22 @@ class _CategoryRow extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.textPrimary,
-                      )),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.textSecondary,
-                      )),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -1055,18 +1250,21 @@ class _LayerButton extends StatelessWidget {
             value: b,
             child: Row(
               children: [
-                Icon(b.icon,
-                    size: 18,
-                    color: b.id == basemap.id
-                        ? AppColors.pine
-                        : AppColors.textSecondary),
+                Icon(
+                  b.icon,
+                  size: 18,
+                  color: b.id == basemap.id
+                      ? AppColors.pine
+                      : AppColors.textSecondary,
+                ),
                 const SizedBox(width: 10),
                 Text(
                   b.label,
                   style: TextStyle(
                     fontSize: 13,
-                    fontWeight:
-                        b.id == basemap.id ? FontWeight.w700 : FontWeight.w500,
+                    fontWeight: b.id == basemap.id
+                        ? FontWeight.w700
+                        : FontWeight.w500,
                     color: b.id == basemap.id
                         ? AppColors.pine
                         : AppColors.textPrimary,
@@ -1100,8 +1298,11 @@ class _LayerButton extends StatelessWidget {
                 color: AppColors.textPrimary,
               ),
             ),
-            const Icon(Icons.arrow_drop_down,
-                size: 16, color: AppColors.textSecondary),
+            const Icon(
+              Icons.arrow_drop_down,
+              size: 16,
+              color: AppColors.textSecondary,
+            ),
           ],
         ),
       ),
