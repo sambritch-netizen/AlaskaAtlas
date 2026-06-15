@@ -46,6 +46,9 @@ class HighwayStop {
   final double lng;
   final String description;
 
+  /// One of [HighwayStopCategories.all] — used to filter pins on the map.
+  final String category;
+
   const HighwayStop({
     required this.mile,
     required this.name,
@@ -53,5 +56,43 @@ class HighwayStop {
     required this.lat,
     required this.lng,
     required this.description,
+    required this.category,
   });
+}
+
+/// Filterable categories for highway mile-marker stops.
+class HighwayStopCategories {
+  HighwayStopCategories._();
+
+  static const String junction = 'Junctions';
+  static const String fuel = 'Fuel & Lodging';
+  static const String camping = 'Camping';
+  static const String viewpoint = 'Viewpoints';
+  static const String wildlife = 'Wildlife';
+  static const String fishing = 'Fishing';
+  static const String historic = 'Historic';
+  static const String roadNotes = 'Road Notes';
+
+  static const List<String> all = [
+    junction,
+    fuel,
+    camping,
+    viewpoint,
+    wildlife,
+    fishing,
+    historic,
+    roadNotes,
+  ];
+
+  static String emojiFor(String category) => switch (category) {
+        junction => '🔀',
+        fuel => '⛽',
+        camping => '🏕️',
+        viewpoint => '⛰️',
+        wildlife => '🦌',
+        fishing => '🎣',
+        historic => '🏺',
+        roadNotes => '🚧',
+        _ => '📍',
+      };
 }

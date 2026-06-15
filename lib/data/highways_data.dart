@@ -73,6 +73,12 @@ class HighwaysData {
       color: Color(0xFF7CB342),
     ),
     Highway(
+      slug: 'elliott-highway',
+      name: 'Elliott Highway',
+      route: 'AK-2',
+      color: Color(0xFF00ACC1),
+    ),
+    Highway(
       slug: 'denali-highway',
       name: 'Denali Highway',
       route: 'AK-8',
@@ -86,6 +92,7 @@ class HighwaysData {
           lng: -145.4962,
           description:
               'Eastern terminus and Milepost 0 of the Denali Highway, where it meets the Richardson Highway. Paxson Lodge is the last fuel before MacLaren River Lodge, 42 miles west.',
+          category: HighwayStopCategories.junction,
         ),
         HighwayStop(
           mile: 16,
@@ -95,6 +102,7 @@ class HighwaysData {
           lng: -145.8659,
           description:
               'Swede Lake Trailhead on the south side of the highway, within the Tangle Lakes Archaeological District. Rolling tundra and scattered lakes make good spot-and-stalk caribou country when the Nelchina herd is moving through GMU 13.',
+          category: HighwayStopCategories.wildlife,
         ),
         HighwayStop(
           mile: 20,
@@ -104,6 +112,7 @@ class HighwaysData {
           lng: -145.9835,
           description:
               'A chain of clear lakes straddling the road. Tangle River Inn offers fuel, food, and rooms, and is also a put-in for the Delta Wild and Scenic River canoe route.',
+          category: HighwayStopCategories.fuel,
         ),
         HighwayStop(
           mile: 21,
@@ -113,6 +122,7 @@ class HighwaysData {
           lng: -146.0104,
           description:
               'The first 21 miles west of Paxson are paved. From here the route is chip-seal and gravel most of the way to Cantwell, with wide views of the Alaska Range opening up.',
+          category: HighwayStopCategories.roadNotes,
         ),
         HighwayStop(
           mile: 25,
@@ -122,6 +132,7 @@ class HighwaysData {
           lng: -146.1120,
           description:
               'One of the densest concentrations of prehistoric sites in Alaska, spanning roughly Milepost 15 to 37 on both sides of the highway. Surface collection and digging are prohibited — respect closure signs.',
+          category: HighwayStopCategories.historic,
         ),
         HighwayStop(
           mile: 37,
@@ -131,6 +142,7 @@ class HighwaysData {
           lng: -146.4356,
           description:
               'At 4,086 ft, the second-highest highway pass in Alaska. Alpine tundra benches hold caribou; rocky basins above hold Dall sheep. Popular glassing pullouts near the summit.',
+          category: HighwayStopCategories.viewpoint,
         ),
         HighwayStop(
           mile: 42,
@@ -140,6 +152,7 @@ class HighwaysData {
           lng: -146.5388,
           description:
               'One of just a handful of fuel, food, and lodging stops on the highway. Fills up fast in caribou season — call ahead for rooms or fuel.',
+          category: HighwayStopCategories.fuel,
         ),
         HighwayStop(
           mile: 55,
@@ -149,6 +162,7 @@ class HighwaysData {
           lng: -146.8637,
           description:
               'The long stretch between MacLaren River Lodge and Alpine Creek Lodge runs through open alpine tundra with eastern Alaska Range peaks to the north. No services for 25+ miles — carry extra fuel.',
+          category: HighwayStopCategories.wildlife,
         ),
         HighwayStop(
           mile: 80,
@@ -158,6 +172,7 @@ class HighwaysData {
           lng: -147.5269,
           description:
               'A roughly 1,000-foot bridge carries the highway over the upper Susitna River — a small, clear headwaters stream here, and a handy landmark for orienting on GMU 13 maps.',
+          category: HighwayStopCategories.viewpoint,
         ),
         HighwayStop(
           mile: 82,
@@ -167,6 +182,7 @@ class HighwaysData {
           lng: -147.5389,
           description:
               'Clearwater drainage crossing near Clearwater Mountain Lodge, popular with grayling anglers and a common pull-off for glassing hillsides for caribou movement in late summer.',
+          category: HighwayStopCategories.fishing,
         ),
         HighwayStop(
           mile: 104,
@@ -176,6 +192,7 @@ class HighwaysData {
           lng: -148.0617,
           description:
               'BLM campground right on Brushkana Creek — grayling fishing in reach and a good base for the GMU 13E drainages to the north.',
+          category: HighwayStopCategories.camping,
         ),
         HighwayStop(
           mile: 135,
@@ -185,6 +202,7 @@ class HighwaysData {
           lng: -148.9018,
           description:
               'Western terminus, meeting the Parks Highway. From here it\'s north to Healy/Denali Park or south to Talkeetna and Anchorage.',
+          category: HighwayStopCategories.junction,
         ),
       ],
     ),
