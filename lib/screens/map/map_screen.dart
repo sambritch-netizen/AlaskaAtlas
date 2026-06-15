@@ -51,7 +51,6 @@ class _MapScreenState extends State<MapScreen> {
 
   // Independently toggleable map overlays, switched from the "Map Layers"
   // menu — onX-style category drill-down.
-  bool _showHighways = true;
   bool _showLakeCharts = false;
   bool _showMileMarkers = false;
 
@@ -72,6 +71,12 @@ class _MapScreenState extends State<MapScreen> {
   // Trip-planning waypoint pins (fishing, wildlife, camping, etc.) — off by
   // default, toggled individually from the Map Layers menu.
   final Set<String> _activeWaypointCategories = {};
+
+  // Per-highway visibility within the Road System group — all on by
+  // default, individually toggled from the Map Layers menu.
+  final Set<String> _activeHighwaySlugs = {
+    for (final highway in HighwaysData.highways) highway.slug,
+  };
 
   // Whether the left-side "Map Layers" panel is open.
   bool _layersPanelOpen = false;
@@ -276,6 +281,7 @@ class _MapScreenState extends State<MapScreen> {
     final markers = <Marker>[];
 
     for (final seg in _highwaySegments) {
+      if (!_activeHighwaySlugs.contains(seg.slug)) continue;
       final points = seg.points;
       if (points.length < 2) continue;
       final offset = _mileMarkerOffsets[seg.slug] ?? 0;
@@ -374,17 +380,18 @@ class _MapScreenState extends State<MapScreen> {
                         ...LakeOverlay.polygonsFor(lake),
                   ],
                 ),
-              if (_showHighways)
+              if (_activeHighwaySlugs.isNotEmpty)
                 PolylineLayer(
                   polylines: [
                     for (final seg in _highwaySegments)
-                      Polyline(
-                        points: seg.points,
-                        color: seg.color,
-                        strokeWidth: 4,
-                        borderColor: Colors.black.withValues(alpha: 0.35),
-                        borderStrokeWidth: 1.5,
-                      ),
+                      if (_activeHighwaySlugs.contains(seg.slug))
+                        Polyline(
+                          points: seg.points,
+                          color: seg.color,
+                          strokeWidth: 4,
+                          borderColor: Colors.black.withValues(alpha: 0.35),
+                          borderStrokeWidth: 1.5,
+                        ),
                   ],
                 ),
               if (_activeHighwayCategories.isNotEmpty)
@@ -394,26 +401,31 @@ class _MapScreenState extends State<MapScreen> {
                     size: const Size(34, 34),
                     markers: [
                       for (final highway in HighwaysData.highways)
-                        for (final stop in highway.stops)
-                          if (_activeHighwayCategories.contains(stop.category))
-                            Marker(
-                              point: _stopPoint(highway, stop),
-                              width: 34,
-                              height: 40,
-                              alignment: Alignment.topCenter,
-                              child: _HighwayStopMarker(
-                                stop: stop,
-                                color: highway.color,
-                                onTap: () =>
-                                    _openHighwayStopSheet(highway, stop),
+                        if (_activeHighwaySlugs.contains(highway.slug))
+                          for (final stop in highway.stops)
+                            if (_activeHighwayCategories.contains(
+                              stop.category,
+                            ))
+                              Marker(
+                                point: _stopPoint(highway, stop),
+                                width: 34,
+                                height: 40,
+                                alignment: Alignment.topCenter,
+                                child: _HighwayStopMarker(
+                                  stop: stop,
+                                  color: _highwayStopCategoryColor(
+                                    stop.category,
+                                  ),
+                                  onTap: () =>
+                                      _openHighwayStopSheet(highway, stop),
+                                ),
                               ),
-                            ),
                     ],
                     builder: (context, markers) =>
                         _ClusterBadge(count: markers.length),
                   ),
                 ),
-              if (_showHighways && _showMileMarkers && _zoomedForMileMarkers)
+              if (_showMileMarkers && _zoomedForMileMarkers)
                 MarkerLayer(markers: _mileMarkerPins()),
               if (_activeWaypointCategories.isNotEmpty)
                 MarkerClusterLayerWidget(
@@ -879,13 +891,12 @@ class _MapScreenState extends State<MapScreen> {
             left: _layersPanelOpen ? 0 : -300,
             width: 300,
             child: _MapLayersSheet(
-              showHighways: _showHighways,
               showLakeCharts: _showLakeCharts,
               showMileMarkers: _showMileMarkers,
               activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
+              activeHighwaySlugs: _activeHighwaySlugs,
               onClose: () => setState(() => _layersPanelOpen = false),
-              onHighwaysChanged: (v) => setState(() => _showHighways = v),
               onMileMarkersChanged: (v) => setState(() => _showMileMarkers = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
@@ -906,6 +917,15 @@ class _MapScreenState extends State<MapScreen> {
                     _activeWaypointCategories.add(cat);
                   } else {
                     _activeWaypointCategories.remove(cat);
+                  }
+                });
+              },
+              onHighwaySlugChanged: (slug, v) {
+                setState(() {
+                  if (v) {
+                    _activeHighwaySlugs.add(slug);
+                  } else {
+                    _activeHighwaySlugs.remove(slug);
                   }
                 });
               },
@@ -1106,11 +1126,24 @@ Color _waypointCategoryColor(String category) => switch (category) {
   WaypointCategories.fishing => const Color(0xFF1E88E5),
   WaypointCategories.wildlife => const Color(0xFF8D6E63),
   WaypointCategories.camping => const Color(0xFFFB8C00),
-  WaypointCategories.hiking => const Color(0xFF43A047),
-  WaypointCategories.survival => const Color(0xFFE53935),
+  WaypointCategories.hiking => const Color(0xFF00897B),
+  WaypointCategories.survival => const Color(0xFFD81B60),
   WaypointCategories.aurora => const Color(0xFF7E57C2),
-  WaypointCategories.harvesting => const Color(0xFF5C6BC0),
+  WaypointCategories.harvesting => const Color(0xFF43A047),
   WaypointCategories.food => const Color(0xFFE53935),
+  _ => AppColors.pine,
+};
+
+/// Color for a highway mile-marker stop pin, by category — kept consistent
+/// across every highway so a "Fuel" pin looks the same on the Denali
+/// Highway as it does on the Parks Highway.
+Color _highwayStopCategoryColor(String category) => switch (category) {
+  HighwayStopCategories.fuel => const Color(0xFFFFB300),
+  HighwayStopCategories.restArea => const Color(0xFF9E9E9E),
+  HighwayStopCategories.campground => const Color(0xFFFB8C00),
+  HighwayStopCategories.scenic => const Color(0xFF00ACC1),
+  HighwayStopCategories.food => const Color(0xFFE53935),
+  HighwayStopCategories.visitorCenter => const Color(0xFF5C6BC0),
   _ => AppColors.pine,
 };
 
@@ -1273,30 +1306,30 @@ class _LakeLabel extends StatelessWidget {
 /// showing how many of its sub-layers are on, drilling down into a detail
 /// page of individual toggle switches.
 class _MapLayersSheet extends StatefulWidget {
-  final bool showHighways;
   final bool showLakeCharts;
   final bool showMileMarkers;
   final Set<String> activeHighwayCategories;
   final Set<String> activeWaypointCategories;
-  final ValueChanged<bool> onHighwaysChanged;
+  final Set<String> activeHighwaySlugs;
   final ValueChanged<bool> onLakeChartsChanged;
   final ValueChanged<bool> onMileMarkersChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
+  final void Function(String slug, bool value) onHighwaySlugChanged;
   final VoidCallback onClose;
   final VoidCallback onPinOverridesChanged;
 
   const _MapLayersSheet({
-    required this.showHighways,
     required this.showLakeCharts,
     required this.showMileMarkers,
     required this.activeHighwayCategories,
     required this.activeWaypointCategories,
-    required this.onHighwaysChanged,
+    required this.activeHighwaySlugs,
     required this.onLakeChartsChanged,
     required this.onMileMarkersChanged,
     required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
+    required this.onHighwaySlugChanged,
     required this.onClose,
     required this.onPinOverridesChanged,
   });
@@ -1316,7 +1349,7 @@ const List<String> _mapFilterCategories = [
   WaypointCategories.food,
 ];
 
-enum _LayersDetailPage { mapFilters }
+enum _LayersDetailPage { mapFilters, roadSystem }
 
 class _MapLayersSheetState extends State<_MapLayersSheet> {
   _LayersDetailPage? _detail;
@@ -1370,13 +1403,13 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           ],
         ),
         const SizedBox(height: 8),
-        _ToggleRow(
-          data: _ToggleRowData(
-            emoji: '🛣️',
-            label: 'Road System',
-            value: widget.showHighways,
-            onChanged: widget.onHighwaysChanged,
-          ),
+        _CategoryRow(
+          emoji: '🛣️',
+          title: 'Road System',
+          subtitle:
+              '${widget.activeHighwaySlugs.length} of '
+              '${HighwaysData.highways.length} Highways On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.roadSystem),
         ),
         _ToggleRow(
           data: _ToggleRowData(
@@ -1540,6 +1573,19 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             ),
         ],
       ),
+      _LayersDetailPage.roadSystem => (
+        'Road System',
+        [
+          for (final highway in HighwaysData.highways)
+            _ToggleRowData(
+              emoji: '',
+              swatch: highway.color,
+              label: highway.name,
+              value: widget.activeHighwaySlugs.contains(highway.slug),
+              onChanged: (v) => widget.onHighwaySlugChanged(highway.slug, v),
+            ),
+        ],
+      ),
     };
 
     return ListView(
@@ -1643,11 +1689,17 @@ class _ToggleRowData {
   final bool value;
   final ValueChanged<bool> onChanged;
 
+  /// When set, a small colored circle is shown instead of [emoji] — used
+  /// for the per-highway rows, where each highway is identified by its
+  /// route-line color rather than an icon.
+  final Color? swatch;
+
   const _ToggleRowData({
     required this.emoji,
     required this.label,
     required this.value,
     required this.onChanged,
+    this.swatch,
   });
 }
 
@@ -1669,7 +1721,18 @@ class _ToggleRow extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Text(data.emoji, style: const TextStyle(fontSize: 18)),
+          if (data.swatch case final color?)
+            Container(
+              width: 14,
+              height: 14,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.surface, width: 1.5),
+              ),
+            )
+          else
+            Text(data.emoji, style: const TextStyle(fontSize: 18)),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
