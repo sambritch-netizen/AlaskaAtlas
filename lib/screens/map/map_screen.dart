@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -304,48 +305,63 @@ class _MapScreenState extends State<MapScreen> {
                   ],
                 ),
               if (_activeHighwayCategories.isNotEmpty)
-                MarkerLayer(
-                  markers: [
-                    for (final highway in HighwaysData.highways)
-                      for (final stop in highway.stops)
-                        if (_activeHighwayCategories.contains(stop.category))
-                          Marker(
-                            point: LatLng(stop.lat, stop.lng),
-                            width: 34,
-                            height: 40,
-                            alignment: Alignment.topCenter,
-                            child: _HighwayStopMarker(
-                              stop: stop,
-                              color: highway.color,
-                              onTap: () =>
-                                  showHighwayStopSheet(context, highway, stop),
+                MarkerClusterLayerWidget(
+                  options: MarkerClusterLayerOptions(
+                    maxClusterRadius: 45,
+                    size: const Size(34, 34),
+                    markers: [
+                      for (final highway in HighwaysData.highways)
+                        for (final stop in highway.stops)
+                          if (_activeHighwayCategories.contains(stop.category))
+                            Marker(
+                              point: LatLng(stop.lat, stop.lng),
+                              width: 34,
+                              height: 40,
+                              alignment: Alignment.topCenter,
+                              child: _HighwayStopMarker(
+                                stop: stop,
+                                color: highway.color,
+                                onTap: () => showHighwayStopSheet(
+                                  context,
+                                  highway,
+                                  stop,
+                                ),
+                              ),
                             ),
-                          ),
-                  ],
+                    ],
+                    builder: (context, markers) =>
+                        _ClusterBadge(count: markers.length),
+                  ),
                 ),
               if (_showHighways && _showMileMarkers && _zoomedForMileMarkers)
                 MarkerLayer(markers: _mileMarkerPins()),
               if (_activeWaypointCategories.isNotEmpty)
-                MarkerLayer(
-                  markers: [
-                    for (final wp in WaypointsData.all)
-                      if (_activeWaypointCategories.contains(wp.category))
-                        Marker(
-                          point: LatLng(wp.lat, wp.lng),
-                          width: 30,
-                          height: 36,
-                          alignment: Alignment.topCenter,
-                          child: _WaypointMarker(
-                            waypoint: wp,
-                            color: _waypointCategoryColor(wp.category),
-                            onTap: () => showWaypointSheet(
-                              context,
-                              wp,
-                              _waypointCategoryColor(wp.category),
+                MarkerClusterLayerWidget(
+                  options: MarkerClusterLayerOptions(
+                    maxClusterRadius: 45,
+                    size: const Size(30, 30),
+                    markers: [
+                      for (final wp in WaypointsData.all)
+                        if (_activeWaypointCategories.contains(wp.category))
+                          Marker(
+                            point: LatLng(wp.lat, wp.lng),
+                            width: 30,
+                            height: 36,
+                            alignment: Alignment.topCenter,
+                            child: _WaypointMarker(
+                              waypoint: wp,
+                              color: _waypointCategoryColor(wp.category),
+                              onTap: () => showWaypointSheet(
+                                context,
+                                wp,
+                                _waypointCategoryColor(wp.category),
+                              ),
                             ),
                           ),
-                        ),
-                  ],
+                    ],
+                    builder: (context, markers) =>
+                        _ClusterBadge(count: markers.length),
+                  ),
                 ),
               MarkerLayer(
                 markers: [
@@ -778,6 +794,36 @@ class _MileMarkerPin extends StatelessWidget {
           fontSize: 10,
           fontWeight: FontWeight.w700,
           color: color,
+        ),
+      ),
+    );
+  }
+}
+
+/// Round badge shown in place of overlapping pins at low zoom — tapping it
+/// (via the cluster layer's default behavior) zooms in until they spread out.
+class _ClusterBadge extends StatelessWidget {
+  final int count;
+
+  const _ClusterBadge({required this.count});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.pineDark,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.surfaceElevated, width: 2),
+        boxShadow: const [BoxShadow(color: Colors.black54, blurRadius: 4)],
+      ),
+      child: Center(
+        child: Text(
+          '$count',
+          style: const TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w800,
+            color: AppColors.textPrimary,
+          ),
         ),
       ),
     );
