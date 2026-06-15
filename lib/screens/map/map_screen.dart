@@ -11,7 +11,6 @@ import '../../models/highway.dart';
 import '../../models/hotspot.dart';
 import '../../models/lake.dart';
 import '../../theme/app_colors.dart';
-import '../../widgets/common.dart';
 import 'basemaps.dart';
 import 'highway_stop_sheet.dart';
 import 'hotspot_sheet.dart';
@@ -30,17 +29,21 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   final _mapController = MapController();
   Basemap _basemap = Basemaps.satellite;
-  String? _category;
-  String? _highwayStopCategory;
+
   // In-map bathymetry only makes sense once lakes occupy real screen space.
   bool _showContours = false;
   static const _contourZoom = 9.0;
 
-  // Independently toggleable map overlays, switched from the left-side
-  // layers panel — onX-style.
+  // Independently toggleable map overlays, switched from the "Map Layers"
+  // menu — onX-style category drill-down.
   bool _showHighways = true;
   bool _showLakeCharts = false;
   bool _showHotspots = true;
+
+  // Per-category visibility within the Highways and Hot Spots groups — all
+  // on by default, toggled individually from the Map Layers menu.
+  final Set<String> _activeHighwayCategories = {...HighwayStopCategories.all};
+  final Set<String> _activeHotspotCategories = {...HotspotsData.categories};
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
@@ -74,7 +77,11 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final spots = _showHotspots ? HotspotsData.byCategory(_category) : <Hotspot>[];
+    final spots = _showHotspots
+        ? HotspotsData.hotspots
+            .where((h) => _activeHotspotCategories.contains(h.category))
+            .toList()
+        : <Hotspot>[];
     final showLakes = _showLakeCharts;
 
     return Scaffold(
@@ -134,8 +141,7 @@ class _MapScreenState extends State<MapScreen> {
                   markers: [
                     for (final highway in HighwaysData.highways)
                       for (final stop in highway.stops)
-                        if (_highwayStopCategory == null ||
-                            stop.category == _highwayStopCategory)
+                        if (_activeHighwayCategories.contains(stop.category))
                         Marker(
                           point: LatLng(stop.lat, stop.lng),
                           width: 34,
@@ -228,47 +234,46 @@ class _MapScreenState extends State<MapScreen> {
                     ],
                   ),
                 ),
-                if (_showHotspots)
-                  FilterChipsRow(
-                    options: HotspotsData.categories,
-                    selected: _category,
-                    emojiFor: HotspotsData.categoryEmoji,
-                    onSelected: (c) => setState(() => _category = c),
-                  ),
-                if (_showHighways)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: FilterChipsRow(
-                      options: HighwayStopCategories.all,
-                      selected: _highwayStopCategory,
-                      emojiFor: HighwayStopCategories.emojiFor,
-                      onSelected: (c) =>
-                          setState(() => _highwayStopCategory = c),
-                    ),
-                  ),
               ],
             ),
           ),
 
-          // ── Left-side layers panel ─────────────────────────────────
+          // ── Left-side "Map Layers" menu button ─────────────────────
           Positioned(
             left: 20,
             top: 0,
             child: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.only(top: 188),
-                child: _LayersPanel(
-                  showHighways: _showHighways,
-                  showLakeCharts: _showLakeCharts,
-                  showHotspots: _showHotspots,
-                  onHighwaysChanged: (v) =>
-                      setState(() => _showHighways = v),
-                  onLakeChartsChanged: (v) {
-                    setState(() => _showLakeCharts = v);
-                    if (v) _mapController.move(_anchorageCenter, 9.6);
-                  },
-                  onHotspotsChanged: (v) =>
-                      setState(() => _showHotspots = v),
+                padding: const EdgeInsets.only(top: 132),
+                child: GestureDetector(
+                  onTap: () => _openMapLayersSheet(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 7),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.layers, size: 15, color: AppColors.pine),
+                        SizedBox(width: 6),
+                        Text(
+                          'Map Layers',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.chevron_right,
+                            size: 16, color: AppColors.textSecondary),
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -291,6 +296,62 @@ class _MapScreenState extends State<MapScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  /// Opens the onX-style "Map Layers" menu: a category list that drills
+  /// down into per-layer toggle switches.
+  void _openMapLayersSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (sheetContext, sheetSetState) {
+            return _MapLayersSheet(
+              showHighways: _showHighways,
+              showLakeCharts: _showLakeCharts,
+              showHotspots: _showHotspots,
+              activeHighwayCategories: _activeHighwayCategories,
+              activeHotspotCategories: _activeHotspotCategories,
+              onHighwaysChanged: (v) {
+                setState(() => _showHighways = v);
+                sheetSetState(() {});
+              },
+              onLakeChartsChanged: (v) {
+                setState(() => _showLakeCharts = v);
+                if (v) _mapController.move(_anchorageCenter, 9.6);
+                sheetSetState(() {});
+              },
+              onHotspotsChanged: (v) {
+                setState(() => _showHotspots = v);
+                sheetSetState(() {});
+              },
+              onHighwayCategoryChanged: (cat, v) {
+                setState(() {
+                  if (v) {
+                    _activeHighwayCategories.add(cat);
+                  } else {
+                    _activeHighwayCategories.remove(cat);
+                  }
+                });
+                sheetSetState(() {});
+              },
+              onHotspotCategoryChanged: (cat, v) {
+                setState(() {
+                  if (v) {
+                    _activeHotspotCategories.add(cat);
+                  } else {
+                    _activeHotspotCategories.remove(cat);
+                  }
+                });
+                sheetSetState(() {});
+              },
+            );
+          },
+        );
+      },
     );
   }
 }
@@ -477,147 +538,317 @@ class _LakeLabel extends StatelessWidget {
   }
 }
 
-/// onX-style left-side overlay panel: tap "Layers" to expand a card of
-/// toggle switches that turn map overlays on and off independently.
-class _LayersPanel extends StatefulWidget {
+/// onX-style "Map Layers" menu: a top-level list of layer categories, each
+/// showing how many of its sub-layers are on, drilling down into a detail
+/// page of individual toggle switches.
+class _MapLayersSheet extends StatefulWidget {
   final bool showHighways;
   final bool showLakeCharts;
   final bool showHotspots;
+  final Set<String> activeHighwayCategories;
+  final Set<String> activeHotspotCategories;
   final ValueChanged<bool> onHighwaysChanged;
   final ValueChanged<bool> onLakeChartsChanged;
   final ValueChanged<bool> onHotspotsChanged;
+  final void Function(String category, bool value) onHighwayCategoryChanged;
+  final void Function(String category, bool value) onHotspotCategoryChanged;
 
-  const _LayersPanel({
+  const _MapLayersSheet({
     required this.showHighways,
     required this.showLakeCharts,
     required this.showHotspots,
+    required this.activeHighwayCategories,
+    required this.activeHotspotCategories,
     required this.onHighwaysChanged,
     required this.onLakeChartsChanged,
     required this.onHotspotsChanged,
+    required this.onHighwayCategoryChanged,
+    required this.onHotspotCategoryChanged,
   });
 
   @override
-  State<_LayersPanel> createState() => _LayersPanelState();
+  State<_MapLayersSheet> createState() => _MapLayersSheetState();
 }
 
-class _LayersPanelState extends State<_LayersPanel> {
-  bool _open = true;
+enum _LayersDetailPage { highways, hotspots, lakeCharts }
+
+class _MapLayersSheetState extends State<_MapLayersSheet> {
+  _LayersDetailPage? _detail;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () => setState(() => _open = !_open),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceElevated,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.border),
+    return DraggableScrollableSheet(
+      initialChildSize: 0.6,
+      minChildSize: 0.35,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) {
+        return Container(
+          decoration: const BoxDecoration(
+            color: AppColors.surface,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            border: Border(
+              top: BorderSide(color: AppColors.border),
+              left: BorderSide(color: AppColors.border),
+              right: BorderSide(color: AppColors.border),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(Icons.layers, size: 15, color: AppColors.pine),
-                const SizedBox(width: 6),
-                const Text(
-                  'Layers',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textPrimary,
-                  ),
-                ),
-                Icon(
-                  _open ? Icons.arrow_drop_up : Icons.arrow_drop_down,
-                  size: 16,
-                  color: AppColors.textSecondary,
-                ),
-              ],
+          ),
+          child: _detail == null
+              ? _buildList(context, scrollController)
+              : _buildDetail(context, scrollController, _detail!),
+        );
+      },
+    );
+  }
+
+  Widget _buildList(BuildContext context, ScrollController scrollController) {
+    final highwaysOn =
+        (widget.showHighways ? 1 : 0) + widget.activeHighwayCategories.length;
+    final hotspotsOn =
+        (widget.showHotspots ? 1 : 0) + widget.activeHotspotCategories.length;
+
+    return ListView(
+      controller: scrollController,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+      children: [
+        Center(
+          child: Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: AppColors.border,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
         ),
-        if (_open)
-          Container(
-            margin: const EdgeInsets.only(top: 6),
-            width: 184,
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-            decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.92),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
+        const Padding(
+          padding: EdgeInsets.symmetric(vertical: 6),
+          child: Text('Map Layers',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.textPrimary,
+              )),
+        ),
+        const SizedBox(height: 8),
+        _CategoryRow(
+          emoji: '🛣️',
+          title: 'Highways',
+          subtitle: '$highwaysOn of 9 Layers On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.highways),
+        ),
+        _CategoryRow(
+          emoji: '📍',
+          title: 'Hot Spots',
+          subtitle: '$hotspotsOn of 9 Layers On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.hotspots),
+        ),
+        _CategoryRow(
+          emoji: '💧',
+          title: 'Lake Charts',
+          subtitle: widget.showLakeCharts ? '1 of 1 Layers On' : '0 of 1 Layers On',
+          onTap: () => setState(() => _detail = _LayersDetailPage.lakeCharts),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetail(BuildContext context, ScrollController scrollController,
+      _LayersDetailPage page) {
+    final (title, rows) = switch (page) {
+      _LayersDetailPage.highways => (
+          'Highways',
+          [
+            _ToggleRowData(
+              emoji: '🛣️',
+              label: 'Highway Routes & Pins',
+              value: widget.showHighways,
+              onChanged: widget.onHighwaysChanged,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _LayerToggle(
-                  emoji: '🛣️',
-                  label: 'Highways',
-                  value: widget.showHighways,
-                  onChanged: widget.onHighwaysChanged,
-                ),
-                _LayerToggle(
-                  emoji: '💧',
-                  label: 'Lake Charts',
-                  value: widget.showLakeCharts,
-                  onChanged: widget.onLakeChartsChanged,
-                ),
-                _LayerToggle(
-                  emoji: '📍',
-                  label: 'Hot Spots',
-                  value: widget.showHotspots,
-                  onChanged: widget.onHotspotsChanged,
-                ),
-              ],
+            for (final cat in HighwayStopCategories.all)
+              _ToggleRowData(
+                emoji: HighwayStopCategories.emojiFor(cat),
+                label: cat,
+                value: widget.activeHighwayCategories.contains(cat),
+                onChanged: (v) => widget.onHighwayCategoryChanged(cat, v),
+              ),
+          ]
+        ),
+      _LayersDetailPage.hotspots => (
+          'Hot Spots',
+          [
+            _ToggleRowData(
+              emoji: '📍',
+              label: 'Hot Spot Pins',
+              value: widget.showHotspots,
+              onChanged: widget.onHotspotsChanged,
+            ),
+            for (final cat in HotspotsData.categories)
+              _ToggleRowData(
+                emoji: HotspotsData.categoryEmoji(cat),
+                label: cat,
+                value: widget.activeHotspotCategories.contains(cat),
+                onChanged: (v) => widget.onHotspotCategoryChanged(cat, v),
+              ),
+          ]
+        ),
+      _LayersDetailPage.lakeCharts => (
+          'Lake Charts',
+          [
+            _ToggleRowData(
+              emoji: '💧',
+              label: 'Lake Bathymetry',
+              value: widget.showLakeCharts,
+              onChanged: widget.onLakeChartsChanged,
+            ),
+          ]
+        ),
+    };
+
+    return ListView(
+      controller: scrollController,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+      children: [
+        Center(
+          child: Container(
+            width: 36,
+            height: 4,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: AppColors.border,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
+        ),
+        Row(
+          children: [
+            IconButton(
+              onPressed: () => setState(() => _detail = null),
+              icon: const Icon(Icons.arrow_back, color: AppColors.textPrimary),
+            ),
+            Text(title,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                )),
+          ],
+        ),
+        const SizedBox(height: 4),
+        for (final row in rows) _ToggleRow(data: row),
       ],
     );
   }
 }
 
-/// A single labeled on/off switch row within the layers panel.
-class _LayerToggle extends StatelessWidget {
+/// A top-level "Map Layers" category row showing how many of its sub-layers
+/// are currently on, with a chevron to drill into the detail page.
+class _CategoryRow extends StatelessWidget {
+  final String emoji;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _CategoryRow({
+    required this.emoji,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 20)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
+                      )),
+                  const SizedBox(height: 2),
+                  Text(subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.textSecondary,
+                      )),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ToggleRowData {
   final String emoji;
   final String label;
   final bool value;
   final ValueChanged<bool> onChanged;
 
-  const _LayerToggle({
+  const _ToggleRowData({
     required this.emoji,
     required this.label,
     required this.value,
     required this.onChanged,
   });
+}
+
+/// A single labeled on/off switch row within a Map Layers detail page.
+class _ToggleRow extends StatelessWidget {
+  final _ToggleRowData data;
+
+  const _ToggleRow({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 2),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
       child: Row(
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 14)),
-          const SizedBox(width: 8),
+          Text(data.emoji, style: const TextStyle(fontSize: 18)),
+          const SizedBox(width: 12),
           Expanded(
             child: Text(
-              label,
+              data.label,
               style: const TextStyle(
-                fontSize: 13,
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textPrimary,
               ),
             ),
           ),
-          Transform.scale(
-            scale: 0.8,
-            child: Switch(
-              value: value,
-              onChanged: onChanged,
-              activeColor: AppColors.pine,
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-            ),
+          Switch(
+            value: data.value,
+            onChanged: data.onChanged,
+            activeColor: AppColors.pine,
           ),
         ],
       ),
