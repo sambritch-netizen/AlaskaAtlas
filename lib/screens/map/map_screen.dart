@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_map_marker_cluster/flutter_map_marker_cluster.dart';
 import 'package:geolocator/geolocator.dart';
@@ -11,6 +12,7 @@ import '../../data/bathymetry_loader.dart';
 import '../../data/geocode_service.dart';
 import '../../data/highways_data.dart';
 import '../../data/lakes_data.dart';
+import '../../data/pin_overrides.dart';
 import '../../data/search_index.dart';
 import '../../data/waypoints_data.dart';
 import '../../models/highway.dart';
@@ -90,6 +92,11 @@ class _MapScreenState extends State<MapScreen> {
   LatLng? _userLocation;
   bool _locating = false;
 
+  // While set, the map shows a center crosshair so the user can drag the
+  // map to reposition this stop's pin, then save the correction locally.
+  Highway? _editingHighway;
+  HighwayStop? _editingStop;
+
   static const _alaskaCenter = LatLng(62.8, -152.5);
   static const _anchorageCenter = LatLng(61.23, -149.78);
 
@@ -104,6 +111,33 @@ class _MapScreenState extends State<MapScreen> {
     super.initState();
     _loadRealContours();
     _loadHighways();
+    PinOverrides.load().then((_) {
+      if (mounted) setState(() {});
+    });
+  }
+
+  /// The displayed location for a highway stop, applying any locally-saved
+  /// pin correction.
+  LatLng _stopPoint(Highway highway, HighwayStop stop) =>
+      PinOverrides.get(PinOverrides.keyFor(highway.slug, stop.name)) ??
+      LatLng(stop.lat, stop.lng);
+
+  void _openHighwayStopSheet(Highway highway, HighwayStop stop) {
+    showHighwayStopSheet(
+      context,
+      highway,
+      stop,
+      onEditLocation: () {
+        setState(() {
+          _editingHighway = highway;
+          _editingStop = stop;
+        });
+        _mapController.move(
+          _stopPoint(highway, stop),
+          _mapController.camera.zoom,
+        );
+      },
+    );
   }
 
   Future<void> _loadRealContours() async {
@@ -171,7 +205,7 @@ class _MapScreenState extends State<MapScreen> {
     if (result.hotspot != null) {
       showHotspotSheet(context, result.hotspot!);
     } else if (result.highwayStop != null) {
-      showHighwayStopSheet(context, result.highway!, result.highwayStop!);
+      _openHighwayStopSheet(result.highway!, result.highwayStop!);
     } else if (result.waypoint != null) {
       showWaypointSheet(
         context,
@@ -363,18 +397,15 @@ class _MapScreenState extends State<MapScreen> {
                         for (final stop in highway.stops)
                           if (_activeHighwayCategories.contains(stop.category))
                             Marker(
-                              point: LatLng(stop.lat, stop.lng),
+                              point: _stopPoint(highway, stop),
                               width: 34,
                               height: 40,
                               alignment: Alignment.topCenter,
                               child: _HighwayStopMarker(
                                 stop: stop,
                                 color: highway.color,
-                                onTap: () => showHighwayStopSheet(
-                                  context,
-                                  highway,
-                                  stop,
-                                ),
+                                onTap: () =>
+                                    _openHighwayStopSheet(highway, stop),
                               ),
                             ),
                     ],
@@ -752,6 +783,83 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
 
+          // ── Pin location editor ────────────────────────────────────
+          if (_editingStop != null) ...[
+            // Fixed crosshair marking the map center — drag the map
+            // underneath it to position the pin, then Save.
+            const IgnorePointer(
+              child: Align(
+                alignment: Alignment.center,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: Icon(
+                    Icons.location_on,
+                    size: 44,
+                    color: Colors.redAccent,
+                    shadows: [Shadow(color: Colors.black54, blurRadius: 6)],
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              left: 16,
+              right: 16,
+              bottom: 24,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColors.surfaceElevated,
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: AppColors.border),
+                  boxShadow: const [
+                    BoxShadow(color: Colors.black54, blurRadius: 10),
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Drag the map to move "${_editingStop!.name}"',
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () => setState(() {
+                        _editingHighway = null;
+                        _editingStop = null;
+                      }),
+                      child: const Text('Cancel'),
+                    ),
+                    FilledButton(
+                      onPressed: () async {
+                        final center = _mapController.camera.center;
+                        await PinOverrides.set(
+                          PinOverrides.keyFor(
+                            _editingHighway!.slug,
+                            _editingStop!.name,
+                          ),
+                          center,
+                        );
+                        if (!mounted) return;
+                        setState(() {
+                          _editingHighway = null;
+                          _editingStop = null;
+                        });
+                      },
+                      child: const Text('Save'),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+
           // ── Backdrop to dismiss the Map Layers panel ───────────────
           if (_layersPanelOpen)
             Positioned.fill(
@@ -801,6 +909,7 @@ class _MapScreenState extends State<MapScreen> {
                   }
                 });
               },
+              onPinOverridesChanged: () => setState(() {}),
             ),
           ),
         ],
@@ -1175,6 +1284,7 @@ class _MapLayersSheet extends StatefulWidget {
   final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
   final VoidCallback onClose;
+  final VoidCallback onPinOverridesChanged;
 
   const _MapLayersSheet({
     required this.showHighways,
@@ -1188,6 +1298,7 @@ class _MapLayersSheet extends StatefulWidget {
     required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
     required this.onClose,
+    required this.onPinOverridesChanged,
   });
 
   @override
@@ -1363,6 +1474,54 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
           subtitle: '$filtersOn of ${_mapFilterCategories.length} Layers On',
           onTap: () => setState(() => _detail = _LayersDetailPage.mapFilters),
         ),
+        if (PinOverrides.all.isNotEmpty) ...[
+          const SizedBox(height: 16),
+          const Divider(color: AppColors.border),
+          const SizedBox(height: 8),
+          Text(
+            'Pin edits (${PinOverrides.all.length})',
+            style: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await Clipboard.setData(
+                      ClipboardData(text: PinOverrides.exportJson()),
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Pin edits copied to clipboard'),
+                        ),
+                      );
+                    }
+                  },
+                  icon: const Icon(Icons.copy_all_outlined, size: 16),
+                  label: const Text('Copy'),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    await PinOverrides.clearAll();
+                    widget.onPinOverridesChanged();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.restore_outlined, size: 16),
+                  label: const Text('Clear'),
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
   }

@@ -6,7 +6,11 @@ import '../../widgets/common.dart';
 
 /// Compact bottom sheet shown when a highway mile-marker stop is tapped.
 void showHighwayStopSheet(
-    BuildContext context, Highway highway, HighwayStop stop) {
+  BuildContext context,
+  Highway highway,
+  HighwayStop stop, {
+  VoidCallback? onEditLocation,
+}) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -65,6 +69,17 @@ void showHighwayStopSheet(
                 ),
               ],
             ),
+            if (onEditLocation != null) ...[
+              const SizedBox(height: 12),
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  onEditLocation();
+                },
+                icon: const Icon(Icons.edit_location_alt_outlined, size: 18),
+                label: const Text('Edit pin location'),
+              ),
+            ],
           ],
         ),
       ),
