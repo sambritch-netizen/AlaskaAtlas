@@ -587,20 +587,51 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                         ),
                       if (!_searchOpen) ...[
-                        IconButton(
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          icon: const Icon(
-                            Icons.filter_alt_outlined,
-                            color: AppColors.textPrimary,
-                          ),
-                          tooltip: 'Filters',
-                          onPressed: () => setState(() {
+                        GestureDetector(
+                          onTap: () => setState(() {
                             _layersPanelOpen = !_layersPanelOpen;
                             if (_layersPanelOpen) _closeSearch();
                           }),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: _layersPanelOpen
+                                  ? AppColors.pine.withValues(alpha: 0.15)
+                                  : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: _layersPanelOpen
+                                    ? AppColors.pine
+                                    : AppColors.border,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.filter_alt_outlined,
+                                  color: _layersPanelOpen
+                                      ? AppColors.pine
+                                      : AppColors.textPrimary,
+                                  size: 16,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Filters',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _layersPanelOpen
+                                        ? AppColors.pine
+                                        : AppColors.textPrimary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                        const SizedBox(width: 4),
+                        const SizedBox(width: 8),
                       ],
                       IconButton(
                         padding: EdgeInsets.zero,
