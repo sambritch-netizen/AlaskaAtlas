@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/guides_data.dart';
 import '../../models/guide.dart';
@@ -23,10 +24,10 @@ class GuidesScreen extends StatelessWidget {
               expandedHeight: 108,
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+                titlePadding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
                 title: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text('Field Guides',
                         style: Theme.of(context)
@@ -44,6 +45,7 @@ class GuidesScreen extends StatelessWidget {
                     ),
                   ],
                 ),
+                centerTitle: true,
               ),
             ),
             SliverPadding(
@@ -81,26 +83,29 @@ class _CategoryTile extends StatelessWidget {
 
     final hasImage = category.imagePath != null;
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.card,
-          border: Border.all(color: AppColors.border),
-        ),
+    // Outer container provides the visible rounded border; inner ClipRRect
+    // clips the photo flush to the inside edge of that border.
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 1.5),
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14.5),
         child: Stack(
           fit: StackFit.expand,
           children: [
             if (hasImage)
               Image.asset(category.imagePath!, fit: BoxFit.cover)
             else
-              const Center(
-                child: Icon(Icons.image_outlined,
-                    color: AppColors.pine, size: 36),
+              Container(
+                color: AppColors.card,
+                child: const Center(
+                  child: Icon(Icons.image_outlined,
+                      color: AppColors.pine, size: 36),
+                ),
               ),
             if (hasImage)
-              // Dark gradient at the bottom so text stays legible
-              // on top of the photo.
               const DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
@@ -109,9 +114,9 @@ class _CategoryTile extends StatelessWidget {
                     colors: [
                       Colors.transparent,
                       Colors.transparent,
-                      Color(0xCC000000),
+                      Color(0xDD000000),
                     ],
-                    stops: [0.0, 0.45, 1.0],
+                    stops: [0.0, 0.4, 1.0],
                   ),
                 ),
               ),
@@ -121,42 +126,39 @@ class _CategoryTile extends StatelessWidget {
                 onTap: () =>
                     context.go('/guides/category', extra: category.name),
                 child: Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       Text(
-                        category.name,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleLarge
-                            ?.copyWith(
-                              color: hasImage
-                                  ? Colors.white
-                                  : AppColors.textPrimary,
-                              shadows: hasImage
-                                  ? const [
-                                      Shadow(
-                                          blurRadius: 6,
-                                          color: Colors.black54),
-                                    ]
-                                  : null,
-                            ),
+                        category.name.toUpperCase(),
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.bebasNeue(
+                          fontSize: 22,
+                          letterSpacing: 1.5,
+                          color: hasImage ? Colors.white : AppColors.textPrimary,
+                          shadows: hasImage
+                              ? const [
+                                  Shadow(blurRadius: 8, color: Colors.black87),
+                                ]
+                              : null,
+                        ),
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '$count guide${count == 1 ? '' : 's'}',
-                        style: TextStyle(
-                          fontSize: 11,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.inter(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.8,
                           color: hasImage
-                              ? Colors.white.withValues(alpha: 0.85)
+                              ? Colors.white.withValues(alpha: 0.82)
                               : AppColors.textMuted,
                           shadows: hasImage
                               ? const [
-                                  Shadow(
-                                      blurRadius: 4,
-                                      color: Colors.black54),
+                                  Shadow(blurRadius: 4, color: Colors.black87),
                                 ]
                               : null,
                         ),
