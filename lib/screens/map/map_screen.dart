@@ -890,15 +890,9 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ],
 
-          // ── Backdrop to dismiss the Map Layers panel ───────────────
-          if (_layersPanelOpen)
-            Positioned.fill(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => setState(() => _layersPanelOpen = false),
-                child: Container(color: Colors.black.withValues(alpha: 0.3)),
-              ),
-            ),
+          // (No backdrop — keep the map interactive while the Filters
+          // panel is open. Users close the panel via its close button
+          // or by tapping the Filters header button again.)
 
           // ── Left-side "Map Layers" panel ───────────────────────────
           AnimatedPositioned(
