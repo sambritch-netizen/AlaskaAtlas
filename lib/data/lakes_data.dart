@@ -337,5 +337,41 @@ class LakesData {
       ],
       deepPoint: [0.5, 0.5],
     ),
+    Lake(
+      id: 'taku',
+      name: 'Taku Lake',
+      area: 'Taku-Campbell, East Anchorage',
+      // Centroid + outline sourced from OpenStreetMap (way 29350953).
+      lat: 61.1502,
+      lng: -149.8819,
+      surfaceAcres: 18,
+      maxDepthFt: 14,
+      blurb:
+          'A compact east-Anchorage lake tucked into the Taku-Campbell neighborhood — stocked rainbow trout with easy bank access and a small picnic area.',
+      access: 'Taku Lake Park off Elmore Road; parking and bank access',
+      species: [_rainbow, _char],
+      tactics: [
+        'Fish the deeper north end — that\'s where the trout hold after stocking.',
+        'Dough bait and salmon eggs produce well from the bank year-round.',
+        'Ice season: jig small glow lures in 8–12 ft near the deep center.',
+      ],
+      // Real shoreline outline (from OSM way 29350953), normalized to 0-1.
+      outline: [
+        [0.9921, 0.2284], [1.0, 0.3646], [0.9901, 0.3893], [0.9659, 0.4006],
+        [0.9434, 0.4663], [0.9059, 0.5423], [0.8857, 0.6104], [0.8564, 0.7096],
+        [0.8202, 0.7354], [0.7808, 0.7654], [0.7617, 0.8068], [0.7437, 0.8197],
+        [0.7304, 0.8597], [0.7094, 0.8671], [0.6859, 0.8499], [0.6679, 0.8391],
+        [0.6507, 0.8498], [0.6334, 0.8744], [0.5665, 0.9256], [0.5061, 0.9596],
+        [0.4421, 0.9778], [0.3868, 0.9819], [0.3524, 0.96], [0.2439, 0.9452],
+        [0.1799, 0.9704], [0.1324, 0.9966], [0.0679, 1.0], [0.0431, 0.9691],
+        [0.0387, 0.9337], [0.0, 0.7039], [0.0048, 0.6668], [0.0182, 0.645],
+        [0.0337, 0.6271], [0.0531, 0.6219], [0.1426, 0.5377], [0.2327, 0.4486],
+        [0.4297, 0.2611], [0.5073, 0.1876], [0.5142, 0.1737], [0.5069, 0.1614],
+        [0.5138, 0.1525], [0.5263, 0.1507], [0.5392, 0.1536], [0.558, 0.1369],
+        [0.6052, 0.1003], [0.6872, 0.0262], [0.7208, 0.0049], [0.7463, 0.0],
+        [0.7946, 0.0055], [0.8505, 0.0475], [0.9154, 0.1196], [0.9631, 0.1855],
+      ],
+      deepPoint: [0.5, 0.5],
+    ),
   ];
 }
