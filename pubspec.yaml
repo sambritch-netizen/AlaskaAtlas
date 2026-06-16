@@ -31,3 +31,4 @@ flutter:
   assets:
     - assets/bathymetry/
     - assets/highways/
+    - assets/category_icons/

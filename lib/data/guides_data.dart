@@ -7,7 +7,7 @@ class GuidesData {
 
   static const List<GuideCategory> categories = [
     GuideCategory(name: 'Camping', emoji: '⛺'),
-    GuideCategory(name: 'Fishing', emoji: '🎣'),
+    GuideCategory(name: 'Fishing', emoji: '🎣', imagePath: 'assets/category_icons/fishing.jpg'),
     GuideCategory(name: 'Survival', emoji: '🧭'),
     GuideCategory(name: 'Wildlife', emoji: '🐻'),
     GuideCategory(name: 'Aurora', emoji: '🌌'),

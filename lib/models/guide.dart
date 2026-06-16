@@ -38,6 +38,7 @@ class GuideSection {
 class GuideCategory {
   final String name;
   final String emoji;
+  final String? imagePath;
 
-  const GuideCategory({required this.name, required this.emoji});
+  const GuideCategory({required this.name, required this.emoji, this.imagePath});
 }

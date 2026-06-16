@@ -97,21 +97,30 @@ class _CategoryTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.pine.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppColors.pine.withValues(alpha: 0.25)),
-                  ),
-                  // Placeholder — replace with bundled category icon art.
-                  child: const Icon(
-                    Icons.image_outlined,
-                    color: AppColors.pine,
-                    size: 22,
-                  ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: category.imagePath != null
+                      ? Image.asset(
+                          category.imagePath!,
+                          width: 48,
+                          height: 48,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: AppColors.pine.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                                color: AppColors.pine.withValues(alpha: 0.25)),
+                          ),
+                          child: const Icon(
+                            Icons.image_outlined,
+                            color: AppColors.pine,
+                            size: 22,
+                          ),
+                        ),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
