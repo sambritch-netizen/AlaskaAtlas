@@ -42,13 +42,13 @@ void main() {
     }
   });
 
-  test('lakes are valid Anchorage-area waters', () {
+  test('lakes are valid Alaska waters', () {
     expect(LakesData.lakes, isNotEmpty);
     for (final lake in LakesData.lakes) {
-      expect(lake.lat, inInclusiveRange(61.0, 61.6),
-          reason: '${lake.name} is outside the Anchorage area');
-      expect(lake.lng, inInclusiveRange(-150.2, -149.3),
-          reason: '${lake.name} is outside the Anchorage area');
+      expect(lake.lat, inInclusiveRange(54.0, 72.0),
+          reason: '${lake.name} latitude is outside Alaska');
+      expect(lake.lng, inInclusiveRange(-180.0, -129.0),
+          reason: '${lake.name} longitude is outside Alaska');
       expect(lake.maxDepthFt, greaterThan(0));
       expect(lake.surfaceAcres, greaterThan(0));
       expect(lake.species, isNotEmpty,
