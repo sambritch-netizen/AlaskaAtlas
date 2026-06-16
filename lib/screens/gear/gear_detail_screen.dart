@@ -7,6 +7,7 @@ import '../../services/turnagain_service.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
+import 'gear_screen.dart';
 
 class GearDetailScreen extends StatelessWidget {
   final GearItem item;
@@ -20,91 +21,92 @@ class GearDetailScreen extends StatelessWidget {
         opacity: 0.25,
         child: CustomScrollView(
           slivers: [
+            // ── Hero photo ──────────────────────────────────────────
             SliverAppBar(
               pinned: true,
-              expandedHeight: 170,
+              expandedHeight: 280,
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
-                background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColors.rustDark.withValues(alpha: 0.35),
-                        AppColors.background,
-                      ],
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    GearImage(item: item),
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0x33000000),
+                            Colors.transparent,
+                            Color(0xCC0B120C),
+                          ],
+                          stops: [0.0, 0.5, 1.0],
+                        ),
+                      ),
                     ),
-                  ),
-                  child: SafeArea(
-                    child: Align(
+                    Align(
                       alignment: Alignment.bottomLeft,
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(item.emoji,
-                                style: const TextStyle(fontSize: 44)),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${GearData.outfitterName.toUpperCase()} · ${item.category.toUpperCase()}',
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.rust,
-                                      letterSpacing: 1.3,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(item.name,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headlineMedium),
-                                ],
-                              ),
-                            ),
+                            if (item.isPackage) ...[
+                              _Tag(
+                                  label: 'PACKAGE',
+                                  color: AppColors.pine),
+                              const SizedBox(width: 8),
+                            ],
+                            _Tag(
+                                label: item.category.toUpperCase(),
+                                color: AppColors.rust),
+                            if (item.noFly) ...[
+                              const SizedBox(width: 8),
+                              _Tag(
+                                  label: 'NO-FLY',
+                                  color: AppColors.danger,
+                                  icon: Icons.no_transfer),
+                            ],
                           ],
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
             SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+                padding: const EdgeInsets.fromLTRB(20, 18, 20, 32),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Text(item.name,
+                        style: Theme.of(context).textTheme.headlineMedium),
+                    const SizedBox(height: 10),
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
                       children: [
                         Text(
                           '\$${item.pricePerDay.toStringAsFixed(0)}',
                           style: const TextStyle(
                             fontSize: 32,
                             fontWeight: FontWeight.w800,
-                            color: AppColors.textPrimary,
+                            color: AppColors.rust,
                           ),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 6, left: 4),
-                          child: Text('per day',
-                              style: TextStyle(
-                                  fontSize: 13, color: AppColors.textMuted)),
-                        ),
+                        const Text(' per day',
+                            style: TextStyle(
+                                fontSize: 13, color: AppColors.textMuted)),
                       ],
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 16),
                     Text(item.description,
-                        style: Theme.of(context).textTheme.bodyMedium),
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(height: 1.5)),
 
                     if (item.includes.isNotEmpty) ...[
                       const SizedBox(height: 24),
@@ -129,19 +131,32 @@ class GearDetailScreen extends StatelessWidget {
                           )),
                     ],
 
-                    if (item.goodFor.isNotEmpty) ...[
-                      const SizedBox(height: 20),
-                      Text('Good For',
+                    if (item.specs.isNotEmpty) ...[
+                      const SizedBox(height: 24),
+                      Text('Specs',
                           style: Theme.of(context).textTheme.headlineSmall),
                       const SizedBox(height: 10),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: item.goodFor
-                            .map((g) =>
-                                MetaBadge(label: g, color: AppColors.birch))
-                            .toList(),
-                      ),
+                      ...item.specs.map((s) => Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 120,
+                                  child: Text(s.label,
+                                      style: const TextStyle(
+                                          fontSize: 13,
+                                          color: AppColors.textMuted)),
+                                ),
+                                Expanded(
+                                  child: Text(s.value,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium),
+                                ),
+                              ],
+                            ),
+                          )),
                     ],
 
                     const SizedBox(height: 28),
@@ -150,7 +165,9 @@ class GearDetailScreen extends StatelessWidget {
                       child: FilledButton.icon(
                         style: FilledButton.styleFrom(
                             backgroundColor: AppColors.rust,
-                            foregroundColor: Colors.white),
+                            foregroundColor: Colors.white,
+                            padding:
+                                const EdgeInsets.symmetric(vertical: 14)),
                         onPressed: () => _showBookingSheet(context),
                         icon: const Icon(Icons.event_available),
                         label: const Text('Request to Book'),
@@ -212,6 +229,42 @@ class GearDetailScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _Tag extends StatelessWidget {
+  final String label;
+  final Color color;
+  final IconData? icon;
+  const _Tag({required this.label, required this.color, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, color: Colors.white, size: 12),
+            const SizedBox(width: 4),
+          ],
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 9.5,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: 0.8,
+            ),
+          ),
+        ],
       ),
     );
   }
