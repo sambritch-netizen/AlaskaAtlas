@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/gear_data.dart';
 import '../../models/gear_item.dart';
@@ -361,10 +360,11 @@ class _FeaturedCard extends StatelessWidget {
                       item.name,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
-                      style: GoogleFonts.bebasNeue(
-                        fontSize: 24,
-                        height: 1.0,
-                        letterSpacing: 0.8,
+                      style: const TextStyle(
+                        fontFamily: 'MudTrack',
+                        fontSize: 26,
+                        height: 1.05,
+                        letterSpacing: 0.5,
                         color: Colors.white,
                       ),
                     ),

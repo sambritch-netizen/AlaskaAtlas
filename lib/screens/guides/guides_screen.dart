@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 import '../../data/guides_data.dart';
 import '../../models/guide.dart';
@@ -134,9 +133,10 @@ class _CategoryTile extends StatelessWidget {
                       Text(
                         category.name.toUpperCase(),
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.bebasNeue(
-                          fontSize: 22,
-                          letterSpacing: 1.5,
+                        style: TextStyle(
+                          fontFamily: 'MudTrack',
+                          fontSize: 24,
+                          letterSpacing: 1.0,
                           color: hasImage ? Colors.white : AppColors.textPrimary,
                           shadows: hasImage
                               ? const [
@@ -149,7 +149,7 @@ class _CategoryTile extends StatelessWidget {
                       Text(
                         '$count guide${count == 1 ? '' : 's'}',
                         textAlign: TextAlign.center,
-                        style: GoogleFonts.inter(
+                        style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                           letterSpacing: 0.8,

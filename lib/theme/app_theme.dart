@@ -22,21 +22,23 @@ class AppTheme {
         error: AppColors.danger,
       ),
       textTheme: GoogleFonts.interTextTheme(base.textTheme).copyWith(
-        displayLarge: GoogleFonts.bitter(
-          fontSize: 34,
-          fontWeight: FontWeight.w800,
+        displayLarge: const TextStyle(
+          fontFamily: 'MudTrack',
+          fontSize: 38,
           color: AppColors.textPrimary,
-          letterSpacing: -0.5,
+          letterSpacing: 0.5,
         ),
-        displaySmall: GoogleFonts.bitter(
+        displaySmall: const TextStyle(
+          fontFamily: 'MudTrack',
+          fontSize: 30,
+          color: AppColors.textPrimary,
+          letterSpacing: 0.5,
+        ),
+        headlineMedium: const TextStyle(
+          fontFamily: 'MudTrack',
           fontSize: 26,
-          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
-        ),
-        headlineMedium: GoogleFonts.bitter(
-          fontSize: 22,
-          fontWeight: FontWeight.w700,
-          color: AppColors.textPrimary,
+          letterSpacing: 0.5,
         ),
         headlineSmall: GoogleFonts.bitter(
           fontSize: 18,
@@ -84,9 +86,10 @@ class AppTheme {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
-        titleTextStyle: GoogleFonts.bitter(
-          fontSize: 20,
-          fontWeight: FontWeight.w700,
+        titleTextStyle: const TextStyle(
+          fontFamily: 'MudTrack',
+          fontSize: 24,
+          letterSpacing: 0.5,
           color: AppColors.textPrimary,
         ),
         systemOverlayStyle: const SystemUiOverlayStyle(
