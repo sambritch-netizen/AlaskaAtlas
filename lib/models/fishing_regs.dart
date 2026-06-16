@@ -9,12 +9,36 @@ class FishingWater {
   final List<String> seasons;
   final List<String> methods;
 
+  /// Sport-fishable species present in this water per the ADF&G booklet.
+  /// Use the [Species] constants below for consistency across waters.
+  final List<String> species;
+
   const FishingWater({
     required this.name,
     this.notes,
     this.seasons = const [],
     this.methods = const [],
+    this.species = const [],
   });
+}
+
+/// Canonical species names used in the ADF&G Southcentral regulations.
+class FishSpecies {
+  FishSpecies._();
+
+  static const String king = 'King Salmon';
+  static const String coho = 'Coho (Silver) Salmon';
+  static const String sockeye = 'Sockeye (Red) Salmon';
+  static const String pink = 'Pink (Humpy) Salmon';
+  static const String chum = 'Chum (Dog) Salmon';
+  static const String rainbow = 'Rainbow/Steelhead Trout';
+  static const String dolly = 'Arctic Char / Dolly Varden';
+  static const String grayling = 'Arctic Grayling';
+  static const String lakeTrout = 'Lake Trout';
+  static const String burbot = 'Burbot';
+  static const String pike = 'Northern Pike (Invasive)';
+  static const String whitefish = 'Whitefish';
+  static const String otherFinfish = 'Other Finfish';
 }
 
 /// A drill-down sub-region within a regulatory region (e.g. "Anchorage

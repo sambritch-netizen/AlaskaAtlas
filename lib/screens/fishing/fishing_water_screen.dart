@@ -39,6 +39,8 @@ class FishingWaterScreen extends StatelessWidget {
                   ),
                 ),
               ),
+            if (water.species.isNotEmpty)
+              _SpeciesCard(species: water.species),
             if (water.seasons.isNotEmpty)
               _Card(
                 title: 'Seasons',
@@ -51,7 +53,9 @@ class FishingWaterScreen extends StatelessWidget {
                 icon: Icons.set_meal_outlined,
                 items: water.methods,
               ),
-            if (water.seasons.isEmpty && water.methods.isEmpty)
+            if (water.seasons.isEmpty &&
+                water.methods.isEmpty &&
+                water.species.isEmpty)
               const _Card(
                 title: 'Notes',
                 icon: Icons.info_outline,
@@ -79,6 +83,95 @@ class FishingWaterScreen extends StatelessWidget {
                   height: 1.45,
                 ),
               ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SpeciesCard extends StatelessWidget {
+  final List<String> species;
+  const _SpeciesCard({required this.species});
+
+  static const Map<String, String> _emoji = {
+    'King Salmon': '👑',
+    'Coho (Silver) Salmon': '🥈',
+    'Sockeye (Red) Salmon': '🔴',
+    'Pink (Humpy) Salmon': '🩷',
+    'Chum (Dog) Salmon': '🐕',
+    'Rainbow/Steelhead Trout': '🌈',
+    'Arctic Char / Dolly Varden': '🐠',
+    'Arctic Grayling': '🪶',
+    'Lake Trout': '🎣',
+    'Burbot': '🦈',
+    'Northern Pike (Invasive)': '⚠️',
+    'Whitefish': '🐟',
+    'Other Finfish': '🐡',
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Row(
+              children: [
+                Icon(Icons.set_meal, size: 16, color: AppColors.pine),
+                SizedBox(width: 8),
+                Text(
+                  'SPECIES',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.pine,
+                    letterSpacing: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final s in species)
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(_emoji[s] ?? '🐟',
+                            style: const TextStyle(fontSize: 13)),
+                        const SizedBox(width: 6),
+                        Text(
+                          s,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
           ],
         ),
