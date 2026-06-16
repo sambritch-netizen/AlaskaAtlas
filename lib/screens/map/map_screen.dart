@@ -582,18 +582,22 @@ class _MapScreenState extends State<MapScreen> {
                       else
                         Expanded(
                           child: Row(
-                            children: const [
-                              Icon(Icons.map_outlined,
+                            children: [
+                              const Icon(Icons.map_outlined,
                                   color: AppColors.pine, size: 17),
-                              SizedBox(width: 8),
-                              Text(
-                                'ALASKA ATLAS',
-                                style: TextStyle(
-                                  fontFamily: 'MudTrack',
-                                  fontSize: 22,
-                                  letterSpacing: 0.5,
-                                  color: AppColors.textPrimary,
-                                  height: 1.0,
+                              const SizedBox(width: 8),
+                              const Flexible(
+                                child: Text(
+                                  'ALASKA ATLAS',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'MudTrack',
+                                    fontSize: 22,
+                                    letterSpacing: 0.5,
+                                    color: AppColors.textPrimary,
+                                    height: 1.0,
+                                  ),
                                 ),
                               ),
                             ],
