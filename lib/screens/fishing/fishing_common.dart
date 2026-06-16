@@ -54,7 +54,7 @@ class FishingStyle {
       speciesShort[species] ?? species;
 }
 
-/// Small uppercase section heading in the rugged display font.
+/// Section heading using Bitter slab serif — the field-guide chapter marker.
 class FishingSectionHeader extends StatelessWidget {
   final String label;
   final Widget? trailing;
@@ -67,10 +67,7 @@ class FishingSectionHeader extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: const TextStyle(
-              fontFamily: 'MudTrack',
-              fontSize: 18,
-              letterSpacing: 0.8,
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
               color: AppColors.textPrimary,
             ),
           ),

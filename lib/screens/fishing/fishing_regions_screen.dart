@@ -89,15 +89,15 @@ class _Header extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 42,
-            height: 42,
+            width: 44,
+            height: 44,
             decoration: BoxDecoration(
               color: FishingStyle.water.withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(12),
               border:
                   Border.all(color: FishingStyle.water.withValues(alpha: 0.4)),
             ),
-            child: const Icon(Icons.phishing, color: FishingStyle.water),
+            child: const Icon(Icons.phishing, color: FishingStyle.water, size: 22),
           ),
           const SizedBox(width: 12),
           Column(
@@ -107,20 +107,20 @@ class _Header extends StatelessWidget {
                 'FISHING',
                 style: TextStyle(
                   fontFamily: 'MudTrack',
-                  fontSize: 28,
+                  fontSize: 30,
                   letterSpacing: 1.0,
                   color: AppColors.textPrimary,
                   height: 1.0,
                 ),
               ),
-              SizedBox(height: 2),
+              SizedBox(height: 3),
               Text(
-                'ALASKA WATERS · SPECIES · REGULATIONS',
+                'Alaska Waters · Species · Regulations',
                 style: TextStyle(
-                  fontSize: 8.5,
+                  fontSize: 11,
                   color: FishingStyle.water,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 1.4,
+                  fontWeight: FontWeight.w500,
+                  letterSpacing: 0.2,
                 ),
               ),
             ],
@@ -198,14 +198,25 @@ class _Browse extends StatelessWidget {
           child: FishingSectionHeader('BROWSE BY SPECIES'),
         ),
         SizedBox(
-          height: 128,
+          height: 148,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 20),
             itemCount: speciesNames.length,
             separatorBuilder: (_, __) => const SizedBox(width: 10),
-            itemBuilder: (context, i) =>
-                _SpeciesCard(species: speciesNames[i]),
+            itemBuilder: (context, i) => TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: Duration(milliseconds: 220 + i * 35),
+              curve: Curves.easeOutCubic,
+              builder: (context, v, child) => Opacity(
+                opacity: v,
+                child: Transform.translate(
+                  offset: Offset(0, 10 * (1 - v)),
+                  child: child,
+                ),
+              ),
+              child: _SpeciesCard(species: speciesNames[i]),
+            ),
           ),
         ),
         const SizedBox(height: 22),
@@ -236,43 +247,47 @@ class _SpeciesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final profile = FishingSpeciesProfiles.byName[species];
     final c = FishingStyle.colorFor(species);
-    return GestureDetector(
-      onTap: () => context.go('/fishing/species', extra: species),
-      child: Container(
-        width: 110,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: c.withValues(alpha: 0.35)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SpeciesBadge(species: species, size: 40),
-            const Spacer(),
-            Text(
-              FishingStyle.shortFor(species),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textPrimary,
+    return Material(
+      color: AppColors.surfaceElevated,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => context.go('/fishing/species', extra: species),
+        child: Container(
+          width: 114,
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: c.withValues(alpha: 0.38)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SpeciesBadge(species: species, size: 46),
+              const Spacer(),
+              Text(
+                FishingStyle.shortFor(species),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
               ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              profile?.scientificName ?? '',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 9.5,
-                fontStyle: FontStyle.italic,
-                color: AppColors.textMuted,
+              const SizedBox(height: 3),
+              Text(
+                profile?.scientificName ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontSize: 9.5,
+                  fontStyle: FontStyle.italic,
+                  color: c.withValues(alpha: 0.75),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -283,19 +298,18 @@ class _RegionCard extends StatelessWidget {
   final FishingRegion region;
   const _RegionCard({required this.region});
 
-  int get _waterCount => region.subRegions
-      .fold(0, (sum, sub) => sum + sub.waters.length);
+  int get _waterCount =>
+      region.subRegions.fold(0, (sum, sub) => sum + sub.waters.length);
 
   @override
   Widget build(BuildContext context) {
     final disabled = region.comingSoon;
-    // Strip the trailing "Regulations" for a cleaner display title.
     final title = region.name.replaceAll(' Regulations', '');
 
     return Opacity(
       opacity: disabled ? 0.55 : 1,
       child: Material(
-        color: AppColors.surfaceElevated,
+        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
@@ -307,86 +321,72 @@ class _RegionCard extends StatelessWidget {
               borderRadius: BorderRadius.circular(16),
               border: Border.all(color: AppColors.border),
             ),
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Accent rail
-                  Container(
-                    width: 5,
-                    decoration: BoxDecoration(
-                      gradient: const LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          FishingStyle.water,
-                          FishingStyle.waterDeep
-                        ],
-                      ),
-                      borderRadius: const BorderRadius.horizontal(
-                          left: Radius.circular(16)),
-                    ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Tinted header band — full-width water accent, no stripe
+                Container(
+                  padding: const EdgeInsets.fromLTRB(16, 13, 14, 13),
+                  decoration: BoxDecoration(
+                    color: FishingStyle.water.withValues(alpha: 0.10),
+                    borderRadius: const BorderRadius.vertical(
+                        top: Radius.circular(15)),
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 14, 14),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  title,
-                                  style: const TextStyle(
-                                    fontFamily: 'MudTrack',
-                                    fontSize: 19,
-                                    letterSpacing: 0.5,
-                                    color: AppColors.textPrimary,
-                                  ),
-                                ),
-                              ),
-                              if (disabled)
-                                _Pill(
-                                    label: 'COMING SOON',
-                                    color: AppColors.textMuted)
-                              else
-                                const Icon(Icons.chevron_right,
-                                    color: FishingStyle.water),
-                            ],
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontFamily: 'MudTrack',
+                            fontSize: 20,
+                            letterSpacing: 0.5,
+                            color: AppColors.textPrimary,
                           ),
-                          const SizedBox(height: 6),
-                          Text(
-                            region.summary,
-                            style: const TextStyle(
-                              fontSize: 12.5,
-                              height: 1.35,
-                              color: AppColors.textSecondary,
+                        ),
+                      ),
+                      if (disabled)
+                        _Pill(label: 'COMING SOON', color: AppColors.textMuted)
+                      else
+                        const Icon(Icons.chevron_right,
+                            color: FishingStyle.water, size: 20),
+                    ],
+                  ),
+                ),
+                // Content zone
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 14, 14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        region.summary,
+                        style: const TextStyle(
+                          fontSize: 12.5,
+                          height: 1.4,
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      if (!disabled) ...[
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            _StatChip(
+                              icon: Icons.layers_outlined,
+                              label: '${region.subRegions.length} sub-regions',
                             ),
-                          ),
-                          if (!disabled) ...[
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                _StatChip(
-                                  icon: Icons.layers_outlined,
-                                  label:
-                                      '${region.subRegions.length} sub-regions',
-                                ),
-                                const SizedBox(width: 8),
-                                _StatChip(
-                                  icon: Icons.water_drop_outlined,
-                                  label: '$_waterCount waters',
-                                ),
-                              ],
+                            const SizedBox(width: 8),
+                            _StatChip(
+                              icon: Icons.water_drop_outlined,
+                              label: '$_waterCount waters',
                             ),
                           ],
-                        ],
-                      ),
-                    ),
+                        ),
+                      ],
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

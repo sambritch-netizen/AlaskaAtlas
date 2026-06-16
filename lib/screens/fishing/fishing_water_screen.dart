@@ -33,7 +33,7 @@ class FishingWaterScreen extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontFamily: 'MudTrack',
-                    fontSize: 17,
+                    fontSize: 20,
                     letterSpacing: 0.5,
                     color: AppColors.textPrimary,
                   ),

@@ -35,7 +35,7 @@ class FishingRegionScreen extends StatelessWidget {
                   title.toUpperCase(),
                   style: const TextStyle(
                     fontFamily: 'MudTrack',
-                    fontSize: 18,
+                    fontSize: 20,
                     letterSpacing: 0.5,
                     color: AppColors.textPrimary,
                   ),
