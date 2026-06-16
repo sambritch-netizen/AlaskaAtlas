@@ -54,6 +54,10 @@ class _MapScreenState extends State<MapScreen> {
   bool _showLakeCharts = false;
   bool _showMileMarkers = false;
 
+  // Overlay of place names, river/lake labels, roads, etc. on top of the
+  // satellite imagery — turn on for a "normal map" look on satellite.
+  bool _showLabels = true;
+
   // Official milepost numbering doesn't always start at zero where the
   // bundled route geometry begins (e.g. the Parks Highway geometry starts
   // at its junction with the Glenn, which is official MP 35). These offsets
@@ -369,6 +373,27 @@ class _MapScreenState extends State<MapScreen> {
                     ? RetinaMode.isHighDensity(context)
                     : false,
               ),
+              // Place-name / road / boundary label overlay — turns the
+              // unlabeled imagery basemaps into a "normal map" look. USGS
+              // Imagery and Topo already include labels, so the overlay is
+              // suppressed there to avoid double-labeling.
+              if (_showLabels &&
+                  (_basemap.id == 'satellite' || _basemap.id == 'dark')) ...[
+                TileLayer(
+                  key: ValueKey('labels-places-${_basemap.id}'),
+                  urlTemplate:
+                      'https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+                  userAgentPackageName: 'com.alaskaatlas.alaska_atlas',
+                  maxNativeZoom: 17,
+                ),
+                TileLayer(
+                  key: ValueKey('labels-roads-${_basemap.id}'),
+                  urlTemplate:
+                      'https://services.arcgisonline.com/arcgis/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}',
+                  userAgentPackageName: 'com.alaskaatlas.alaska_atlas',
+                  maxNativeZoom: 17,
+                ),
+              ],
               if (showLakes && _showContours)
                 PolygonLayer(
                   polygons: [
@@ -893,11 +918,13 @@ class _MapScreenState extends State<MapScreen> {
             child: _MapLayersSheet(
               showLakeCharts: _showLakeCharts,
               showMileMarkers: _showMileMarkers,
+              showLabels: _showLabels,
               activeHighwayCategories: _activeHighwayCategories,
               activeWaypointCategories: _activeWaypointCategories,
               activeHighwaySlugs: _activeHighwaySlugs,
               onClose: () => setState(() => _layersPanelOpen = false),
               onMileMarkersChanged: (v) => setState(() => _showMileMarkers = v),
+              onLabelsChanged: (v) => setState(() => _showLabels = v),
               onLakeChartsChanged: (v) {
                 setState(() => _showLakeCharts = v);
                 if (v) _mapController.move(_anchorageCenter, 9.6);
@@ -1308,11 +1335,13 @@ class _LakeLabel extends StatelessWidget {
 class _MapLayersSheet extends StatefulWidget {
   final bool showLakeCharts;
   final bool showMileMarkers;
+  final bool showLabels;
   final Set<String> activeHighwayCategories;
   final Set<String> activeWaypointCategories;
   final Set<String> activeHighwaySlugs;
   final ValueChanged<bool> onLakeChartsChanged;
   final ValueChanged<bool> onMileMarkersChanged;
+  final ValueChanged<bool> onLabelsChanged;
   final void Function(String category, bool value) onHighwayCategoryChanged;
   final void Function(String category, bool value) onWaypointCategoryChanged;
   final void Function(String slug, bool value) onHighwaySlugChanged;
@@ -1322,11 +1351,13 @@ class _MapLayersSheet extends StatefulWidget {
   const _MapLayersSheet({
     required this.showLakeCharts,
     required this.showMileMarkers,
+    required this.showLabels,
     required this.activeHighwayCategories,
     required this.activeWaypointCategories,
     required this.activeHighwaySlugs,
     required this.onLakeChartsChanged,
     required this.onMileMarkersChanged,
+    required this.onLabelsChanged,
     required this.onHighwayCategoryChanged,
     required this.onWaypointCategoryChanged,
     required this.onHighwaySlugChanged,
@@ -1410,6 +1441,14 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
               '${widget.activeHighwaySlugs.length} of '
               '${HighwaysData.highways.length} Highways On',
           onTap: () => setState(() => _detail = _LayersDetailPage.roadSystem),
+        ),
+        _ToggleRow(
+          data: _ToggleRowData(
+            emoji: '🏷️',
+            label: 'Place Labels',
+            value: widget.showLabels,
+            onChanged: widget.onLabelsChanged,
+          ),
         ),
         _ToggleRow(
           data: _ToggleRowData(
