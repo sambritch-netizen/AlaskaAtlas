@@ -1,12 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../models/fishing_regs.dart';
 import '../models/guide.dart';
 import '../models/gear_item.dart';
 import '../models/lake.dart';
 import '../models/species.dart';
 import '../screens/map/lake_profile_screen.dart';
 import '../screens/explore/explore_screen.dart';
+import '../screens/fishing/fishing_regions_screen.dart';
+import '../screens/fishing/fishing_subregion_screen.dart';
+import '../screens/fishing/fishing_subregions_screen.dart';
+import '../screens/fishing/fishing_water_screen.dart';
 import '../screens/gear/gear_detail_screen.dart';
 import '../screens/gear/gear_screen.dart';
 import '../screens/guides/guide_category_screen.dart';
@@ -73,6 +78,32 @@ final routerProvider = Provider<GoRouter>((ref) {
                   path: 'species',
                   builder: (context, state) =>
                       SpeciesDetailScreen(species: state.extra as Species),
+                ),
+              ],
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/fishing',
+              builder: (context, state) => const FishingRegionsScreen(),
+              routes: [
+                GoRoute(
+                  path: 'region',
+                  builder: (context, state) => FishingRegionScreen(
+                    region: state.extra as FishingRegion,
+                  ),
+                ),
+                GoRoute(
+                  path: 'subregion',
+                  builder: (context, state) => FishingSubRegionScreen(
+                    sub: state.extra as FishingSubRegion,
+                  ),
+                ),
+                GoRoute(
+                  path: 'water',
+                  builder: (context, state) => FishingWaterScreen(
+                    water: state.extra as FishingWater,
+                  ),
                 ),
               ],
             ),
