@@ -43,7 +43,7 @@ class GuidesScreen extends StatelessWidget {
                   (context, i) => TweenAnimationBuilder<double>(
                     tween: Tween(begin: 0.0, end: 1.0),
                     duration: Duration(
-                        milliseconds: 280 + (i * 55).clamp(0, 300)),
+                        milliseconds: 260 + (i * 40).clamp(0, 200)),
                     curve: Curves.easeOutCubic,
                     builder: (context, v, child) => Opacity(
                       opacity: v,

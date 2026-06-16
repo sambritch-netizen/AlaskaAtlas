@@ -72,7 +72,7 @@ class FishingWaterScreen extends StatelessWidget {
                       alignment: Alignment.topRight,
                       child: Padding(
                         padding: EdgeInsets.only(top: 48, right: 20),
-                        child: Icon(Icons.phishing,
+                        child: Icon(Icons.water,
                             size: 64, color: Color(0x335B8BAB)),
                       ),
                     ),
@@ -90,9 +90,25 @@ class FishingWaterScreen extends StatelessWidget {
                         const Icon(Icons.place_outlined,
                             size: 13, color: FishingStyle.water),
                         const SizedBox(width: 5),
+                        Text(
+                          loc.region,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        const Text(
+                          ' · ',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
                         Flexible(
                           child: Text(
-                            '${loc.region} · ${loc.sub}',
+                            loc.sub,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
