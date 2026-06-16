@@ -79,67 +79,94 @@ class _CategoryTile extends StatelessWidget {
     final count =
         GuidesData.guides.where((g) => g.category == category.name).length;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () =>
-              context.go('/guides/category', extra: category.name),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: category.imagePath != null
-                      ? Image.asset(
-                          category.imagePath!,
-                          width: 48,
-                          height: 48,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: 48,
-                          height: 48,
-                          decoration: BoxDecoration(
-                            color: AppColors.pine.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                                color: AppColors.pine.withValues(alpha: 0.25)),
-                          ),
-                          child: const Icon(
-                            Icons.image_outlined,
-                            color: AppColors.pine,
-                            size: 22,
-                          ),
-                        ),
+    final hasImage = category.imagePath != null;
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          border: Border.all(color: AppColors.border),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (hasImage)
+              Image.asset(category.imagePath!, fit: BoxFit.cover)
+            else
+              const Center(
+                child: Icon(Icons.image_outlined,
+                    color: AppColors.pine, size: 36),
+              ),
+            if (hasImage)
+              // Dark gradient at the bottom so text stays legible
+              // on top of the photo.
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Color(0xCC000000),
+                    ],
+                    stops: [0.0, 0.45, 1.0],
+                  ),
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(category.name,
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 2),
-                    Text(
-                      '$count guide${count == 1 ? '' : 's'}',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: AppColors.textMuted,
+              ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () =>
+                    context.go('/guides/category', extra: category.name),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        category.name,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(
+                              color: hasImage
+                                  ? Colors.white
+                                  : AppColors.textPrimary,
+                              shadows: hasImage
+                                  ? const [
+                                      Shadow(
+                                          blurRadius: 6,
+                                          color: Colors.black54),
+                                    ]
+                                  : null,
+                            ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 2),
+                      Text(
+                        '$count guide${count == 1 ? '' : 's'}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: hasImage
+                              ? Colors.white.withValues(alpha: 0.85)
+                              : AppColors.textMuted,
+                          shadows: hasImage
+                              ? const [
+                                  Shadow(
+                                      blurRadius: 4,
+                                      color: Colors.black54),
+                                ]
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
