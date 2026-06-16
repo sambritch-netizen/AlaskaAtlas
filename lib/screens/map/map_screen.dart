@@ -107,7 +107,6 @@ class _MapScreenState extends State<MapScreen> {
   HighwayStop? _editingStop;
 
   static const _alaskaCenter = LatLng(62.8, -152.5);
-  static const _anchorageCenter = LatLng(61.23, -149.78);
 
   // Survey-accurate ADF&G contours, by lake id, once digitized and bundled.
   final Map<String, List<DepthContour>> _realContours = {};
@@ -925,10 +924,7 @@ class _MapScreenState extends State<MapScreen> {
               onClose: () => setState(() => _layersPanelOpen = false),
               onMileMarkersChanged: (v) => setState(() => _showMileMarkers = v),
               onLabelsChanged: (v) => setState(() => _showLabels = v),
-              onLakeChartsChanged: (v) {
-                setState(() => _showLakeCharts = v);
-                if (v) _mapController.move(_anchorageCenter, 9.6);
-              },
+              onLakeChartsChanged: (v) => setState(() => _showLakeCharts = v),
               onHighwayCategoryChanged: (cat, v) {
                 setState(() {
                   if (v) {
