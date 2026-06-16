@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../models/fishing_regs.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/topo_background.dart';
+import 'fishing_common.dart';
 
 /// Detail of a single regulated water body — its species and methods/means.
 class FishingWaterScreen extends StatelessWidget {
@@ -15,184 +16,175 @@ class FishingWaterScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text(
-          water.name,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-        ),
-      ),
       body: TopoBackground(
         opacity: 0.3,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
-            if (water.notes != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: Text(
-                  water.notes!,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 150,
+              backgroundColor: AppColors.background,
+              foregroundColor: AppColors.textPrimary,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 56, right: 16, bottom: 14),
+                title: Text(
+                  water.name.toUpperCase(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                    height: 1.45,
+                    fontFamily: 'MudTrack',
+                    fontSize: 17,
+                    letterSpacing: 0.5,
+                    color: AppColors.textPrimary,
                   ),
                 ),
+                background: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [Color(0x4D5B8BAB), AppColors.background],
+                        ),
+                      ),
+                    ),
+                    const Align(
+                      alignment: Alignment.topRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 48, right: 20),
+                        child: Icon(Icons.phishing,
+                            size: 64, color: Color(0x335B8BAB)),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            if (water.species.isNotEmpty)
-              _SpeciesCard(species: water.species),
-            if (water.methods.isNotEmpty)
-              _Card(
-                title: 'Methods & Means',
-                icon: Icons.set_meal_outlined,
-                items: water.methods,
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  if (water.notes != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(14),
+                      decoration: BoxDecoration(
+                        color: FishingStyle.water.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                            color: FishingStyle.water.withValues(alpha: 0.3)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Icon(Icons.info_outline,
+                              size: 16, color: FishingStyle.water),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              water.notes!,
+                              style: const TextStyle(
+                                fontSize: 13,
+                                color: AppColors.textSecondary,
+                                height: 1.45,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 18),
+                  ],
+                  if (water.species.isNotEmpty) ...[
+                    const FishingSectionHeader('SPECIES PRESENT'),
+                    const SizedBox(height: 4),
+                    const Text(
+                      'Tap a species for ID, habitat & how to fish it.',
+                      style:
+                          TextStyle(fontSize: 11.5, color: AppColors.textMuted),
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [
+                        for (final s in water.species)
+                          SpeciesChip(
+                            species: s,
+                            onTap: () =>
+                                context.go('/fishing/species', extra: s),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+                  ],
+                  if (water.methods.isNotEmpty) ...[
+                    const FishingSectionHeader('METHODS & MEANS'),
+                    const SizedBox(height: 12),
+                    _BulletCard(items: water.methods),
+                  ],
+                  if (water.species.isEmpty && water.methods.isEmpty)
+                    const _BulletCard(items: [
+                      'No species or method-specific information on file '
+                          'for this water.',
+                    ]),
+                ]),
               ),
-            if (water.species.isEmpty && water.methods.isEmpty)
-              const _Card(
-                title: 'Notes',
-                icon: Icons.info_outline,
-                items: [
-                  'No species or method-specific information on file for this water.',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _BulletCard extends StatelessWidget {
+  final List<String> items;
+  const _BulletCard({required this.items});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final item in items)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: const EdgeInsets.only(top: 6),
+                    width: 5,
+                    height: 5,
+                    decoration: const BoxDecoration(
+                      color: FishingStyle.water,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item.trim(),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.textSecondary,
+                        height: 1.45,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SpeciesCard extends StatelessWidget {
-  final List<String> species;
-  const _SpeciesCard({required this.species});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'SPECIES',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: AppColors.pine,
-                letterSpacing: 1.2,
-              ),
             ),
-            const SizedBox(height: 10),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final s in species) _SpeciesChip(name: s),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SpeciesChip extends StatelessWidget {
-  final String name;
-  const _SpeciesChip({required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(20),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: () => context.go('/fishing/species', extra: name),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppColors.border),
-          ),
-          child: Text(
-            name,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Card extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<String> items;
-  const _Card({
-    required this.title,
-    required this.icon,
-    required this.items,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 16, color: AppColors.pine),
-                const SizedBox(width: 8),
-                Text(
-                  title.toUpperCase(),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.pine,
-                    letterSpacing: 1.2,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            for (final item in items)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Text(
-                  item.startsWith(' ') || item.startsWith('   ')
-                      ? item
-                      : '• $item',
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.textSecondary,
-                    height: 1.45,
-                  ),
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }

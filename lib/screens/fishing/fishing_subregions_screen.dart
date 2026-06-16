@@ -4,45 +4,64 @@ import 'package:go_router/go_router.dart';
 import '../../models/fishing_regs.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/topo_background.dart';
+import 'fishing_common.dart';
 
-/// Lists the sub-regions inside a single [FishingRegion].
-class FishingRegionScreen extends StatelessWidget {
-  final FishingRegion region;
+/// Detail of a single [FishingSubRegion] — the list of regulated waters.
+class FishingSubRegionScreen extends StatelessWidget {
+  final FishingSubRegion sub;
 
-  const FishingRegionScreen({super.key, required this.region});
+  const FishingSubRegionScreen({super.key, required this.sub});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: Text(
-          region.name,
-          style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700),
-        ),
-      ),
       body: TopoBackground(
         opacity: 0.3,
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-          children: [
-            Text(
-              region.summary,
-              style: const TextStyle(
-                fontSize: 13,
-                color: AppColors.textSecondary,
-                height: 1.4,
+        child: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              expandedHeight: 124,
+              backgroundColor: AppColors.background,
+              foregroundColor: AppColors.textPrimary,
+              flexibleSpace: FlexibleSpaceBar(
+                titlePadding: const EdgeInsets.only(left: 56, bottom: 14),
+                title: Text(
+                  sub.name.toUpperCase(),
+                  style: const TextStyle(
+                    fontFamily: 'MudTrack',
+                    fontSize: 17,
+                    letterSpacing: 0.5,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+                background: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Color(0x335B8BAB), AppColors.background],
+                    ),
+                  ),
+                ),
               ),
             ),
-            const SizedBox(height: 18),
-            for (final sub in region.subRegions) ...[
-              _SubRegionCard(sub: sub),
-              const SizedBox(height: 10),
-            ],
-            const SizedBox(height: 8),
-            const _AdfgFooter(),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+                child: FishingSectionHeader(
+                    '${sub.waters.length} REGULATED WATERS'),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
+              sliver: SliverList.separated(
+                itemCount: sub.waters.length,
+                separatorBuilder: (_, __) => const SizedBox(height: 8),
+                itemBuilder: (context, i) => _WaterRow(water: sub.waters[i]),
+              ),
+            ),
           ],
         ),
       ),
@@ -50,54 +69,51 @@ class FishingRegionScreen extends StatelessWidget {
   }
 }
 
-class _SubRegionCard extends StatelessWidget {
-  final FishingSubRegion sub;
-  const _SubRegionCard({required this.sub});
+class _WaterRow extends StatelessWidget {
+  final FishingWater water;
+  const _WaterRow({required this.water});
 
   @override
   Widget build(BuildContext context) {
+    final species = water.species;
     return Material(
       color: AppColors.surfaceElevated,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(13),
       child: InkWell(
-        borderRadius: BorderRadius.circular(14),
-        onTap: () => context.go('/fishing/subregion', extra: sub),
+        borderRadius: BorderRadius.circular(13),
+        onTap: () => context.go('/fishing/water', extra: water),
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(13),
             border: Border.all(color: AppColors.border),
           ),
           child: Row(
             children: [
-              const Icon(Icons.water, color: AppColors.info, size: 22),
-              const SizedBox(width: 14),
+              const Icon(Icons.water_drop_outlined,
+                  color: FishingStyle.water, size: 20),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      sub.name,
+                      water.name,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w700,
                         color: AppColors.textPrimary,
                       ),
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '${sub.waters.length} regulated waters',
-                      style: const TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.pine,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
+                    if (species.isNotEmpty) ...[
+                      const SizedBox(height: 6),
+                      _SpeciesDots(species: species),
+                    ],
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+              const Icon(Icons.chevron_right,
+                  color: AppColors.textSecondary, size: 20),
             ],
           ),
         ),
@@ -106,28 +122,38 @@ class _SubRegionCard extends StatelessWidget {
   }
 }
 
-class _AdfgFooter extends StatelessWidget {
-  const _AdfgFooter();
+/// A compact row of colored species dots + count, previewing what swims here.
+class _SpeciesDots extends StatelessWidget {
+  final List<String> species;
+  const _SpeciesDots({required this.species});
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: const Text(
-        'Summarized from the 2026 ADF&G Southcentral Sport Fishing '
-        'Regulations. Bag/length limits intentionally omitted — '
-        'emergency orders supersede published regulations. '
-        'Always check adfg.alaska.gov/sf/EONR before you cast.',
-        style: TextStyle(
-          fontSize: 11,
-          color: AppColors.textMuted,
-          height: 1.45,
+    final shown = species.take(6).toList();
+    return Row(
+      children: [
+        for (final s in shown)
+          Padding(
+            padding: const EdgeInsets.only(right: 4),
+            child: Container(
+              width: 10,
+              height: 10,
+              decoration: BoxDecoration(
+                color: FishingStyle.colorFor(s),
+                shape: BoxShape.circle,
+              ),
+            ),
+          ),
+        const SizedBox(width: 4),
+        Text(
+          '${species.length} species',
+          style: const TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textMuted,
+          ),
         ),
-      ),
+      ],
     );
   }
 }
