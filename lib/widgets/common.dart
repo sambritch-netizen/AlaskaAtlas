@@ -2,6 +2,20 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
+/// Maps a guide or species category/subcategory name to a real icon.
+IconData guidesCategoryIcon(String name) => switch (name) {
+      'Fishing' || 'Fish Species' => Icons.phishing,
+      'Wildlife' || 'Birds' || 'Land Animals' => Icons.pets,
+      'Camping' => Icons.forest,
+      'Hiking' => Icons.hiking,
+      'Harvesting' || 'Berries' || 'Mushrooms & Foraging' || 'Other Wild Edibles' =>
+        Icons.eco,
+      'Survival' => Icons.explore,
+      'Aurora' => Icons.nights_stay,
+      'Food' => Icons.restaurant,
+      _ => Icons.menu_book,
+    };
+
 /// Section heading used across screens.
 class SectionHeader extends StatelessWidget {
   final String title;
@@ -16,24 +30,12 @@ class SectionHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Container(
-                width: 4,
-                height: 18,
-                decoration: BoxDecoration(
-                  color: AppColors.pine,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              const SizedBox(width: 10),
-              Text(title, style: Theme.of(context).textTheme.headlineSmall),
-            ],
-          ),
+          Text(title, style: Theme.of(context).textTheme.headlineSmall),
           if (subtitle != null)
             Padding(
-              padding: const EdgeInsets.only(left: 14, top: 2),
-              child: Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
+              padding: const EdgeInsets.only(top: 2),
+              child:
+                  Text(subtitle!, style: Theme.of(context).textTheme.bodySmall),
             ),
         ],
       ),

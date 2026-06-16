@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/guides_data.dart';
 import '../../models/guide.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
 
 /// Field Guides landing page — a grid of category tiles. Tapping a
@@ -24,26 +25,8 @@ class GuidesScreen extends StatelessWidget {
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
                 titlePadding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
-                title: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Field Guides',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontSize: 21)),
-                    const Text(
-                      'KNOW-HOW FOR THE LAST FRONTIER',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.6,
-                      ),
-                    ),
-                  ],
-                ),
+                title: Text('Field Guides',
+                    style: Theme.of(context).textTheme.headlineMedium),
                 centerTitle: true,
               ),
             ),
@@ -99,8 +82,8 @@ class _CategoryTile extends StatelessWidget {
             else
               Container(
                 color: AppColors.card,
-                child: const Center(
-                  child: Icon(Icons.image_outlined,
+                child: Center(
+                  child: Icon(guidesCategoryIcon(category.name),
                       color: AppColors.pine, size: 36),
                 ),
               ),

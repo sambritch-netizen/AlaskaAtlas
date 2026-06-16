@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../models/species.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
 
 /// Shows a list of [Species] entries for a single sub-category
@@ -35,17 +36,13 @@ class SpeciesListScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(title,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontSize: 21)),
+                        style: Theme.of(context).textTheme.headlineMedium),
                     Text(
-                      '${species.length} SPECIES',
+                      '${species.length} species',
                       style: const TextStyle(
-                        fontSize: 9,
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.6,
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: AppColors.textMuted,
                       ),
                     ),
                   ],
@@ -98,7 +95,7 @@ class _SpeciesCard extends StatelessWidget {
                     border: Border.all(
                         color: AppColors.pine.withValues(alpha: 0.25)),
                   ),
-                  child: const Icon(Icons.image_outlined,
+                  child: Icon(guidesCategoryIcon(species.subcategory),
                       color: AppColors.pine, size: 22),
                 ),
                 const SizedBox(width: 12),

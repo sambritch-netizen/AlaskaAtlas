@@ -90,24 +90,12 @@ class GuideCategoryScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        const Icon(Icons.image_outlined,
+                        Icon(guidesCategoryIcon(category),
                             color: AppColors.pine, size: 22),
                         const SizedBox(width: 8),
                         Text(category,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(fontSize: 21)),
+                            style: Theme.of(context).textTheme.headlineMedium),
                       ],
-                    ),
-                    const Text(
-                      'KNOW-HOW FOR THE LAST FRONTIER',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.6,
-                      ),
                     ),
                   ],
                 ),
@@ -185,7 +173,7 @@ class _SubcategoryCard extends StatelessWidget {
                     border: Border.all(
                         color: AppColors.pine.withValues(alpha: 0.25)),
                   ),
-                  child: const Icon(Icons.image_outlined,
+                  child: Icon(guidesCategoryIcon(subcategory.name),
                       color: AppColors.pine, size: 22),
                 ),
                 const SizedBox(width: 12),
@@ -256,28 +244,13 @@ class _GuideCard extends StatelessWidget {
                         border: Border.all(
                             color: AppColors.pine.withValues(alpha: 0.25)),
                       ),
-                      child: const Icon(Icons.image_outlined,
+                      child: Icon(guidesCategoryIcon(guide.category),
                           color: AppColors.pine, size: 22),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            guide.category.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textMuted,
-                              letterSpacing: 1.2,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(guide.title,
-                              style: Theme.of(context).textTheme.titleLarge),
-                        ],
-                      ),
+                      child: Text(guide.title,
+                          style: Theme.of(context).textTheme.titleLarge),
                     ),
                     const Icon(Icons.chevron_right,
                         color: AppColors.textMuted, size: 20),

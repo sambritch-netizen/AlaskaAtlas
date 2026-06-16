@@ -43,8 +43,8 @@ class SpeciesDetailScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const Icon(Icons.image_outlined,
-                                color: AppColors.pine, size: 44),
+                            Icon(guidesCategoryIcon(species.subcategory),
+                                color: AppColors.pine, size: 36),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Column(
@@ -52,12 +52,10 @@ class SpeciesDetailScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    species.subcategory.toUpperCase(),
+                                    species.subcategory,
                                     style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.pine,
-                                      letterSpacing: 1.3,
+                                      fontSize: 11,
+                                      color: AppColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
