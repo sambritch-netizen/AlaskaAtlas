@@ -9,7 +9,7 @@ class GearData {
 
   static const String outfitterName = 'Turnagain Outfitters';
   static const String outfitterTagline =
-      'Anchorage-based gear rentals — fishing, camping, winter, hunting & more.';
+      'Anchorage-based gear rentals — fishing, camping, winter & more.';
 
   /// Base44 app id for the Turnagain Outfitters store.
   static const String base44AppId = '69cc33ead8900ab3dab19df0';
@@ -19,7 +19,6 @@ class GearData {
     'Fishing',
     'Camping',
     'Winter',
-    'Hunting',
     'Add-Ons',
   ];
 
@@ -253,22 +252,6 @@ class GearData {
       noFly: false,
       includes: [],
       specs: [GearSpec(label: 'Volume', value: '30L'), GearSpec(label: 'Includes', value: 'Pack + insulated hydration sleeve')],
-    ),
-
-    // ── Hunting ───────────────────────────────────────────
-    GearItem(
-      id: '69cf0953932a612a06ed7484',
-      name: 'Hunting Package',
-      category: 'Hunting',
-      emoji: '🦌',
-      description: 'Everything you need for a successful Alaska big game hunt.',
-      pricePerDay: 30,
-      imageUrl: 'https://media.base44.com/images/public/69cc33ead8900ab3dab19df0/fffbc9c50_DSC_0395.jpg',
-      isPackage: true,
-      featured: false,
-      noFly: false,
-      includes: ['Binos', 'Butcher Kit', 'Reusable Game Bags', 'Bear Spray'],
-      specs: [],
     ),
 
     // ── Add-Ons ───────────────────────────────────────────

@@ -26,12 +26,11 @@ class TurnagainService {
   static const String websiteUrl = 'https://turnagainoutfitters.com';
 
   /// Base44 product categories that map into the app's rental catalog.
-  /// `merch` (apparel) is intentionally excluded.
+  /// `merch` (apparel) and `hunting` are intentionally excluded.
   static const Map<String, String> _categoryMap = {
     'fishing': 'Fishing',
     'camping': 'Camping',
     'winter': 'Winter',
-    'hunting': 'Hunting',
     'addon': 'Add-Ons',
   };
 
@@ -39,7 +38,6 @@ class TurnagainService {
     'Fishing': '🎣',
     'Camping': '🏕️',
     'Winter': '❄️',
-    'Hunting': '🦌',
     'Add-Ons': '🎒',
   };
 
