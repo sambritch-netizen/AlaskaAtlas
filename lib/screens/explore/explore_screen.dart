@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../data/hotspots_data.dart';
 import '../../models/hotspot.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/categorized_tile.dart';
 import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
 import '../map/hotspot_sheet.dart';
@@ -212,69 +213,15 @@ class _SpotListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => showHotspotSheet(context, spot),
-          borderRadius: BorderRadius.circular(14),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: AppColors.pine.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppColors.pine.withValues(alpha: 0.25)),
-                  ),
-                  child: Center(
-                    child:
-                        Text(spot.emoji, style: const TextStyle(fontSize: 22)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(spot.name,
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 2),
-                      Text(
-                        spot.blurb,
-                        style: Theme.of(context).textTheme.bodySmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          MetaBadge(label: spot.category, color: AppColors.pine),
-                          const SizedBox(width: 6),
-                          MetaBadge(
-                              label: spot.region, color: AppColors.textSecondary),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const Icon(Icons.chevron_right,
-                    color: AppColors.textMuted, size: 20),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return CategorizedTile(
+      title: spot.name,
+      subtitle: spot.blurb,
+      leadingEmoji: spot.emoji,
+      onTap: () => showHotspotSheet(context, spot),
+      trailing: [
+        MetaBadge(label: spot.category, color: AppColors.pine),
+        MetaBadge(label: spot.region, color: AppColors.textSecondary),
+      ],
     );
   }
 }

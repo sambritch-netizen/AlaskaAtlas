@@ -122,46 +122,45 @@ class _CategoryTile extends StatelessWidget {
               child: InkWell(
                 onTap: () =>
                     context.go('/guides/category', extra: category.name),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Text(
-                        category.name.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'MudTrack',
-                          fontSize: 24,
-                          letterSpacing: 1.0,
-                          color: hasImage ? Colors.white : AppColors.textPrimary,
-                          shadows: hasImage
-                              ? const [
-                                  Shadow(blurRadius: 8, color: Colors.black87),
-                                ]
-                              : null,
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                    decoration: hasImage
+                        ? const BoxDecoration(
+                            color: Color(0xE60B120C),
+                          )
+                        : null,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          category.name.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'MudTrack',
+                            fontSize: 24,
+                            letterSpacing: 1.0,
+                            color: hasImage
+                                ? AppColors.textPrimary
+                                : AppColors.textPrimary,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        '$count guide${count == 1 ? '' : 's'}',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 0.8,
-                          color: hasImage
-                              ? Colors.white.withValues(alpha: 0.82)
-                              : AppColors.textMuted,
-                          shadows: hasImage
-                              ? const [
-                                  Shadow(blurRadius: 4, color: Colors.black87),
-                                ]
-                              : null,
+                        const SizedBox(height: 2),
+                        Text(
+                          '$count guide${count == 1 ? '' : 's'}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.8,
+                            color: AppColors.textMuted,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

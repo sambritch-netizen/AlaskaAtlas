@@ -29,16 +29,7 @@ class GuideDetailScreen extends StatelessWidget {
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColors.pineDark.withValues(alpha: 0.35),
-                        AppColors.background,
-                      ],
-                    ),
-                  ),
+                  color: AppColors.surface,
                   child: SafeArea(
                     child: Align(
                       alignment: Alignment.bottomLeft,

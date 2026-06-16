@@ -8,6 +8,7 @@ import '../../data/wildlife_species_data.dart';
 import '../../models/guide.dart';
 import '../../models/species.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/categorized_tile.dart';
 import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
 
@@ -145,60 +146,17 @@ class _SubcategoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final species = _speciesForSubcategory(subcategory.name);
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.go('/guides/species-list', extra: {
-            'title': subcategory.name,
-            'species': species,
-          }),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(14),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.pine.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                        color: AppColors.pine.withValues(alpha: 0.25)),
-                  ),
-                  child: Icon(guidesCategoryIcon(subcategory.name),
-                      color: AppColors.pine, size: 22),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(subcategory.name,
-                          style: Theme.of(context).textTheme.titleLarge),
-                      const SizedBox(height: 2),
-                      Text(subcategory.description,
-                          style: Theme.of(context).textTheme.bodySmall),
-                    ],
-                  ),
-                ),
-                MetaBadge(
-                    label: '${species.length}', color: AppColors.textMuted),
-                const SizedBox(width: 6),
-                const Icon(Icons.chevron_right,
-                    color: AppColors.textMuted, size: 20),
-              ],
-            ),
-          ),
-        ),
-      ),
+    return CategorizedTile(
+      title: subcategory.name,
+      subtitle: subcategory.description,
+      leadingIcon: guidesCategoryIcon(subcategory.name),
+      onTap: () => context.go('/guides/species-list', extra: {
+        'title': subcategory.name,
+        'species': species,
+      }),
+      trailing: [
+        MetaBadge(label: '${species.length}', color: AppColors.textMuted),
+      ],
     );
   }
 }

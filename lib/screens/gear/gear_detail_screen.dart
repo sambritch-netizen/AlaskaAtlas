@@ -54,7 +54,7 @@ class GearDetailScreen extends StatelessWidget {
                             if (item.isPackage) ...[
                               _Tag(
                                   label: 'PACKAGE',
-                                  color: AppColors.pine),
+                                  color: AppColors.rustDark),
                               const SizedBox(width: 8),
                             ],
                             _Tag(
@@ -118,7 +118,7 @@ class GearDetailScreen extends StatelessWidget {
                             child: Row(
                               children: [
                                 const Icon(Icons.check_circle_outline,
-                                    color: AppColors.pine, size: 18),
+                                    color: AppColors.rust, size: 18),
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(inc,

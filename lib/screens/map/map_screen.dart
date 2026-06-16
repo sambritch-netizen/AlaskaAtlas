@@ -1302,19 +1302,22 @@ class _LakeLabel extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 2),
-          Text(
-            lake.name,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              fontStyle: FontStyle.italic,
-              color: Color(0xFF14537A),
-              shadows: [
-                Shadow(color: Colors.white, blurRadius: 3),
-                Shadow(color: Colors.white, blurRadius: 6),
-              ],
+          const SizedBox(height: 3),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.85),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              lake.name,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w700,
+                fontStyle: FontStyle.italic,
+                color: Color(0xFF14537A),
+              ),
             ),
           ),
         ],
