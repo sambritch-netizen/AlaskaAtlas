@@ -52,6 +52,14 @@ class FishingStyle {
 
   static String shortFor(String species) =>
       speciesShort[species] ?? species;
+
+  /// Single-letter monogram for the species token (King -> K, Sockeye -> S).
+  /// Color + monogram together let an angler pattern-match a species in the
+  /// browse strip without relying on a generic fish-hook glyph.
+  static String monogramFor(String species) {
+    final s = shortFor(species).trim();
+    return s.isEmpty ? '?' : s.substring(0, 1).toUpperCase();
+  }
 }
 
 /// Section heading using Bitter slab serif — the field-guide chapter marker.
@@ -87,15 +95,28 @@ class SpeciesBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = FishingStyle.colorFor(species);
-    return Container(
-      width: size,
-      height: size,
-      decoration: BoxDecoration(
-        color: c.withValues(alpha: 0.18),
-        shape: BoxShape.circle,
-        border: Border.all(color: c.withValues(alpha: 0.55), width: 1.5),
+    return Semantics(
+      label: FishingStyle.shortFor(species),
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          color: c.withValues(alpha: 0.18),
+          shape: BoxShape.circle,
+          border: Border.all(color: c.withValues(alpha: 0.6), width: 1.5),
+        ),
+        alignment: Alignment.center,
+        child: Text(
+          FishingStyle.monogramFor(species),
+          style: TextStyle(
+            fontFamily: 'MudTrack',
+            color: c,
+            fontSize: size * 0.46,
+            height: 1.0,
+            letterSpacing: 0.5,
+          ),
+        ),
       ),
-      child: Icon(Icons.phishing, color: c, size: size * 0.5),
     );
   }
 }
@@ -109,38 +130,51 @@ class SpeciesChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = FishingStyle.colorFor(species);
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(20),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.fromLTRB(8, 6, 12, 6),
-          decoration: BoxDecoration(
-            color: c.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: c.withValues(alpha: 0.45)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 18,
-                height: 18,
-                decoration: BoxDecoration(color: c, shape: BoxShape.circle),
-                child: const Icon(Icons.phishing,
-                    color: Colors.white, size: 11),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                FishingStyle.shortFor(species),
-                style: const TextStyle(
-                  fontSize: 12.5,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
+    final label = FishingStyle.shortFor(species);
+    return Semantics(
+      button: true,
+      label: label,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(20),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.fromLTRB(8, 6, 12, 6),
+            decoration: BoxDecoration(
+              color: c.withValues(alpha: 0.12),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: c.withValues(alpha: 0.45)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 18,
+                  height: 18,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(color: c, shape: BoxShape.circle),
+                  child: Text(
+                    FishingStyle.monogramFor(species),
+                    style: const TextStyle(
+                      fontFamily: 'MudTrack',
+                      color: AppColors.textPrimary,
+                      fontSize: 11,
+                      height: 1.0,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(width: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

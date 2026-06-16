@@ -65,18 +65,18 @@ class FishingRegionScreen extends StatelessWidget {
                         height: 1.45,
                       ),
                     ),
-                    const SizedBox(height: 14),
-                    Row(
-                      children: [
-                        _Metric(
-                            value: '${region.subRegions.length}',
-                            label: 'SUB-REGIONS'),
-                        const SizedBox(width: 10),
-                        _Metric(value: '$_waterCount', label: 'WATERS'),
-                      ],
-                    ),
                     const SizedBox(height: 18),
-                    const FishingSectionHeader('SUB-REGIONS'),
+                    FishingSectionHeader(
+                      'SUB-REGIONS',
+                      trailing: Text(
+                        '${region.subRegions.length} · $_waterCount waters',
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: FishingStyle.water,
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 4),
                   ],
                 ),
@@ -89,49 +89,6 @@ class FishingRegionScreen extends StatelessWidget {
                 separatorBuilder: (_, __) => const SizedBox(height: 10),
                 itemBuilder: (context, i) =>
                     _SubRegionCard(sub: region.subRegions[i]),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _Metric extends StatelessWidget {
-  final String value;
-  final String label;
-  const _Metric({required this.value, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
-        child: Column(
-          children: [
-            Text(
-              value,
-              style: const TextStyle(
-                fontFamily: 'MudTrack',
-                fontSize: 26,
-                color: FishingStyle.water,
-                height: 1.0,
-              ),
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 9,
-                fontWeight: FontWeight.w700,
-                color: AppColors.textMuted,
-                letterSpacing: 1.2,
               ),
             ),
           ],

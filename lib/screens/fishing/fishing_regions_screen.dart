@@ -60,6 +60,10 @@ class _FishingRegionsScreenState extends State<FishingRegionsScreen> {
                   setState(() => _query = '');
                 },
               ),
+              const Padding(
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 6),
+                child: _RegsBanner(),
+              ),
               Expanded(
                 child: searching
                     ? _SearchResults(
@@ -206,7 +210,8 @@ class _Browse extends StatelessWidget {
             separatorBuilder: (_, __) => const SizedBox(width: 10),
             itemBuilder: (context, i) => TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
-              duration: Duration(milliseconds: 220 + i * 35),
+              duration: Duration(
+                  milliseconds: 220 + (i * 35).clamp(0, 180)),
               curve: Curves.easeOutCubic,
               builder: (context, v, child) => Opacity(
                 opacity: v,
@@ -230,10 +235,6 @@ class _Browse extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
             child: _RegionCard(region: region),
           ),
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 6, 20, 0),
-          child: _RegsDisclaimer(),
-        ),
       ],
     );
   }
@@ -572,7 +573,7 @@ class _Pill extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: FontWeight.w800,
           color: color,
           letterSpacing: 1.0,
@@ -582,35 +583,60 @@ class _Pill extends StatelessWidget {
   }
 }
 
-class _RegsDisclaimer extends StatelessWidget {
-  const _RegsDisclaimer();
+/// Persistent regulatory banner — the disclaimer that belongs at the top of
+/// the fishing flow, not buried at the bottom. Bag and length limits are
+/// intentionally omitted from this app; users must confirm them with ADF&G
+/// before they fish, because emergency orders supersede published regs.
+class _RegsBanner extends StatelessWidget {
+  const _RegsBanner();
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Icon(Icons.info_outline, size: 15, color: AppColors.textMuted),
-          SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              'Summaries of ADF&G sport-fishing regulations. Bag/length '
-              'limits are omitted — emergency orders supersede published '
-              'regs. Always check adfg.alaska.gov/sf/EONR before you cast.',
-              style: TextStyle(
-                fontSize: 11,
-                color: AppColors.textMuted,
-                height: 1.4,
+    return Semantics(
+      container: true,
+      label: 'Regulatory advisory',
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+        decoration: BoxDecoration(
+          color: AppColors.warning.withValues(alpha: 0.10),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.warning.withValues(alpha: 0.45)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.warning_amber_rounded,
+                size: 18, color: AppColors.warning),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Bag & length limits not shown',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.warning,
+                      height: 1.2,
+                    ),
+                  ),
+                  SizedBox(height: 3),
+                  Text(
+                    'Summaries based on 2025 ADF&G sport-fishing regs. '
+                    'Emergency orders override these — check '
+                    'adfg.alaska.gov/sf/EONR before you cast.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textSecondary,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

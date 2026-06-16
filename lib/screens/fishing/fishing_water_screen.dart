@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../data/fishing_regs_data.dart';
 import '../../models/fishing_regs.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/topo_background.dart';
@@ -12,8 +13,25 @@ class FishingWaterScreen extends StatelessWidget {
 
   const FishingWaterScreen({super.key, required this.water});
 
+  /// Walk the regs tree to find which region/subregion contains this water.
+  /// Anglers arriving via search need this — ADF&G rules differ by region.
+  ({String region, String sub})? _locate() {
+    for (final region in FishingRegsData.regions) {
+      for (final sub in region.subRegions) {
+        if (sub.waters.contains(water)) {
+          return (
+            region: region.name.replaceAll(' Regulations', ''),
+            sub: sub.name,
+          );
+        }
+      }
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final loc = _locate();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: TopoBackground(
@@ -66,6 +84,28 @@ class FishingWaterScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 28),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
+                  if (loc != null) ...[
+                    Row(
+                      children: [
+                        const Icon(Icons.place_outlined,
+                            size: 13, color: FishingStyle.water),
+                        const SizedBox(width: 5),
+                        Flexible(
+                          child: Text(
+                            '${loc.region} · ${loc.sub}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                  ],
                   if (water.notes != null) ...[
                     Container(
                       padding: const EdgeInsets.all(14),

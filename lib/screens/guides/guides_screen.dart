@@ -40,8 +40,23 @@ class GuidesScreen extends StatelessWidget {
                   childAspectRatio: 1.15,
                 ),
                 delegate: SliverChildBuilderDelegate(
-                  (context, i) =>
-                      _CategoryTile(category: GuidesData.categories[i]),
+                  (context, i) => TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    duration: Duration(
+                        milliseconds: 280 + (i * 55).clamp(0, 300)),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, v, child) => Opacity(
+                      opacity: v,
+                      child: Transform.translate(
+                        offset: Offset(0, 16 * (1 - v)),
+                        child: Transform.scale(
+                          scale: 0.96 + 0.04 * v,
+                          child: child,
+                        ),
+                      ),
+                    ),
+                    child: _CategoryTile(category: GuidesData.categories[i]),
+                  ),
                   childCount: GuidesData.categories.length,
                 ),
               ),

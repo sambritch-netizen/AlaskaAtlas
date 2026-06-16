@@ -123,6 +123,14 @@ class FishSpeciesScreen extends StatelessWidget {
                           _PrimeWindow(text: profile.season, color: c),
                         ],
                         const SizedBox(height: 8),
+                        if (profile.tacticsAndGear.isNotEmpty)
+                          _InfoCard(
+                            icon: Icons.set_meal_outlined,
+                            title: 'Tactics & Gear',
+                            items: profile.tacticsAndGear,
+                            color: c,
+                            primary: true,
+                          ),
                         if (profile.identification.isNotEmpty)
                           _InfoCard(
                             icon: Icons.visibility_outlined,
@@ -135,13 +143,6 @@ class FishSpeciesScreen extends StatelessWidget {
                             icon: Icons.terrain_outlined,
                             title: 'Habitat',
                             items: profile.habitat,
-                            color: c,
-                          ),
-                        if (profile.tacticsAndGear.isNotEmpty)
-                          _InfoCard(
-                            icon: Icons.phishing,
-                            title: 'Tactics & Gear',
-                            items: profile.tacticsAndGear,
                             color: c,
                           ),
                       ]),
@@ -209,11 +210,13 @@ class _InfoCard extends StatelessWidget {
   final String title;
   final List<String> items;
   final Color color;
+  final bool primary;
   const _InfoCard({
     required this.icon,
     required this.title,
     required this.items,
     required this.color,
+    this.primary = false,
   });
 
   @override
@@ -223,9 +226,14 @@ class _InfoCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: primary
+              ? color.withValues(alpha: 0.10)
+              : AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: AppColors.border),
+          border: Border.all(
+            color: primary ? color.withValues(alpha: 0.45) : AppColors.border,
+            width: primary ? 1.5 : 1,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
