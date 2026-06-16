@@ -10,9 +10,9 @@ class GuidesData {
     GuideCategory(name: 'Fishing', emoji: '🎣', imagePath: 'assets/category_icons/fishing.jpg'),
     GuideCategory(name: 'Survival', emoji: '🧭'),
     GuideCategory(name: 'Wildlife', emoji: '🐻', imagePath: 'assets/category_icons/wildlife.jpg'),
-    GuideCategory(name: 'Aurora', emoji: '🌌'),
+    GuideCategory(name: 'Aurora', emoji: '🌌', imagePath: 'assets/category_icons/aurora.jpg'),
     GuideCategory(name: 'Hiking', emoji: '🥾'),
-    GuideCategory(name: 'Food', emoji: '🍲'),
+    GuideCategory(name: 'Food', emoji: '🍲', imagePath: 'assets/category_icons/food.jpg'),
     GuideCategory(name: 'Harvesting', emoji: '🫐'),
   ];
 
