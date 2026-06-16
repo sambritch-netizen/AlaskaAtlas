@@ -71,9 +71,6 @@ class GuideCategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final guides =
         GuidesData.guides.where((g) => g.category == category).toList();
-    final emoji = GuidesData.categories
-        .firstWhere((c) => c.name == category)
-        .emoji;
     final subcategories = _speciesSubcategories[category];
 
     return Scaffold(
@@ -93,7 +90,8 @@ class GuideCategoryScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Text(emoji, style: const TextStyle(fontSize: 22)),
+                        const Icon(Icons.image_outlined,
+                            color: AppColors.pine, size: 22),
                         const SizedBox(width: 8),
                         Text(category,
                             style: Theme.of(context)
@@ -187,10 +185,8 @@ class _SubcategoryCard extends StatelessWidget {
                     border: Border.all(
                         color: AppColors.pine.withValues(alpha: 0.25)),
                   ),
-                  child: Center(
-                    child: Text(subcategory.emoji,
-                        style: const TextStyle(fontSize: 22)),
-                  ),
+                  child: const Icon(Icons.image_outlined,
+                      color: AppColors.pine, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
@@ -260,10 +256,8 @@ class _GuideCard extends StatelessWidget {
                         border: Border.all(
                             color: AppColors.pine.withValues(alpha: 0.25)),
                       ),
-                      child: Center(
-                        child: Text(guide.emoji,
-                            style: const TextStyle(fontSize: 22)),
-                      ),
+                      child: const Icon(Icons.image_outlined,
+                          color: AppColors.pine, size: 22),
                     ),
                     const SizedBox(width: 12),
                     Expanded(

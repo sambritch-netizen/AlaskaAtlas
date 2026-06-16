@@ -106,9 +106,11 @@ class _CategoryTile extends StatelessWidget {
                     border: Border.all(
                         color: AppColors.pine.withValues(alpha: 0.25)),
                   ),
-                  child: Center(
-                    child: Text(category.emoji,
-                        style: const TextStyle(fontSize: 24)),
+                  // Placeholder — replace with bundled category icon art.
+                  child: const Icon(
+                    Icons.image_outlined,
+                    color: AppColors.pine,
+                    size: 22,
                   ),
                 ),
                 Column(

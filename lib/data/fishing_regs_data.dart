@@ -228,13 +228,13 @@ class FishingRegsData {
     ],
     waters: [
       FishingWater(
-        name: 'Alexander Creek Drainage (Unit 1)',
+        name: 'Alexander Creek Drainage',
         notes: 'Lower Susitna tributary; king salmon waters.',
         species: _salmonCombo,
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Deshka River Drainage (Unit 1)',
+        name: 'Deshka River Drainage',
         notes: 'One of the most popular king and coho fisheries in Southcentral.',
         species: [..._salmonCombo, FishSpecies.rainbow, FishSpecies.dolly],
         seasons: [
@@ -243,65 +243,65 @@ class FishingRegsData {
         ],
       ),
       FishingWater(
-        name: 'Birch Creek (Unit 2)',
+        name: 'Birch Creek',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
       ),
       FishingWater(
-        name: 'Goose Creek (Unit 2)',
+        name: 'Goose Creek',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
       ),
       FishingWater(
-        name: 'Greys (196 Mile) Creek (Unit 2)',
+        name: 'Greys (196 Mile) Creek',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
       ),
       FishingWater(
-        name: 'Kashwitna River Drainage (Unit 2)',
+        name: 'Kashwitna River Drainage',
         species: _salmonCombo,
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Little Willow Creek Drainage (Unit 2)',
+        name: 'Little Willow Creek Drainage',
         species: _salmonCombo,
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Montana Creek Drainage (Unit 2)',
+        name: 'Montana Creek Drainage',
         species: [..._salmonCombo, FishSpecies.rainbow, FishSpecies.dolly],
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Sheep Creek Drainage (Unit 2)',
+        name: 'Sheep Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
         methods: [
           'Only one unbaited, single-hook, artificial lure or fly is allowed in many sections — check the booklet.',
         ],
       ),
       FishingWater(
-        name: 'Sunshine Creek Drainage (Unit 2)',
+        name: 'Sunshine Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
       ),
       FishingWater(
-        name: 'Trapper Creek Drainage (Unit 2)',
+        name: 'Trapper Creek Drainage',
         species: [..._salmonCombo, FishSpecies.rainbow, FishSpecies.dolly],
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Willow Creek Drainage (Unit 2)',
+        name: 'Willow Creek Drainage',
         notes: 'Major road-accessible king and silver fishery.',
         species: [..._salmonCombo, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
         seasons: ['King salmon closed in 2026 by emergency order.'],
       ),
       FishingWater(
-        name: 'Deception Creek Drainage (Unit 2)',
+        name: 'Deception Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly],
       ),
       FishingWater(
-        name: 'Clarence Lake (Unit 3)',
+        name: 'Clarence Lake',
         notes: 'Remote upper-Susitna lake with grayling and lake trout.',
         species: [FishSpecies.grayling, FishSpecies.lakeTrout, FishSpecies.burbot],
       ),
       FishingWater(
-        name: 'Susitna River (Unit 3 — mainstem)',
+        name: 'Susitna River',
         notes:
             'Upper mainstem above the major tributaries; primarily a grayling, whitefish, and lake-trout fishery.',
         species: [
@@ -312,11 +312,11 @@ class FishingRegsData {
         ],
       ),
       FishingWater(
-        name: 'Canyon Creek (Unit 4)',
+        name: 'Canyon Creek',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Talachulitna River Drainage (Unit 4)',
+        name: 'Talachulitna River Drainage',
         notes: 'Famous fly-water rainbow and silver fishery.',
         species: [FishSpecies.coho, FishSpecies.sockeye, FishSpecies.pink, FishSpecies.chum, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
         methods: [
@@ -324,36 +324,36 @@ class FishingRegsData {
         ],
       ),
       FishingWater(
-        name: 'Fish Lake Creek Drainage (Unit 4)',
+        name: 'Fish Lake Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Lake Creek Drainage (Unit 4)',
+        name: 'Lake Creek Drainage',
         species: [..._salmonCombo, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Peters Creek (Unit 4)',
+        name: 'Peters Creek',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Clear (Chunilna) Creek Drainage (Unit 5)',
+        name: 'Clear (Chunilna) Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Fish Creek Drainage (Unit 5)',
+        name: 'Fish Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.pink, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Larson Creek Drainage (Unit 5)',
+        name: 'Larson Creek Drainage',
         species: [FishSpecies.coho, FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling],
       ),
       FishingWater(
-        name: 'Byers Creek Drainage / Byers Lake (Unit 6)',
+        name: 'Byers Creek Drainage / Byers Lake',
         notes: 'Denali State Park; popular roadside lake.',
         species: [FishSpecies.rainbow, FishSpecies.dolly, FishSpecies.grayling, FishSpecies.lakeTrout, FishSpecies.burbot],
       ),
       FishingWater(
-        name: 'East Fork Chulitna River Drainages (Unit 6)',
+        name: 'East Fork Chulitna River Drainages',
         species: [FishSpecies.dolly, FishSpecies.grayling, FishSpecies.whitefish],
       ),
     ],

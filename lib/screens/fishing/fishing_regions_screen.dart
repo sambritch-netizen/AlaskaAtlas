@@ -87,7 +87,7 @@ class _RegionCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('🎣', style: TextStyle(fontSize: 22)),
+              const Icon(Icons.public, color: AppColors.pine, size: 22),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(

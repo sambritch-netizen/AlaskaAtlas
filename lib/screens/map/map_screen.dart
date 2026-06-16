@@ -586,6 +586,22 @@ class _MapScreenState extends State<MapScreen> {
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                         ),
+                      if (!_searchOpen) ...[
+                        IconButton(
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          icon: const Icon(
+                            Icons.filter_alt_outlined,
+                            color: AppColors.textPrimary,
+                          ),
+                          tooltip: 'Filters',
+                          onPressed: () => setState(() {
+                            _layersPanelOpen = !_layersPanelOpen;
+                            if (_layersPanelOpen) _closeSearch();
+                          }),
+                        ),
+                        const SizedBox(width: 4),
+                      ],
                       IconButton(
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(),
@@ -650,9 +666,10 @@ class _MapScreenState extends State<MapScreen> {
                                 final result = _searchResults[i];
                                 return ListTile(
                                   dense: true,
-                                  leading: Text(
-                                    _searchResultEmoji(result),
-                                    style: const TextStyle(fontSize: 20),
+                                  leading: const Icon(
+                                    Icons.place_outlined,
+                                    size: 20,
+                                    color: AppColors.pine,
                                   ),
                                   title: Text(
                                     result.name,
@@ -723,60 +740,6 @@ class _MapScreenState extends State<MapScreen> {
               ],
             ),
           ),
-
-          // ── Left-side "Map Layers" menu button ─────────────────────
-          if (!_searchOpen)
-            Positioned(
-              left: 20,
-              top: 0,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 132),
-                  child: GestureDetector(
-                    onTap: () => setState(() {
-                      _layersPanelOpen = !_layersPanelOpen;
-                      if (_layersPanelOpen) _closeSearch();
-                    }),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 7,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.surfaceElevated,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.filter_alt,
-                            size: 15,
-                            color: AppColors.pine,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Filters',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textPrimary,
-                            ),
-                          ),
-                          SizedBox(width: 4),
-                          Icon(
-                            Icons.chevron_right,
-                            size: 16,
-                            color: AppColors.textSecondary,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
 
           // ── Locate-me button ───────────────────────────────────────
           Positioned(
@@ -1130,17 +1093,6 @@ class _SearchPin extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Emoji shown next to a [SearchResult] in the search results list.
-String _searchResultEmoji(SearchResult result) {
-  if (result.hotspot != null) return result.hotspot!.emoji;
-  if (result.highwayStop != null) return result.highwayStop!.emoji;
-  if (result.waypoint != null) {
-    return _waypointCategoryEmoji(result.waypoint!.category);
-  }
-  if (result.lake != null) return '🌊';
-  return '📍';
 }
 
 /// Color for a [Waypoint] pin, by category — mirrors the Field Guide

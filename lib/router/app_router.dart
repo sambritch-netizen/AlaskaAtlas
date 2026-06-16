@@ -7,7 +7,7 @@ import '../models/gear_item.dart';
 import '../models/lake.dart';
 import '../models/species.dart';
 import '../screens/map/lake_profile_screen.dart';
-import '../screens/explore/explore_screen.dart';
+import '../screens/fishing/fish_species_screen.dart';
 import '../screens/fishing/fishing_regions_screen.dart';
 import '../screens/fishing/fishing_subregion_screen.dart';
 import '../screens/fishing/fishing_subregions_screen.dart';
@@ -24,17 +24,11 @@ import '../screens/shell_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
-    initialLocation: '/explore',
+    initialLocation: '/map',
     routes: [
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => ShellScreen(shell: shell),
         branches: [
-          StatefulShellBranch(routes: [
-            GoRoute(
-              path: '/explore',
-              builder: (context, state) => const ExploreScreen(),
-            ),
-          ]),
           StatefulShellBranch(routes: [
             GoRoute(
               path: '/map',
@@ -103,6 +97,12 @@ final routerProvider = Provider<GoRouter>((ref) {
                   path: 'water',
                   builder: (context, state) => FishingWaterScreen(
                     water: state.extra as FishingWater,
+                  ),
+                ),
+                GoRoute(
+                  path: 'species',
+                  builder: (context, state) => FishSpeciesScreen(
+                    speciesName: state.extra as String,
                   ),
                 ),
               ],

@@ -98,10 +98,8 @@ class _SpeciesCard extends StatelessWidget {
                     border: Border.all(
                         color: AppColors.pine.withValues(alpha: 0.25)),
                   ),
-                  child: Center(
-                    child: Text(species.emoji,
-                        style: const TextStyle(fontSize: 24)),
-                  ),
+                  child: const Icon(Icons.image_outlined,
+                      color: AppColors.pine, size: 22),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
