@@ -581,53 +581,70 @@ class _MapScreenState extends State<MapScreen> {
                         )
                       else
                         Expanded(
-                          child: Text(
-                            'Alaska Atlas',
-                            style: Theme.of(context).textTheme.headlineSmall,
+                          child: Row(
+                            children: const [
+                              Icon(Icons.map_outlined,
+                                  color: AppColors.pine, size: 17),
+                              SizedBox(width: 8),
+                              Text(
+                                'ALASKA ATLAS',
+                                style: TextStyle(
+                                  fontFamily: 'MudTrack',
+                                  fontSize: 22,
+                                  letterSpacing: 0.5,
+                                  color: AppColors.textPrimary,
+                                  height: 1.0,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       if (!_searchOpen) ...[
-                        GestureDetector(
-                          onTap: () => setState(() {
-                            _layersPanelOpen = !_layersPanelOpen;
-                            if (_layersPanelOpen) _closeSearch();
-                          }),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: _layersPanelOpen
-                                  ? AppColors.pine.withValues(alpha: 0.15)
-                                  : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: _layersPanelOpen
-                                    ? AppColors.pine
-                                    : AppColors.border,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.filter_alt_outlined,
+                        Material(
+                          color: _layersPanelOpen
+                              ? AppColors.pine.withValues(alpha: 0.15)
+                              : Colors.transparent,
+                          borderRadius: BorderRadius.circular(20),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(20),
+                            onTap: () => setState(() {
+                              _layersPanelOpen = !_layersPanelOpen;
+                              if (_layersPanelOpen) _closeSearch();
+                            }),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
                                   color: _layersPanelOpen
                                       ? AppColors.pine
-                                      : AppColors.textPrimary,
-                                  size: 16,
+                                      : AppColors.border,
                                 ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  'Filters',
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w600,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.filter_alt_outlined,
                                     color: _layersPanelOpen
                                         ? AppColors.pine
                                         : AppColors.textPrimary,
+                                    size: 16,
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Filters',
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: _layersPanelOpen
+                                          ? AppColors.pine
+                                          : AppColors.textPrimary,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -825,7 +842,7 @@ class _MapScreenState extends State<MapScreen> {
                   child: Icon(
                     Icons.location_on,
                     size: 44,
-                    color: Colors.redAccent,
+                    color: AppColors.danger,
                     shadows: [Shadow(color: Colors.black54, blurRadius: 6)],
                   ),
                 ),
@@ -1113,7 +1130,7 @@ class _SearchPin extends StatelessWidget {
               ),
             ),
           ),
-          const Icon(Icons.location_on, size: 34, color: Colors.redAccent),
+          const Icon(Icons.location_on, size: 34, color: AppColors.danger),
         ],
       ),
     );
@@ -1387,14 +1404,12 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
       children: [
         Row(
           children: [
-            const Expanded(
+            Expanded(
               child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 6),
+                padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Text(
                   'Filters',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w700,
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     color: AppColors.textPrimary,
                   ),
                 ),
@@ -1612,9 +1627,7 @@ class _MapLayersSheetState extends State<_MapLayersSheet> {
             Expanded(
               child: Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                   color: AppColors.textPrimary,
                 ),
               ),
@@ -1723,45 +1736,54 @@ class _ToggleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 6),
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-      decoration: BoxDecoration(
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Material(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: Row(
-        children: [
-          if (data.swatch case final color?)
-            Container(
-              width: 14,
-              height: 14,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.surface, width: 1.5),
-              ),
-            )
-          else
-            Text(data.emoji, style: const TextStyle(fontSize: 18)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              data.label,
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
-              ),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => data.onChanged(!data.value),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            child: Row(
+              children: [
+                if (data.swatch case final color?)
+                  Container(
+                    width: 14,
+                    height: 14,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.surface, width: 1.5),
+                    ),
+                  )
+                else
+                  Text(data.emoji, style: const TextStyle(fontSize: 18)),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    data.label,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+                Switch(
+                  value: data.value,
+                  onChanged: data.onChanged,
+                  activeColor: AppColors.pine,
+                ),
+              ],
             ),
           ),
-          Switch(
-            value: data.value,
-            onChanged: data.onChanged,
-            activeColor: AppColors.pine,
-          ),
-        ],
+        ),
       ),
     );
   }
