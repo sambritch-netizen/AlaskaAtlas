@@ -78,10 +78,13 @@ class TripRouteUtils {
   static double milesBetweenPoints(LatLng a, LatLng b) =>
       _distance.as(LengthUnit.Mile, a, b);
 
+  /// Both ends just need to be on the road system — [AlaskaCity.accessibleByRoad]
+  /// already flags island/ferry-only towns correctly, and Alaska's handful
+  /// of highways all connect to each other at junctions, so two
+  /// road-connected cities are drivable even without a directly shared
+  /// highway slug (e.g. Seward to Soldotna via Tern Lake Junction).
   static LegMode interCityMode(AlaskaCity from, AlaskaCity to) {
-    final shared =
-        from.highwaySlugs.toSet().intersection(to.highwaySlugs.toSet());
-    return (from.accessibleByRoad && to.accessibleByRoad && shared.isNotEmpty)
+    return (from.accessibleByRoad && to.accessibleByRoad)
         ? LegMode.drive
         : LegMode.flyOrFerry;
   }
