@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../data/alaska_cities_data.dart';
 import '../models/fishing_regs.dart';
 import '../models/guide.dart';
 import '../models/gear_item.dart';
@@ -21,6 +22,10 @@ import '../screens/guides/species_detail_screen.dart';
 import '../screens/guides/species_list_screen.dart';
 import '../screens/map/map_screen.dart';
 import '../screens/shell_screen.dart';
+import '../screens/trip/trip_activities_screen.dart';
+import '../screens/trip/trip_cities_screen.dart';
+import '../screens/trip/trip_planner_screen.dart';
+import '../screens/trip/trip_setup_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
@@ -117,6 +122,38 @@ final routerProvider = Provider<GoRouter>((ref) {
                   path: 'detail',
                   builder: (context, state) =>
                       GearDetailScreen(item: state.extra as GearItem),
+                ),
+              ],
+            ),
+          ]),
+          StatefulShellBranch(routes: [
+            GoRoute(
+              path: '/trip',
+              builder: (context, state) => const TripPlannerScreen(),
+              routes: [
+                GoRoute(
+                  path: 'setup',
+                  builder: (context, state) => const TripSetupScreen(),
+                ),
+                GoRoute(
+                  path: 'cities',
+                  builder: (context, state) => const TripCitiesScreen(),
+                ),
+                GoRoute(
+                  path: 'city',
+                  builder: (context, state) => TripActivitiesScreen(
+                    city: state.extra as AlaskaCity,
+                  ),
+                ),
+                GoRoute(
+                  path: 'route',
+                  builder: (context, state) {
+                    final extra = state.extra as List<AlaskaCity>;
+                    return TripActivitiesScreen(
+                      city: extra[0],
+                      routeTo: extra[1],
+                    );
+                  },
                 ),
               ],
             ),

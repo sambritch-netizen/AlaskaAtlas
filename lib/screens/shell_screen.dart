@@ -43,6 +43,11 @@ class ShellScreen extends StatelessWidget {
               selectedIcon: Icon(Icons.backpack),
               label: 'Rent Gear',
             ),
+            NavigationDestination(
+              icon: Icon(Icons.card_travel_outlined),
+              selectedIcon: Icon(Icons.card_travel),
+              label: 'Trip',
+            ),
           ],
         ),
       ),
