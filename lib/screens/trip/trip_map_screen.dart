@@ -13,6 +13,15 @@ import '../map/basemaps.dart';
 
 const _distance = Distance();
 
+/// The closest-approach points between two highway centerlines, used as a
+/// stand-in for the real-world junction where they meet.
+class _Junction {
+  final LatLng pointA;
+  final LatLng pointB;
+
+  const _Junction(this.pointA, this.pointB);
+}
+
 /// Arrange the trip: drag cities into visit order and dial in nights per
 /// stop, with a live map showing the numbered route — following the actual
 /// highway centerline between stops that share a road, not a straight line
@@ -44,23 +53,91 @@ class _TripMapScreenState extends ConsumerState<TripMapScreen> {
     _mapController.move(city.location, 8.5);
   }
 
-  /// The road-following path between [a] and [b]: the bundled OSM
-  /// centerline for a highway they share, trimmed to the stretch between
-  /// the two cities, falling back to a straight line if no shared highway
-  /// centerline is loaded yet (or they're fly/ferry only).
+  HighwaySegment? _segmentFor(String slug) {
+    for (final s in _highwaySegments) {
+      if (s.slug == slug) return s;
+    }
+    return null;
+  }
+
+  /// The road-following path between [a] and [b]. If they share a highway,
+  /// that centerline trimmed between the two cities. Otherwise — e.g.
+  /// Seward (Seward Highway) to Soldotna (Sterling Highway) — backtracks up
+  /// one highway to the junction where it meets the other, then continues
+  /// down that one, instead of cutting a straight line across the
+  /// wilderness. Falls back to a straight line only if no route through the
+  /// loaded centerlines can be found.
   List<LatLng> _routeBetween(AlaskaCity a, AlaskaCity b) {
-    final shared = a.highwaySlugs.toSet().intersection(b.highwaySlugs.toSet());
-    for (final slug in shared) {
-      final segment = _highwaySegments.firstWhere(
-        (s) => s.slug == slug,
-        orElse: () => const HighwaySegment(slug: '', name: '', route: '', color: Colors.transparent, points: []),
-      );
-      if (segment.points.length > 1) {
-        final trimmed = _trimSegment(segment.points, a.location, b.location);
-        if (trimmed.length > 1) return trimmed;
+    if (_highwaySegments.isEmpty) return [a.location, b.location];
+
+    List<LatLng>? best;
+    var bestMiles = double.infinity;
+
+    void consider(List<LatLng> route) {
+      if (route.length < 2) return;
+      final miles = _routeMiles(route);
+      if (miles < bestMiles) {
+        bestMiles = miles;
+        best = route;
       }
     }
-    return [a.location, b.location];
+
+    // Direct: a shared highway runs through both cities.
+    for (final slug in a.highwaySlugs.toSet().intersection(b.highwaySlugs.toSet())) {
+      final segment = _segmentFor(slug);
+      if (segment != null && segment.points.length > 1) {
+        consider(_trimSegment(segment.points, a.location, b.location));
+      }
+    }
+
+    // One transfer: drive a's highway to where it meets one of b's
+    // highways, then continue on that one.
+    for (final slugA in a.highwaySlugs) {
+      final segA = _segmentFor(slugA);
+      if (segA == null || segA.points.length < 2) continue;
+      for (final slugB in b.highwaySlugs) {
+        if (slugA == slugB) continue;
+        final segB = _segmentFor(slugB);
+        if (segB == null || segB.points.length < 2) continue;
+        final junction = _findJunction(segA.points, segB.points);
+        if (junction == null) continue;
+        final legA = _trimSegment(segA.points, a.location, junction.pointA);
+        final legB = _trimSegment(segB.points, junction.pointB, b.location);
+        consider([...legA, ...legB]);
+      }
+    }
+
+    return best ?? [a.location, b.location];
+  }
+
+  double _routeMiles(List<LatLng> points) {
+    var total = 0.0;
+    for (var i = 1; i < points.length; i++) {
+      total += _distance.as(LengthUnit.Mile, points[i - 1], points[i]);
+    }
+    return total;
+  }
+
+  /// The closest pair of points between two highway centerlines — an
+  /// approximation of the real-world junction where they meet. Returns
+  /// null if the closest the two lines ever come is implausibly far for a
+  /// junction (i.e. they don't actually connect).
+  _Junction? _findJunction(List<LatLng> pointsA, List<LatLng> pointsB) {
+    var bestDistMeters = double.infinity;
+    var bestI = 0;
+    var bestJ = 0;
+    for (var i = 0; i < pointsA.length; i++) {
+      for (var j = 0; j < pointsB.length; j++) {
+        final d = _distance.as(LengthUnit.Meter, pointsA[i], pointsB[j]);
+        if (d < bestDistMeters) {
+          bestDistMeters = d;
+          bestI = i;
+          bestJ = j;
+        }
+      }
+    }
+    if (bestDistMeters > 500) return null;
+    return _Junction(pointsA[bestI], pointsB[bestJ]);
   }
 
   /// Cuts [points] down to the span between the points nearest [from] and
@@ -105,8 +182,7 @@ class _TripMapScreenState extends ConsumerState<TripMapScreen> {
     for (var i = 0; i < cities.length - 1; i++) {
       final a = cities[i];
       final b = cities[i + 1];
-      final shared = a.highwaySlugs.toSet().intersection(b.highwaySlugs.toSet());
-      final isRoadConnected = a.accessibleByRoad && b.accessibleByRoad && shared.isNotEmpty;
+      final isRoadConnected = a.accessibleByRoad && b.accessibleByRoad;
       polylines.add(
         isRoadConnected
             ? Polyline(
