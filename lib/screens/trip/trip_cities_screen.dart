@@ -138,8 +138,8 @@ class _TripCitiesScreenState extends ConsumerState<TripCitiesScreen> {
           child: SizedBox(
             width: double.infinity,
             child: ElevatedButton(
-              onPressed: () => context.go('/trip'),
-              child: const Text('Build My Itinerary'),
+              onPressed: () => context.go('/trip/map'),
+              child: const Text('Arrange Your Route'),
             ),
           ),
         ),

@@ -24,6 +24,8 @@ import '../screens/map/map_screen.dart';
 import '../screens/shell_screen.dart';
 import '../screens/trip/trip_activities_screen.dart';
 import '../screens/trip/trip_cities_screen.dart';
+import '../screens/trip/trip_itinerary_screen.dart';
+import '../screens/trip/trip_map_screen.dart';
 import '../screens/trip/trip_planner_screen.dart';
 import '../screens/trip/trip_setup_screen.dart';
 
@@ -154,6 +156,14 @@ final routerProvider = Provider<GoRouter>((ref) {
                       routeTo: extra[1],
                     );
                   },
+                ),
+                GoRoute(
+                  path: 'map',
+                  builder: (context, state) => const TripMapScreen(),
+                ),
+                GoRoute(
+                  path: 'itinerary',
+                  builder: (context, state) => const TripItineraryScreen(),
                 ),
               ],
             ),

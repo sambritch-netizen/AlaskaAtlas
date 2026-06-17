@@ -156,11 +156,37 @@ class TripPlannerScreen extends ConsumerWidget {
       ),
       SliverToBoxAdapter(
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
           child: OutlinedButton.icon(
             onPressed: () => context.go('/trip/cities'),
             icon: const Icon(Icons.add_location_alt_outlined),
             label: const Text('Add a City'),
+          ),
+        ),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => context.go('/trip/map'),
+              icon: const Icon(Icons.map_outlined),
+              label: const Text('Arrange on Map'),
+            ),
+          ),
+        ),
+      ),
+      SliverToBoxAdapter(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 28),
+          child: SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed: cities.isEmpty ? null : () => context.go('/trip/itinerary'),
+              icon: const Icon(Icons.checklist),
+              label: const Text('View Full Itinerary'),
+            ),
           ),
         ),
       ),

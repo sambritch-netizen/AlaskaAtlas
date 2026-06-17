@@ -79,6 +79,13 @@ class TripPlanNotifier extends Notifier<TripPlan> {
     _persist();
   }
 
+  void setNights(String cityId, int nights) {
+    final map = {...state.nightsByCity};
+    map[cityId] = nights.clamp(1, 30);
+    state = state.copyWith(nightsByCity: map);
+    _persist();
+  }
+
   void toggleActivity(String cityId, String activityRef) {
     final map = {
       for (final entry in state.savedActivitiesByCity.entries)

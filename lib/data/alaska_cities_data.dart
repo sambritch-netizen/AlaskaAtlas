@@ -91,6 +91,18 @@ class AlaskaCitiesData {
       highwaySlugs: ['seward-highway'],
     ),
     AlaskaCity(
+      id: 'whittier',
+      name: 'Whittier',
+      region: 'Southcentral',
+      lat: 60.7728,
+      lng: -148.6864,
+      emoji: '🚇',
+      blurb: 'A one-tunnel town on Prince William Sound — glacier cruises and tidewater ice.',
+      hasAirport: false,
+      accessibleByRoad: true,
+      highwaySlugs: ['seward-highway'],
+    ),
+    AlaskaCity(
       id: 'homer',
       name: 'Homer',
       region: 'Southcentral',
