@@ -8,6 +8,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../data/anchorage_data.dart';
 import '../../data/bathymetry_loader.dart';
 import '../../data/geocode_service.dart';
 import '../../data/highways_data.dart';
@@ -19,6 +20,10 @@ import '../../models/highway.dart';
 import '../../models/lake.dart';
 import '../../models/waypoint.dart';
 import '../../theme/app_colors.dart';
+import 'anchorage_city_node.dart';
+import 'anchorage_city_overlay.dart';
+import 'anchorage_marker.dart';
+import 'anchorage_poi_sheet.dart';
 import 'basemaps.dart';
 import 'highway_stop_sheet.dart';
 import 'hotspot_sheet.dart';
@@ -48,6 +53,13 @@ class _MapScreenState extends State<MapScreen> {
   // out on screen.
   bool _zoomedForMileMarkers = false;
   static const _mileMarkerZoom = 8.0;
+
+  // Anchorage "city mode" — zooming in past this threshold while centered
+  // over Anchorage swaps the statewide pulsing city node for a full
+  // immersive POI overlay (filter pills + bottom card strip).
+  bool _anchorageCityMode = false;
+  static const _anchorageCityZoom = 10.5;
+  final Set<AnchoragePOICategory> _activePOICategories = {};
 
   // Independently toggleable map overlays, switched from the "Map Layers"
   // menu — onX-style category drill-down.
@@ -360,6 +372,12 @@ class _MapScreenState extends State<MapScreen> {
                 if (zoomedIn != _zoomedForMileMarkers) {
                   setState(() => _zoomedForMileMarkers = zoomedIn);
                 }
+                final inAnchorageCity = camera.zoom >= _anchorageCityZoom &&
+                    AnchorageData.isInAnchorage(
+                        camera.center.latitude, camera.center.longitude);
+                if (inAnchorageCity != _anchorageCityMode) {
+                  setState(() => _anchorageCityMode = inAnchorageCity);
+                }
               },
             ),
             children: [
@@ -504,6 +522,41 @@ class _MapScreenState extends State<MapScreen> {
                       ),
                 ],
               ),
+              if (_anchorageCityMode)
+                MarkerLayer(
+                  markers: [
+                    for (final poi in AnchorageData.pois)
+                      if (_activePOICategories.isEmpty ||
+                          _activePOICategories.contains(poi.category))
+                        Marker(
+                          point: poi.location,
+                          width: poi.isTurnagainOutfitters ? 68 : 56,
+                          height: poi.isTurnagainOutfitters ? 68 : 56,
+                          alignment: Alignment.center,
+                          child: AnchorageMarker(
+                            poi: poi,
+                            onTap: () => showAnchoragePoiSheet(context, poi),
+                          ),
+                        ),
+                  ],
+                )
+              else
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      point: const LatLng(61.2181, -149.9003),
+                      width: 120,
+                      height: 80,
+                      alignment: Alignment.center,
+                      child: AnchorageCityNode(
+                        onTap: () => _mapController.move(
+                          const LatLng(61.2181, -149.9003),
+                          _anchorageCityZoom + 0.5,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               if (_searchPin != null)
                 MarkerLayer(
                   markers: [
@@ -964,6 +1017,25 @@ class _MapScreenState extends State<MapScreen> {
               onPinOverridesChanged: () => setState(() {}),
             ),
           ),
+
+          // ── Anchorage city mode overlay ────────────────────────────
+          if (_anchorageCityMode)
+            AnchorageCityOverlay(
+              onExit: () {
+                setState(() => _anchorageCityMode = false);
+                _mapController.move(_alaskaCenter, 4.3);
+              },
+              activeCategories: _activePOICategories,
+              onCategoryToggle: (cat) => setState(() {
+                if (_activePOICategories.contains(cat)) {
+                  _activePOICategories.remove(cat);
+                } else {
+                  _activePOICategories.add(cat);
+                }
+              }),
+              pois: AnchorageData.pois,
+              onPoiSelected: (poi) => showAnchoragePoiSheet(context, poi),
+            ),
         ],
       ),
     );
