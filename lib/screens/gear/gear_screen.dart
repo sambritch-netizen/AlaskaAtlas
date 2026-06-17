@@ -93,9 +93,6 @@ class _GearScreenState extends ConsumerState<GearScreen> {
 
     return SliverMainAxisGroup(
       slivers: [
-        // ── Outfitter banner ────────────────────────────────────────
-        const SliverToBoxAdapter(child: _OutfitterBanner()),
-
         // ── Featured carousel (only on the "All" view) ──────────────
         if (showFeatured) ...[
           const SliverToBoxAdapter(
@@ -198,63 +195,6 @@ class _SectionLabel extends StatelessWidget {
         fontWeight: FontWeight.w800,
         color: AppColors.textSecondary,
         letterSpacing: 1.4,
-      ),
-    );
-  }
-}
-
-class _OutfitterBanner extends StatelessWidget {
-  const _OutfitterBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 8, 20, 0),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.rust.withValues(alpha: 0.25),
-            AppColors.rust.withValues(alpha: 0.06),
-          ],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.rust.withValues(alpha: 0.4)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 46,
-            height: 46,
-            decoration: BoxDecoration(
-              color: AppColors.rust,
-              borderRadius: BorderRadius.circular(13),
-            ),
-            child: const Icon(Icons.backpack, color: Colors.white, size: 24),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(GearData.outfitterName,
-                          style: Theme.of(context).textTheme.titleLarge),
-                    ),
-                    const SizedBox(width: 6),
-                    const Icon(Icons.verified,
-                        color: AppColors.rust, size: 16),
-                  ],
-                ),
-                const SizedBox(height: 3),
-                Text(GearData.outfitterTagline,
-                    style: Theme.of(context).textTheme.bodySmall),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
