@@ -29,16 +29,7 @@ class GuideDetailScreen extends StatelessWidget {
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
                 background: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        AppColors.pineDark.withValues(alpha: 0.35),
-                        AppColors.background,
-                      ],
-                    ),
-                  ),
+                  color: AppColors.surface,
                   child: SafeArea(
                     child: Align(
                       alignment: Alignment.bottomLeft,
@@ -47,8 +38,8 @@ class GuideDetailScreen extends StatelessWidget {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Text(guide.emoji,
-                                style: const TextStyle(fontSize: 44)),
+                            Icon(guidesCategoryIcon(guide.category),
+                                color: AppColors.pine, size: 36),
                             const SizedBox(width: 14),
                             Expanded(
                               child: Column(
@@ -56,12 +47,10 @@ class GuideDetailScreen extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    guide.category.toUpperCase(),
+                                    guide.category,
                                     style: const TextStyle(
                                       fontSize: 11,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.pine,
-                                      letterSpacing: 1.4,
+                                      color: AppColors.textMuted,
                                     ),
                                   ),
                                   const SizedBox(height: 4),
@@ -147,25 +136,10 @@ class GuideDetailScreen extends StatelessWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 3,
-                                    height: 18,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.pine,
-                                      borderRadius: BorderRadius.circular(2),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(s.heading,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall),
-                                  ),
-                                ],
-                              ),
+                              Text(s.heading,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineSmall),
                               const SizedBox(height: 10),
                               Text(
                                 s.body,

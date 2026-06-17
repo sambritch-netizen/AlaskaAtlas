@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-16T17:30:00Z",
+  "title": "Design System: Alaska Atlas",
+  "extensions": {
+    "colorMeta": {
+      "background":       { "role": "neutral",   "displayName": "Spruce Black",    "canonical": "oklch(10% 0.018 145)", "tonalRamp": ["#060a07","#0b120c","#111b12","#1a2a1c","#243826","#2f4d34","#3d6645","#4c9a5f"] },
+      "surface":          { "role": "neutral",   "displayName": "Forest Dark",     "canonical": "oklch(12% 0.018 145)", "tonalRamp": ["#060a07","#0b120c","#111b12","#1a2a1c","#243826","#2f4d34","#3d6645","#4c9a5f"] },
+      "surface-elevated": { "role": "neutral",   "displayName": "Forest Elevated", "canonical": "oklch(17% 0.022 145)", "tonalRamp": ["#060a07","#0b120c","#111b12","#1a2a1c","#243826","#2f4d34","#3d6645","#4c9a5f"] },
+      "card":             { "role": "neutral",   "displayName": "Forest Card",     "canonical": "oklch(14% 0.020 145)", "tonalRamp": ["#060a07","#0b120c","#111b12","#152115","#1a2a1c","#243826","#2f4d34","#3d6645"] },
+      "pine":             { "role": "primary",   "displayName": "Pine Green",      "canonical": "oklch(58% 0.13 147)",  "tonalRamp": ["#0e2415","#1b4332","#2f7042","#3d8650","#4c9a5f","#65ad76","#82c091","#a5d4b0"] },
+      "pine-dark":        { "role": "primary",   "displayName": "Pine Dark",       "canonical": "oklch(46% 0.12 147)",  "tonalRamp": ["#0e2415","#1b4332","#2f7042","#3d8650","#4c9a5f","#65ad76","#82c091","#a5d4b0"] },
+      "pine-deep":        { "role": "primary",   "displayName": "Pine Deep",       "canonical": "oklch(28% 0.09 147)",  "tonalRamp": ["#0e2415","#1b4332","#2f7042","#3d8650","#4c9a5f","#65ad76","#82c091","#a5d4b0"] },
+      "rust":             { "role": "secondary", "displayName": "Burnt Rust",      "canonical": "oklch(60% 0.14 50)",   "tonalRamp": ["#3d1a05","#6b2d0a","#a35e26","#cd7b3e","#db9457","#e8ac72","#f0c492","#f8ddb5"] },
+      "rust-dark":        { "role": "secondary", "displayName": "Rust Dark",       "canonical": "oklch(48% 0.13 50)",   "tonalRamp": ["#3d1a05","#6b2d0a","#a35e26","#cd7b3e","#db9457","#e8ac72","#f0c492","#f8ddb5"] },
+      "birch":            { "role": "tertiary",  "displayName": "Birch Tan",       "canonical": "oklch(68% 0.06 80)",   "tonalRamp": ["#3d3016","#5e4a23","#7d6436","#9c804f","#b9a47a","#cbbf9b","#ddd4b8","#eee9d8"] },
+      "water":            { "role": "tertiary",  "displayName": "Water Blue",      "canonical": "oklch(55% 0.07 225)",  "tonalRamp": ["#0d1f2d","#1b3a52","#2d5673","#3e7295","#5b8bab","#7aa3be","#9cbcd1","#c0d8e6"] },
+      "text-primary":     { "role": "neutral",   "displayName": "Fog Text",        "canonical": "oklch(94% 0.015 145)", "tonalRamp": ["#2e3e30","#4c6350","#6b8870","#89a88d","#a5c2a9","#c0d8c3","#d8ecda","#ecf2ea"] },
+      "text-secondary":   { "role": "neutral",   "displayName": "Lichen Text",     "canonical": "oklch(70% 0.025 145)", "tonalRamp": ["#2e3e30","#4c6350","#6b8870","#89a88d","#9db3a0","#b5c8b8","#ccdcce","#e0eee1"] },
+      "text-muted":       { "role": "neutral",   "displayName": "Muskeg Text",     "canonical": "oklch(48% 0.022 145)", "tonalRamp": ["#1e2e20","#2e3e30","#3e5040","#4c6350","#5c7260","#738a78","#8ca491","#a5bfaa"] },
+      "border":           { "role": "neutral",   "displayName": "Topo Border",     "canonical": "oklch(22% 0.025 145)", "tonalRamp": ["#0b120c","#111b12","#1a2a1c","#24382a","#2f4d34","#3d6645","#4c9a5f","#65ad76"] },
+      "danger":           { "role": "neutral",   "displayName": "Danger Red",      "canonical": "oklch(58% 0.17 25)",   "tonalRamp": ["#4a0e0a","#7a1a14","#a82b22","#cc4438","#e25b4a","#ea7d72","#f0a09a","#f5c8c4"] },
+      "warning":          { "role": "neutral",   "displayName": "Warning Amber",   "canonical": "oklch(72% 0.13 80)",   "tonalRamp": ["#3d2405","#6b3f0a","#a06120","#c88030","#e0a93e","#ebbe62","#f3d088","#f9e4b5"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display / App Bar", "purpose": "Screen-level titles, species hero names, app bar. Mud Track only." },
+      "headline": { "displayName": "Section Header",    "purpose": "Sub-section headers within screens. Bitter slab serif." },
+      "title":    { "displayName": "Card Title",        "purpose": "Card primary labels, list row headers. Bitter." },
+      "body":     { "displayName": "Body",              "purpose": "Content blocks, species summaries, regulation notes. Inter." },
+      "label":    { "displayName": "Label / Eyebrow",   "purpose": "Section eyebrows and count chips. Inter uppercase, wide tracking. Used deliberately, not reflexively." }
+    },
+    "shadows": [
+      { "name": "card-ambient",  "value": "0 3px 8px rgba(0,0,0,0.54)",  "purpose": "Ambient depth on card theme. Invisible at dark ambient; disambiguation on bright displays only." },
+      { "name": "sheet-overlay", "value": "0 -4px 24px rgba(0,0,0,0.6)", "purpose": "Bottom sheet scrim shadow." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default state transitions. Material standard easing." },
+      { "name": "ease-decel",    "value": "cubic-bezier(0.0, 0.0, 0.2, 1)", "purpose": "Elements entering the screen (sheet slide-up, panel open)." }
+    ],
+    "breakpoints": []
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main CTA. Pine fill, forest text. Tactile and grounded — no hover animation, color-only state change.",
+      "html": "<button class=\"ds-btn-primary\">BOOK GEAR</button>",
+      "css": ".ds-btn-primary { background: #4c9a5f; color: #0b120c; font-family: Inter, system-ui, sans-serif; font-size: 15px; font-weight: 700; padding: 14px 24px; border-radius: 12px; border: none; cursor: pointer; transition: background 0.15s; letter-spacing: 0.01em; } .ds-btn-primary:hover { background: #2f7042; } .ds-btn-primary:active { background: #1b4332; } .ds-btn-primary:focus-visible { outline: 2px solid #4c9a5f; outline-offset: 3px; }"
+    },
+    {
+      "name": "Species Chip",
+      "kind": "chip",
+      "refersTo": "chip-species",
+      "description": "Tappable chip showing a colored species dot and name. Water-context UI only.",
+      "html": "<button class=\"ds-chip-species\"><span class=\"ds-chip-dot\" style=\"background:#4c9a5f\"></span>King Salmon</button>",
+      "css": ".ds-chip-species { display: inline-flex; align-items: center; gap: 7px; background: #1a2a1c; color: #9db3a0; font-family: Inter, system-ui, sans-serif; font-size: 12.5px; font-weight: 600; padding: 6px 12px; border-radius: 9999px; border: 1px solid #24382a; cursor: pointer; transition: border-color 0.15s, background 0.15s; } .ds-chip-species:hover { border-color: #4c9a5f; background: rgba(76,154,95,0.1); color: #ecf2ea; } .ds-chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }"
+    },
+    {
+      "name": "Filter Chip (active)",
+      "kind": "chip",
+      "refersTo": "chip-species",
+      "description": "Category filter pill in its selected state. Pine tint fill, pine border.",
+      "html": "<button class=\"ds-chip-filter ds-chip-filter--active\">Fishing</button>",
+      "css": ".ds-chip-filter { display: inline-flex; align-items: center; background: #1a2a1c; color: #5c7260; font-family: Inter, system-ui, sans-serif; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 9999px; border: 1px solid #24382a; cursor: pointer; transition: all 0.15s; } .ds-chip-filter--active { background: rgba(76,154,95,0.15); color: #4c9a5f; border-color: #4c9a5f; } .ds-chip-filter:hover { border-color: #4c9a5f; color: #4c9a5f; }"
+    },
+    {
+      "name": "Content Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Standard content tile. Forest fill, topo border, 16px radius. No elevation animation.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-title\">Sixmile Lake</div><div class=\"ds-card-sub\">3 species · 120 ac</div></div>",
+      "css": ".ds-card { background: #152115; border: 1px solid #24382a; border-radius: 16px; padding: 16px; } .ds-card-title { font-family: Inter, system-ui, sans-serif; font-size: 14px; font-weight: 700; color: #ecf2ea; margin: 0 0 4px; } .ds-card-sub { font-family: Inter, system-ui, sans-serif; font-size: 11.5px; font-weight: 600; color: #5b8bab; margin: 0; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-default",
+      "description": "Full-width search field. Elevated fill, pine focus border. No glow.",
+      "html": "<div class=\"ds-input-wrap\"><svg class=\"ds-input-icon\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#5c7260\" stroke-width=\"2\"><circle cx=\"11\" cy=\"11\" r=\"8\"/><line x1=\"21\" y1=\"21\" x2=\"16.65\" y2=\"16.65\"/></svg><input class=\"ds-input\" type=\"text\" placeholder=\"Search waters, species…\" /></div>",
+      "css": ".ds-input-wrap { position: relative; display: flex; align-items: center; } .ds-input-icon { position: absolute; left: 14px; pointer-events: none; } .ds-input { width: 100%; background: #1a2a1c; color: #ecf2ea; font-family: Inter, system-ui, sans-serif; font-size: 14px; padding: 14px 14px 14px 40px; border: 1px solid #24382a; border-radius: 12px; outline: none; box-sizing: border-box; transition: border-color 0.15s; } .ds-input::placeholder { color: #5c7260; } .ds-input:focus { border-color: #4c9a5f; border-width: 1.5px; }"
+    },
+    {
+      "name": "Bottom Navigation",
+      "kind": "nav",
+      "refersTo": "card-default",
+      "description": "4-tab bottom nav. Forest surface, pine active state, muted inactive.",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav-item ds-nav-item--active\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#4c9a5f\" stroke-width=\"2\"><path d=\"M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z\"/></svg><span>Map</span></button><button class=\"ds-nav-item\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#5c7260\" stroke-width=\"2\"><path d=\"M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z\"/><path d=\"M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z\"/></svg><span>Guides</span></button></nav>",
+      "css": ".ds-nav { display: flex; background: #111b12; height: 68px; align-items: center; justify-content: space-around; border-top: 1px solid #1d2f22; } .ds-nav-item { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: none; cursor: pointer; padding: 8px 16px; border-radius: 16px; transition: background 0.15s; } .ds-nav-item span { font-family: Inter, system-ui, sans-serif; font-size: 11px; font-weight: 500; color: #5c7260; } .ds-nav-item--active { background: rgba(76,154,95,0.18); } .ds-nav-item--active span { font-weight: 700; color: #4c9a5f; }"
+    },
+    {
+      "name": "Section Header",
+      "kind": "custom",
+      "refersTo": "card-default",
+      "description": "FishingSectionHeader — Mud Track label used as a deliberate brand cadence element, not a generic eyebrow.",
+      "html": "<div class=\"ds-section-header\">SPECIES PRESENT</div>",
+      "css": ".ds-section-header { font-family: 'MudTrack', Georgia, serif; font-size: 13px; color: #9db3a0; letter-spacing: 0.5px; margin: 0; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Trapper's Field Journal",
+    "overview": "Alaska Atlas is the design of a worn, trusted field guide — dense with real information, every detail earned rather than decorated. The background is the deep black-green of a spruce forest at 5am, and everything that appears on it carries weight. This is not a minimal SaaS tool or a consumer travel app. It is reference material that happens to run on a phone.\n\nThe palette is built entirely around the land: near-black evergreen surfaces, a single pine-green accent that maps to action and trust, a rust-orange that evokes Turnagain Outfitters' brand heat, a worn birch tan for secondary data, and a water-blue reserved for fishing contexts. Typography pairs Mud Track (a distressed display face with the authority of a carved trail sign) with Bitter (a slab serif that reads like a regulation booklet reborn) and Inter (clean, precise body text). No decoration for its own sake. Every element earns its presence.\n\nThe system rejects the two failure modes Alaska Atlas was built to replace: the government-reg site (correct data, visually punishing, no trust-building) and the outdoor-retail app (shopping-first, cross-sell everywhere, no field utility).",
+    "keyCharacteristics": [
+      "Deep forest dark mode — used at dawn in low ambient light",
+      "One saturated accent (pine green) on ≤20% of any surface",
+      "Mud Track on display headlines only; Bitter and Inter below",
+      "Topo-line texture on backgrounds — subtle, never decorative",
+      "Cards earn their borders; no nested cards, no side-stripe accents"
+    ],
+    "rules": [
+      { "name": "The One Green Rule", "body": "Pine (#4C9A5F) is the sole saturated action color. Rust is the Turnagain accent, water is the fishing accent — neither substitutes for pine in navigation or primary interactions. Using two accent colors simultaneously on one screen is prohibited.", "section": "colors" },
+      { "name": "The Water Reservation Rule", "body": "Water blue (#5B8BAB) is fishing-context only. It does not appear in Guides, Rentals, or Map except where a fishing-specific element is present.", "section": "colors" },
+      { "name": "The Mud Track Ceiling Rule", "body": "Mud Track is reserved for display-level text (20px minimum, 42px maximum) and app bar titles. Anything smaller is Bitter or Inter. Using Mud Track at body or label size destroys its authority.", "section": "typography" },
+      { "name": "The Contrast Floor Rule", "body": "Body text must use #ECF2EA or #9DB3A0 on dark surfaces. No grays invented for elegance. Muted text (#5C7260) is permitted only for genuinely tertiary information.", "section": "typography" },
+      { "name": "The No-Float Rule", "body": "Shadows do not appear on elements at rest. They appear only on bottom sheets and modal surfaces as structural disambiguation, not as hover delight effects.", "section": "elevation" }
+    ],
+    "dos": [
+      "Keep Mud Track exclusively at display/AppBar scale (20px+)",
+      "Put a border (#24382A) stroke on every card and input field",
+      "Use water blue (#5B8BAB) only in fishing-context UI",
+      "Default to textSecondary (#9DB3A0) for body content",
+      "Apply TopoBackground at 0.3 opacity to every screen",
+      "Earn trust through precision — every label and species name verified against source data"
+    ],
+    "donts": [
+      "Don't use a light or cream background anywhere — this is a field tool used at dawn",
+      "Don't make government-reg-style walls of unformatted text",
+      "Don't let the Rentals tab feel like REI or Bass Pro",
+      "Don't use border-left or any single-side border stripe as a card accent",
+      "Don't apply Mud Track below 20px or above 42px",
+      "Don't use pine green and rust simultaneously as prominent elements on the same screen",
+      "Don't add card elevation shadows on hover/active states",
+      "Don't put a side-stripe left border on any callout, alert, or card"
+    ]
+  }
+}

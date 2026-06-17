@@ -24,11 +24,6 @@ class ShellScreen extends StatelessWidget {
           ),
           destinations: const [
             NavigationDestination(
-              icon: Icon(Icons.explore_outlined),
-              selectedIcon: Icon(Icons.explore),
-              label: 'Explore',
-            ),
-            NavigationDestination(
               icon: Icon(Icons.map_outlined),
               selectedIcon: Icon(Icons.map),
               label: 'Map',
@@ -39,9 +34,19 @@ class ShellScreen extends StatelessWidget {
               label: 'Guides',
             ),
             NavigationDestination(
+              icon: Icon(Icons.set_meal_outlined),
+              selectedIcon: Icon(Icons.set_meal),
+              label: 'Fishing',
+            ),
+            NavigationDestination(
               icon: Icon(Icons.backpack_outlined),
               selectedIcon: Icon(Icons.backpack),
               label: 'Rent Gear',
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.card_travel_outlined),
+              selectedIcon: Icon(Icons.card_travel),
+              label: 'Trip',
             ),
           ],
         ),

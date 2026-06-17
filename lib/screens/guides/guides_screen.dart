@@ -7,22 +7,13 @@ import '../../theme/app_colors.dart';
 import '../../widgets/common.dart';
 import '../../widgets/topo_background.dart';
 
-class GuidesScreen extends StatefulWidget {
+/// Field Guides landing page — a grid of category tiles. Tapping a
+/// tile opens [GuideCategoryScreen] for that category.
+class GuidesScreen extends StatelessWidget {
   const GuidesScreen({super.key});
 
   @override
-  State<GuidesScreen> createState() => _GuidesScreenState();
-}
-
-class _GuidesScreenState extends State<GuidesScreen> {
-  String? _category;
-
-  @override
   Widget build(BuildContext context) {
-    final guides = _category == null
-        ? GuidesData.guides
-        : GuidesData.guides.where((g) => g.category == _category).toList();
-
     return Scaffold(
       body: TopoBackground(
         opacity: 0.3,
@@ -33,48 +24,41 @@ class _GuidesScreenState extends State<GuidesScreen> {
               expandedHeight: 108,
               backgroundColor: AppColors.background,
               flexibleSpace: FlexibleSpaceBar(
-                titlePadding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-                title: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Field Guides',
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(fontSize: 21)),
-                    const Text(
-                      'KNOW-HOW FOR THE LAST FRONTIER',
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: AppColors.pine,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 1.6,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: FilterChipsRow(
-                  options:
-                      GuidesData.categories.map((c) => c.name).toList(),
-                  selected: _category,
-                  emojiFor: (name) => GuidesData.categories
-                      .firstWhere((c) => c.name == name)
-                      .emoji,
-                  onSelected: (c) => setState(() => _category = c),
-                ),
+                titlePadding: const EdgeInsets.fromLTRB(0, 0, 0, 12),
+                title: Text('Field Guides',
+                    style: Theme.of(context).textTheme.headlineMedium),
+                centerTitle: true,
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              sliver: SliverList.builder(
-                itemCount: guides.length,
-                itemBuilder: (context, i) => _GuideCard(guide: guides[i]),
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 1.15,
+                ),
+                delegate: SliverChildBuilderDelegate(
+                  (context, i) => TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0.0, end: 1.0),
+                    duration: Duration(
+                        milliseconds: 260 + (i * 40).clamp(0, 200)),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, v, child) => Opacity(
+                      opacity: v,
+                      child: Transform.translate(
+                        offset: Offset(0, 16 * (1 - v)),
+                        child: Transform.scale(
+                          scale: 0.96 + 0.04 * v,
+                          child: child,
+                        ),
+                      ),
+                    ),
+                    child: _CategoryTile(category: GuidesData.categories[i]),
+                  ),
+                  childCount: GuidesData.categories.length,
+                ),
               ),
             ),
           ],
@@ -84,106 +68,104 @@ class _GuidesScreenState extends State<GuidesScreen> {
   }
 }
 
-class _GuideCard extends StatelessWidget {
-  final Guide guide;
+class _CategoryTile extends StatelessWidget {
+  final GuideCategory category;
 
-  const _GuideCard({required this.guide});
-
-  Color get _difficultyColor => switch (guide.difficulty) {
-        'Beginner' => AppColors.pine,
-        'Intermediate' => AppColors.warning,
-        _ => AppColors.danger,
-      };
+  const _CategoryTile({required this.category});
 
   @override
   Widget build(BuildContext context) {
+    final count =
+        GuidesData.guides.where((g) => g.category == category.name).length;
+
+    final hasImage = category.imagePath != null;
+
+    // Outer container provides the visible rounded border; inner ClipRRect
+    // clips the photo flush to the inside edge of that border.
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppColors.card,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+        border: Border.all(color: AppColors.border, width: 1.5),
       ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () => context.go('/guides/detail', extra: guide),
-          borderRadius: BorderRadius.circular(16),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: AppColors.pine.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                            color: AppColors.pine.withValues(alpha: 0.25)),
-                      ),
-                      child: Center(
-                        child: Text(guide.emoji,
-                            style: const TextStyle(fontSize: 22)),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            guide.category.toUpperCase(),
-                            style: const TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.textMuted,
-                              letterSpacing: 1.2,
-                            ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(14.5),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (hasImage)
+              Image.asset(category.imagePath!, fit: BoxFit.cover)
+            else
+              Container(
+                color: AppColors.card,
+                child: Center(
+                  child: Icon(guidesCategoryIcon(category.name),
+                      color: AppColors.pine, size: 36),
+                ),
+              ),
+            if (hasImage)
+              const DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.transparent,
+                      Color(0xDD000000),
+                    ],
+                    stops: [0.0, 0.4, 1.0],
+                  ),
+                ),
+              ),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () =>
+                    context.go('/guides/category', extra: category.name),
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
+                    decoration: hasImage
+                        ? const BoxDecoration(
+                            color: Color(0xE60B120C),
+                          )
+                        : null,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          category.name.toUpperCase(),
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'MudTrack',
+                            fontSize: 24,
+                            letterSpacing: 1.0,
+                            color: hasImage
+                                ? AppColors.textPrimary
+                                : AppColors.textPrimary,
                           ),
-                          const SizedBox(height: 2),
-                          Text(guide.title,
-                              style: Theme.of(context).textTheme.titleLarge),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '$count guide${count == 1 ? '' : 's'}',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.8,
+                            color: AppColors.textMuted,
+                          ),
+                        ),
+                      ],
                     ),
-                    const Icon(Icons.chevron_right,
-                        color: AppColors.textMuted, size: 20),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  guide.summary,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    MetaBadge(label: guide.difficulty, color: _difficultyColor),
-                    const SizedBox(width: 8),
-                    MetaBadge(
-                      label: '${guide.readMinutes} min read',
-                      color: AppColors.textSecondary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        guide.season,
-                        textAlign: TextAlign.right,
-                        style: const TextStyle(
-                            fontSize: 11, color: AppColors.textMuted),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
