@@ -2,16 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../data/alaska_cities_data.dart';
+import '../../data/highways_data.dart';
+import '../../models/highway.dart';
 import '../../providers/trip_plan_provider.dart';
 import '../../theme/app_colors.dart';
 import '../map/basemaps.dart';
 
+const _distance = Distance();
+
 /// Arrange the trip: drag cities into visit order and dial in nights per
-/// stop, with a live map showing the numbered route so it's obvious what
-/// "two days in Seward, then four in Whittier" actually looks like on the
-/// ground.
+/// stop, with a live map showing the numbered route — following the actual
+/// highway centerline between stops that share a road, not a straight line
+/// drawn through the wilderness — so it's obvious what "two days in Seward,
+/// then four in Whittier" actually looks like on the ground.
 class TripMapScreen extends ConsumerStatefulWidget {
   const TripMapScreen({super.key});
 
@@ -21,9 +27,65 @@ class TripMapScreen extends ConsumerStatefulWidget {
 
 class _TripMapScreenState extends ConsumerState<TripMapScreen> {
   final _mapController = MapController();
+  List<HighwaySegment> _highwaySegments = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHighways();
+  }
+
+  Future<void> _loadHighways() async {
+    final segments = await HighwayLoader.load();
+    if (mounted) setState(() => _highwaySegments = segments);
+  }
 
   void _focusCity(AlaskaCity city) {
     _mapController.move(city.location, 8.5);
+  }
+
+  /// The road-following path between [a] and [b]: the bundled OSM
+  /// centerline for a highway they share, trimmed to the stretch between
+  /// the two cities, falling back to a straight line if no shared highway
+  /// centerline is loaded yet (or they're fly/ferry only).
+  List<LatLng> _routeBetween(AlaskaCity a, AlaskaCity b) {
+    final shared = a.highwaySlugs.toSet().intersection(b.highwaySlugs.toSet());
+    for (final slug in shared) {
+      final segment = _highwaySegments.firstWhere(
+        (s) => s.slug == slug,
+        orElse: () => const HighwaySegment(slug: '', name: '', route: '', color: Colors.transparent, points: []),
+      );
+      if (segment.points.length > 1) {
+        final trimmed = _trimSegment(segment.points, a.location, b.location);
+        if (trimmed.length > 1) return trimmed;
+      }
+    }
+    return [a.location, b.location];
+  }
+
+  /// Cuts [points] down to the span between the points nearest [from] and
+  /// [to], oriented from [from] to [to].
+  List<LatLng> _trimSegment(List<LatLng> points, LatLng from, LatLng to) {
+    var fromIndex = 0;
+    var toIndex = 0;
+    var fromBest = double.infinity;
+    var toBest = double.infinity;
+    for (var i = 0; i < points.length; i++) {
+      final dFrom = _distance.as(LengthUnit.Meter, points[i], from);
+      if (dFrom < fromBest) {
+        fromBest = dFrom;
+        fromIndex = i;
+      }
+      final dTo = _distance.as(LengthUnit.Meter, points[i], to);
+      if (dTo < toBest) {
+        toBest = dTo;
+        toIndex = i;
+      }
+    }
+    final start = fromIndex < toIndex ? fromIndex : toIndex;
+    final end = fromIndex < toIndex ? toIndex : fromIndex;
+    final sub = points.sublist(start, end + 1);
+    return fromIndex <= toIndex ? sub : sub.reversed.toList();
   }
 
   @override
@@ -38,6 +100,30 @@ class _TripMapScreenState extends ConsumerState<TripMapScreen> {
     final bounds = cities.length > 1
         ? LatLngBounds.fromPoints([for (final c in cities) c.location])
         : null;
+
+    final polylines = <Polyline>[];
+    for (var i = 0; i < cities.length - 1; i++) {
+      final a = cities[i];
+      final b = cities[i + 1];
+      final shared = a.highwaySlugs.toSet().intersection(b.highwaySlugs.toSet());
+      final isRoadConnected = a.accessibleByRoad && b.accessibleByRoad && shared.isNotEmpty;
+      polylines.add(
+        isRoadConnected
+            ? Polyline(
+                points: _routeBetween(a, b),
+                color: AppColors.rust.withValues(alpha: 0.9),
+                strokeWidth: 4,
+                borderColor: Colors.black.withValues(alpha: 0.3),
+                borderStrokeWidth: 1.5,
+              )
+            : Polyline(
+                points: [a.location, b.location],
+                color: AppColors.rust.withValues(alpha: 0.7),
+                strokeWidth: 3,
+                pattern: const StrokePattern.dotted(),
+              ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Arrange Your Route')),
@@ -71,17 +157,7 @@ class _TripMapScreenState extends ConsumerState<TripMapScreen> {
                         userAgentPackageName: 'com.alaskaatlas.alaska_atlas',
                         maxNativeZoom: Basemaps.dark.maxNativeZoom,
                       ),
-                      if (cities.length > 1)
-                        PolylineLayer(
-                          polylines: [
-                            Polyline(
-                              points: [for (final c in cities) c.location],
-                              color: AppColors.rust.withValues(alpha: 0.8),
-                              strokeWidth: 3,
-                              pattern: const StrokePattern.dotted(),
-                            ),
-                          ],
-                        ),
+                      if (polylines.isNotEmpty) PolylineLayer(polylines: polylines),
                       MarkerLayer(
                         markers: [
                           for (var i = 0; i < cities.length; i++)
